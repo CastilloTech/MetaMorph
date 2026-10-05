@@ -1,0 +1,673 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0f1115">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>MetaMorph</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<style>
+  :root {
+    --bg: #0f1115;
+    --surface: #171a21;
+    --surface-2: #1f232c;
+    --line: #2a2f3a;
+    --text: #e8e6e1;
+    --muted: #8b8f98;
+    --accent: #c9a45c;
+    --accent-ink: #1a1408;
+    --focus: #c9a45c;
+    --release: #6f8fb5;
+    --ok: #6fae8b;
+    --danger: #c46a6a;
+    --radius: 14px;
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; height: 100%; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font: 16px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    font-variant-emoji: text;
+  }
+  button, input, textarea { font: inherit; color: inherit; }
+  button { cursor: pointer; border: 0; background: none; }
+
+  #app { max-width: 560px; margin: 0 auto; min-height: 100%; display: flex; flex-direction: column; }
+  header {
+    padding: calc(14px + env(safe-area-inset-top)) 16px 10px;
+    display: flex; align-items: baseline; justify-content: space-between;
+  }
+  header h1 { font-size: 20px; margin: 0; letter-spacing: .04em; font-weight: 600; }
+  header .date { color: var(--muted); font-size: 14px; }
+  main { flex: 1; padding: 4px 16px calc(96px + env(safe-area-inset-bottom)); }
+
+  nav.tabs {
+    position: fixed; left: 0; right: 0; bottom: 0;
+    background: color-mix(in srgb, var(--bg) 92%, transparent);
+    backdrop-filter: blur(10px);
+    border-top: 1px solid var(--line);
+    padding: 8px 16px calc(8px + env(safe-area-inset-bottom));
+  }
+  nav.tabs .inner { max-width: 560px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  nav.tabs button { padding: 12px; border-radius: 12px; color: var(--muted); font-weight: 600; }
+  nav.tabs button.on { background: var(--surface-2); color: var(--text); }
+
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px; margin-bottom: 12px; }
+  .label { color: var(--muted); font-size: 13px; text-transform: uppercase; letter-spacing: .08em; margin: 0 0 8px; }
+  .muted { color: var(--muted); }
+  .row { display: flex; align-items: center; gap: 12px; }
+  .spread { justify-content: space-between; }
+
+  .btn { padding: 14px 18px; border-radius: 12px; background: var(--surface-2); border: 1px solid var(--line); font-weight: 600; }
+  .btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+  .btn.ghost { background: none; }
+  .btn.danger { color: var(--danger); }
+  .btn.block { width: 100%; }
+  .btn.small { padding: 8px 12px; font-size: 14px; }
+
+  /* steppers */
+  .stepper { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .step { background: var(--surface-2); border-radius: 12px; padding: 10px; text-align: center; }
+  .step .v { font-size: 22px; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .step .k { font-size: 12px; color: var(--muted); }
+  .step .pm { display: flex; justify-content: space-between; margin-top: 6px; }
+  .step .pm button { width: 32px; height: 32px; border-radius: 8px; background: var(--surface); font-size: 18px; }
+
+  /* history */
+  .hist { list-style: none; margin: 0; padding: 0; }
+  .hist li { display: flex; justify-content: space-between; padding: 10px 0; border-top: 1px solid var(--line); font-size: 15px; }
+  .hist li:first-child { border-top: 0; }
+  .num { font-variant-numeric: tabular-nums; }
+
+  /* run screen */
+  .run { position: fixed; inset: 0; background: var(--bg); z-index: 20; display: flex; flex-direction: column;
+         padding: calc(20px + env(safe-area-inset-top)) 16px calc(20px + env(safe-area-inset-bottom)); }
+  .run .inner { max-width: 560px; width: 100%; margin: 0 auto; flex: 1; display: flex; flex-direction: column; }
+  .run .top { display: flex; justify-content: space-between; align-items: center; color: var(--muted); }
+  .run .center { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 12px; }
+  .phase { font-size: 15px; letter-spacing: .3em; font-weight: 700; }
+  .clock { font-size: 84px; font-weight: 300; font-variant-numeric: tabular-nums; line-height: 1; }
+  .instr { color: var(--muted); max-width: 30ch; font-size: 17px; }
+  .ritual { font-size: 22px; max-width: 24ch; line-height: 1.35; }
+  .bigtap { width: 100%; padding: 26px; border-radius: 18px; font-size: 20px; font-weight: 700; }
+  .bigtap.lock { background: var(--focus); color: var(--accent-ink); }
+  .bigtap.catch { background: var(--surface-2); border: 1px solid var(--line); }
+  .bigtap.wait { background: none; border: 1px dashed var(--line); color: var(--muted); }
+  .bar { height: 4px; background: var(--surface-2); border-radius: 2px; overflow: hidden; width: 100%; }
+  .bar > i { display: block; height: 100%; background: currentColor; width: 0; }
+  .dots { display: flex; gap: 6px; justify-content: center; }
+  .dots i { width: 8px; height: 8px; border-radius: 50%; background: var(--surface-2); }
+  .dots i.on { background: var(--muted); }
+  .dots i.now { background: var(--text); }
+  .controls { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+  /* gates */
+  .gatebar { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-bottom: 14px; }
+  .gatebar button { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 10px 4px; text-align: center; }
+  .gatebar button.on { border-color: var(--accent); background: var(--surface-2); }
+  .gatebar .ic { font-size: 20px; display: block; }
+  .gatebar .nm { font-size: 13px; font-weight: 600; display: block; }
+  .gatebar .ct { font-size: 12px; color: var(--muted); display: block; font-variant-numeric: tabular-nums; }
+
+  .blk { display: grid; grid-template-columns: auto 1fr auto; gap: 12px; align-items: center; }
+  .chk { width: 30px; height: 30px; border-radius: 50%; border: 2px solid var(--line); display: grid; place-items: center; color: transparent; font-size: 16px; }
+  .chk.done { background: var(--ok); border-color: var(--ok); color: #0d1a12; }
+  .blk .t { font-variant-numeric: tabular-nums; color: var(--muted); font-size: 14px; }
+  .blk .ti { font-weight: 600; font-size: 17px; }
+  .blk.now { border-color: var(--accent); }
+  .tag { font-size: 11px; color: var(--accent); letter-spacing: .1em; text-transform: uppercase; margin-left: 6px; }
+  .steps { margin: 12px 0 0; padding: 12px 0 0; border-top: 1px solid var(--line); display: grid; gap: 6px; font-size: 14px; }
+  .steps b { color: var(--muted); font-weight: 600; display: inline-block; width: 52px; font-size: 12px; letter-spacing: .08em; }
+  .acts { display: flex; gap: 8px; margin-top: 12px; }
+  .acts .btn { flex: 1; }
+
+  /* sheet */
+  .sheet-bg { position: fixed; inset: 0; background: rgba(0,0,0,.55); z-index: 30; display: flex; align-items: flex-end; justify-content: center; }
+  .sheet { background: var(--surface); border-top-left-radius: 20px; border-top-right-radius: 20px; width: 100%; max-width: 560px;
+           max-height: 92vh; overflow-y: auto; padding: 20px 16px calc(20px + env(safe-area-inset-bottom)); }
+  .sheet h2 { margin: 0 0 14px; font-size: 18px; }
+  .field { margin-bottom: 12px; }
+  .field label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 4px; }
+  .field input, .field textarea {
+    width: 100%; background: var(--surface-2); border: 1px solid var(--line); border-radius: 10px; padding: 12px;
+  }
+  .field textarea { min-height: 64px; resize: vertical; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .phasebox { border: 1px solid var(--line); border-radius: 12px; padding: 12px; margin-bottom: 12px; }
+  .phasebox .label { margin-bottom: 10px; }
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+(() => {
+  'use strict';
+
+  /* ---------- data ---------- */
+
+  const GATES = [
+    { id: 'sleep',     name: 'Sleep',     icon: '☾' },
+    { id: 'fitness',   name: 'Fitness',   icon: '△' },
+    { id: 'nutrition', name: 'Nutrition', icon: '◐' },
+    { id: 'hygiene',   name: 'Hygiene',   icon: '◇' },
+  ];
+
+  const KEY = 'metamorph.v1';
+  const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+
+  function block(title, start, minutes, open, openSec, work, close, closeSec) {
+    return { id: uid(), title, start, minutes, open, openSec, work, close, closeSec };
+  }
+
+  function seed() {
+    return {
+      v: 1,
+      gates: {
+        sleep: [
+          block('Wind-down', '22:30', 30, 'Dim the lights. Assume the exit posture.', 30, 'No screens. Let the day go.', 'One line: how did the day end?', 30),
+        ],
+        fitness: [
+          block('Training', '07:00', 40, 'Excitatory, 60s: hard breaths, shake out, move.', 60, 'Train.', 'Hard exhale. Cold water on the face.', 15),
+        ],
+        nutrition: [
+          block('Breakfast', '08:00', 20, 'Pause. Notice hunger, 1–10.', 15, 'Eat. Water and protein.', 'Notice hunger again.', 15),
+          block('Lunch',     '12:30', 30, 'Pause. Notice hunger, 1–10.', 15, 'Eat. Water and protein.', 'Notice hunger again.', 15),
+          block('Dinner',    '18:30', 30, 'Pause. Notice hunger, 1–10.', 15, 'Eat. Water and protein.', 'Notice hunger again.', 15),
+        ],
+        hygiene: [
+          block('Morning', '06:30', 15, 'Cold water. The day begins.', 15, 'Morning routine.', 'Hard exhale. Done.', 10),
+          block('Evening', '21:30', 15, 'Change the room or the lighting.', 10, 'Evening routine.', 'Hand off to wind-down.', 10),
+        ],
+      },
+      done: {},
+      drill: { focus: 30, release: 30, rounds: 8, sessions: [] },
+    };
+  }
+
+  function load() {
+    try {
+      const s = JSON.parse(localStorage.getItem(KEY));
+      if (s && s.v === 1) return s;
+    } catch (e) {}
+    return seed();
+  }
+  function save() {
+    try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {}
+  }
+
+  const S = load();
+  const today = () => {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  };
+
+  // drop done-marks older than 60 days
+  (() => {
+    const cutoff = Date.now() - 60 * 864e5;
+    for (const k of Object.keys(S.done)) if (new Date(k).getTime() < cutoff) delete S.done[k];
+    save();
+  })();
+
+  try { navigator.storage && navigator.storage.persist && navigator.storage.persist(); } catch (e) {}
+
+  /* ---------- helpers ---------- */
+
+  const $app = document.getElementById('app');
+  const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const mmss = sec => { sec = Math.max(0, Math.ceil(sec)); return `${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, '0')}`; };
+  const toMin = hhmm => { const [h, m] = hhmm.split(':').map(Number); return h * 60 + m; };
+  const fromMin = m => { m = ((m % 1440) + 1440) % 1440; return `${String(Math.floor(m / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`; };
+  const avg = a => a.length ? a.reduce((x, y) => x + y, 0) / a.length : null;
+  const sorted = list => [...list].sort((a, b) => toMin(a.start) - toMin(b.start));
+  const isDone = id => !!(S.done[today()] && S.done[today()][id]);
+  function setDone(id, v) {
+    const k = today();
+    S.done[k] = S.done[k] || {};
+    if (v) S.done[k][id] = true; else delete S.done[k][id];
+    save();
+  }
+  function isNow(b) {
+    const d = new Date(), n = d.getHours() * 60 + d.getMinutes();
+    const s = toMin(b.start), e = s + Number(b.minutes);
+    return e <= 1440 ? n >= s && n < e : n >= s || n < e - 1440;
+  }
+
+  let ac = null;
+  function beep(freq = 660, dur = 0.2) {
+    try {
+      ac = ac || new (window.AudioContext || window.webkitAudioContext)();
+      if (ac.state === 'suspended') ac.resume();
+      const o = ac.createOscillator(), g = ac.createGain(), t = ac.currentTime;
+      o.type = 'sine'; o.frequency.value = freq;
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.exponentialRampToValueAtTime(0.35, t + 0.02);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+      o.connect(g).connect(ac.destination);
+      o.start(t); o.stop(t + dur + 0.05);
+    } catch (e) {}
+    try { navigator.vibrate && navigator.vibrate(150); } catch (e) {}
+  }
+
+  function unlockAudio() {
+    try {
+      ac = ac || new (window.AudioContext || window.webkitAudioContext)();
+      if (ac.state === 'suspended') ac.resume();
+    } catch (e) {}
+  }
+
+  let wake = null;
+  async function lockScreen() { try { wake = await navigator.wakeLock.request('screen'); } catch (e) {} }
+  function unlockScreen() { try { wake && wake.release(); } catch (e) {} wake = null; }
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible' && (drillRun || blockRun)) lockScreen();
+  });
+
+  /* ---------- view state ---------- */
+
+  const V = { tab: 'drill', gate: 'sleep', edit: null, summary: null };
+  let drillRun = null;   // { round, phase, start, end, latencies[], catches, locked }
+  let blockRun = null;   // { gate, id, phase, end, remaining, paused }
+  let ticker = null;
+
+  function startTicker() { stopTicker(); ticker = setInterval(tick, 200); }
+  function stopTicker() { clearInterval(ticker); ticker = null; }
+
+  /* ---------- render ---------- */
+
+  function render() {
+    if (drillRun) return renderDrillRun();
+    if (blockRun) return renderBlockRun();
+
+    const dateStr = new Date().toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
+    $app.innerHTML = `
+      <header><h1>MetaMorph</h1><span class="date">${esc(dateStr)}</span></header>
+      <main>${V.tab === 'drill' ? drillHome() : gatesHome()}</main>
+      <nav class="tabs"><div class="inner">
+        <button data-act="tab" data-v="drill" class="${V.tab === 'drill' ? 'on' : ''}">Switch Drill</button>
+        <button data-act="tab" data-v="gates" class="${V.tab === 'gates' ? 'on' : ''}">Gates</button>
+      </div></nav>
+      ${V.edit ? editSheet() : ''}
+    `;
+  }
+
+  /* drill home */
+  function drillHome() {
+    const d = S.drill;
+    if (V.summary) {
+      const s = V.summary, a = avg(s.latencies);
+      return `
+        <div class="card">
+          <p class="label">Session complete</p>
+          <div class="row spread"><span>Rounds</span><b class="num">${s.rounds}</b></div>
+          <div class="row spread"><span>Avg recovery latency</span><b class="num">${a == null ? '—' : a.toFixed(1) + ' s'}</b></div>
+          <div class="row spread"><span>Drifts caught</span><b class="num">${s.catches}</b></div>
+          <p class="muted" style="margin:12px 0 0;font-size:14px">${s.latencies.map((l, i) => `R${i + 1} ${l.toFixed(1)}s`).join(' · ') || 'No returns marked.'}</p>
+        </div>
+        <button class="btn primary block" data-act="summary-ok">Done</button>`;
+    }
+
+    const sessions = d.sessions;
+    const recent = sessions.slice(-7).map(s => avg(s.latencies)).filter(x => x != null);
+    const prior = sessions.slice(-14, -7).map(s => avg(s.latencies)).filter(x => x != null);
+    const trend = recent.length
+      ? `<p class="muted" style="margin:0 0 10px;font-size:14px">Last ${recent.length}: <b class="num" style="color:var(--text)">${avg(recent).toFixed(1)} s</b>${prior.length ? ` · previous ${prior.length}: <span class="num">${avg(prior).toFixed(1)} s</span>` : ''}</p>`
+      : '';
+
+    return `
+      <div class="card">
+        <p class="label">The rite</p>
+        <p style="margin:0">Hold one object in tight focus. Then release it entirely and let attention drift.
+        <b>When the focus chime sounds, tap the moment you're back on the object.</b> That's your recovery latency.</p>
+      </div>
+      <div class="card">
+        <div class="stepper">
+          ${stepper('focus', 'Focus (s)', d.focus)}
+          ${stepper('release', 'Release (s)', d.release)}
+          ${stepper('rounds', 'Rounds', d.rounds)}
+        </div>
+      </div>
+      <button class="btn primary block" data-act="drill-start" style="margin-bottom:20px">Begin</button>
+      <div class="card">
+        <p class="label">Recovery latency</p>
+        ${trend}
+        ${sessions.length ? `<ul class="hist">${sessions.slice(-10).reverse().map(s => {
+          const a = avg(s.latencies);
+          const when = new Date(s.t).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+          return `<li><span>${esc(when)} <span class="muted">· ${s.rounds}r · ${s.catches} caught</span></span><b class="num">${a == null ? '—' : a.toFixed(1) + ' s'}</b></li>`;
+        }).join('')}</ul>` : '<p class="muted" style="margin:0">No sessions yet. It should shorten over weeks.</p>'}
+      </div>`;
+  }
+
+  function stepper(key, label, val) {
+    return `<div class="step"><div class="v num">${val}</div><div class="k">${label}</div>
+      <div class="pm"><button data-act="step" data-k="${key}" data-d="-1">−</button><button data-act="step" data-k="${key}" data-d="1">+</button></div></div>`;
+  }
+
+  /* drill run */
+  function renderDrillRun() {
+    const r = drillRun, d = S.drill, focus = r.phase === 'focus';
+    const color = focus ? 'var(--focus)' : 'var(--release)';
+    let tap;
+    if (!focus) tap = `<button class="bigtap wait" disabled>Let it drift</button>`;
+    else if (!r.locked) tap = `<button class="bigtap lock" data-act="lock">I'm back</button>`;
+    else tap = `<button class="bigtap catch" data-act="catch">Caught a drift <span class="muted num">(${r.catches})</span></button>`;
+
+    $app.innerHTML = `
+      <div class="run"><div class="inner">
+        <div class="top"><span class="num">Round ${r.round} / ${d.rounds}</span><button class="btn small ghost" data-act="drill-stop">End</button></div>
+        <div class="center">
+          <div class="dots">${Array.from({ length: d.rounds }, (_, i) => `<i class="${i + 1 < r.round ? 'on' : i + 1 === r.round ? 'now' : ''}"></i>`).join('')}</div>
+          <div class="phase" style="color:${color}">${focus ? 'FOCUS' : 'RELEASE'}</div>
+          <div class="clock" id="clock">${mmss((r.end - Date.now()) / 1000)}</div>
+          <div class="bar" style="color:${color};max-width:280px"><i id="bar"></i></div>
+          <div class="instr">${focus
+            ? (r.locked ? 'Hold it. If you notice you drifted, tap and return.' : 'Return to the object. Tap the instant you are on it.')
+            : 'Release the object entirely. Do not hold anything.'}</div>
+        </div>
+        ${tap}
+      </div></div>`;
+    tick();
+  }
+
+  /* gates home */
+  function gatesHome() {
+    const g = GATES.find(x => x.id === V.gate);
+    const list = sorted(S.gates[V.gate]);
+    return `
+      <div class="gatebar">${GATES.map(x => {
+        const bl = S.gates[x.id], n = bl.filter(b => isDone(b.id)).length;
+        return `<button data-act="gate" data-v="${x.id}" class="${x.id === V.gate ? 'on' : ''}">
+          <span class="ic">${x.icon}</span><span class="nm">${x.name}</span><span class="ct">${n}/${bl.length}</span></button>`;
+      }).join('')}</div>
+      ${list.map(b => {
+        const done = isDone(b.id), now = isNow(b);
+        return `<div class="card ${now ? 'blk now' : ''}">
+          <div class="blk">
+            <button class="chk ${done ? 'done' : ''}" data-act="toggle" data-id="${b.id}" aria-label="Mark done">✓</button>
+            <div>
+              <div class="t">${b.start}–${fromMin(toMin(b.start) + Number(b.minutes))} · ${b.minutes} min${now ? '<span class="tag">now</span>' : ''}</div>
+              <div class="ti">${esc(b.title)}</div>
+            </div>
+            <span></span>
+          </div>
+          <div class="steps">
+            ${b.open ? `<div><b>OPEN</b>${esc(b.open)} <span class="muted num">· ${b.openSec}s</span></div>` : ''}
+            ${b.work ? `<div><b>WORK</b>${esc(b.work)}</div>` : ''}
+            ${b.close ? `<div><b>CLOSE</b>${esc(b.close)} <span class="muted num">· ${b.closeSec}s</span></div>` : ''}
+          </div>
+          <div class="acts">
+            <button class="btn small" data-act="edit" data-id="${b.id}">Edit</button>
+            <button class="btn small primary" data-act="block-start" data-id="${b.id}">Start ritual</button>
+          </div>
+        </div>`;
+      }).join('') || `<p class="muted">No blocks for ${g.name} yet.</p>`}
+      <button class="btn block" data-act="add">+ Add ${g.name} block</button>`;
+  }
+
+  /* edit sheet */
+  function editSheet() {
+    const e = V.edit, b = e.block;
+    return `
+      <div class="sheet-bg" data-act="edit-cancel-bg">
+        <form class="sheet" id="editform" autocomplete="off">
+          <h2>${e.isNew ? 'New' : 'Edit'} ${GATES.find(g => g.id === e.gate).name} block</h2>
+          <div class="field"><label>Title</label><input name="title" required value="${esc(b.title)}"></div>
+          <div class="grid2">
+            <div class="field"><label>Start</label><input name="start" type="time" required value="${esc(b.start)}"></div>
+            <div class="field"><label>Duration (min)</label><input name="minutes" type="number" min="1" max="720" required value="${esc(b.minutes)}"></div>
+          </div>
+          <div class="phasebox">
+            <p class="label">Open</p>
+            <div class="field"><textarea name="open" placeholder="The anchor that starts the block">${esc(b.open)}</textarea></div>
+            <div class="field" style="margin:0"><label>Seconds</label><input name="openSec" type="number" min="0" max="600" value="${esc(b.openSec)}"></div>
+          </div>
+          <div class="phasebox">
+            <p class="label">Work</p>
+            <div class="field" style="margin:0"><textarea name="work" placeholder="What the block is for">${esc(b.work)}</textarea></div>
+          </div>
+          <div class="phasebox">
+            <p class="label">Close</p>
+            <div class="field"><textarea name="close" placeholder="The gesture that ends it">${esc(b.close)}</textarea></div>
+            <div class="field" style="margin:0"><label>Seconds</label><input name="closeSec" type="number" min="0" max="600" value="${esc(b.closeSec)}"></div>
+          </div>
+          <button class="btn primary block" type="submit" style="margin-bottom:8px">Save</button>
+          <div class="grid2">
+            <button class="btn" type="button" data-act="edit-cancel">Cancel</button>
+            ${e.isNew ? '<span></span>' : '<button class="btn danger" type="button" data-act="delete">Delete</button>'}
+          </div>
+        </form>
+      </div>`;
+  }
+
+  /* block run */
+  const PHASE_LABEL = { open: 'OPEN', work: 'WORK', close: 'CLOSE' };
+  const PHASE_COLOR = { open: 'var(--accent)', work: 'var(--text)', close: 'var(--release)' };
+
+  function findBlock(gate, id) { return S.gates[gate].find(b => b.id === id); }
+  function phaseSeconds(b, p) { return p === 'open' ? Number(b.openSec) : p === 'work' ? Number(b.minutes) * 60 : Number(b.closeSec); }
+  function phaseText(b, p) { return p === 'open' ? b.open : p === 'work' ? b.work : b.close; }
+
+  function renderBlockRun() {
+    const r = blockRun, b = findBlock(r.gate, r.id);
+    if (!b) { blockRun = null; return render(); }
+    const order = ['open', 'work', 'close'];
+    $app.innerHTML = `
+      <div class="run"><div class="inner">
+        <div class="top"><span>${esc(b.title)}</span><button class="btn small ghost" data-act="block-stop">Exit</button></div>
+        <div class="center">
+          <div class="dots">${order.map(p => `<i class="${order.indexOf(p) < order.indexOf(r.phase) ? 'on' : p === r.phase ? 'now' : ''}"></i>`).join('')}</div>
+          <div class="phase" style="color:${PHASE_COLOR[r.phase]}">${PHASE_LABEL[r.phase]}</div>
+          <div class="ritual">${esc(phaseText(b, r.phase)) || '<span class="muted">—</span>'}</div>
+          <div class="clock" id="clock" style="font-size:64px;margin-top:8px">${mmss(blockRemaining() / 1000)}</div>
+          <div class="bar" style="color:${PHASE_COLOR[r.phase]};max-width:280px"><i id="bar"></i></div>
+        </div>
+        <div class="controls">
+          <button class="btn" data-act="block-pause">${r.paused ? 'Resume' : 'Pause'}</button>
+          <button class="btn primary" data-act="block-next">${r.phase === 'close' ? 'Finish' : 'Next'}</button>
+        </div>
+      </div></div>`;
+    tick();
+  }
+
+  function blockRemaining() {
+    const r = blockRun;
+    return r.paused ? r.remaining : r.end - Date.now();
+  }
+
+  /* ---------- timers ---------- */
+
+  function tick() {
+    const clock = document.getElementById('clock'), bar = document.getElementById('bar');
+    if (drillRun) {
+      const r = drillRun, left = r.end - Date.now();
+      if (left <= 0) return advanceDrill();
+      if (clock) clock.textContent = mmss(left / 1000);
+      if (bar) bar.style.width = (100 * (1 - left / (r.end - r.start))) + '%';
+    } else if (blockRun) {
+      const r = blockRun, left = blockRemaining();
+      if (!r.paused && left <= 0) return advanceBlock();
+      if (clock) clock.textContent = mmss(left / 1000);
+      if (bar) bar.style.width = (100 * (1 - left / r.total)) + '%';
+    }
+  }
+
+  function setDrillPhase(phase) {
+    const sec = phase === 'focus' ? S.drill.focus : S.drill.release;
+    drillRun.phase = phase;
+    drillRun.start = Date.now();
+    drillRun.end = drillRun.start + sec * 1000;
+    drillRun.locked = false;
+    beep(phase === 'focus' ? 880 : 440, 0.25);
+    renderDrillRun();
+  }
+
+  function advanceDrill() {
+    const r = drillRun;
+    if (r.phase === 'focus') return setDrillPhase('release');
+    if (r.round >= S.drill.rounds) return finishDrill(r.round);
+    r.round++;
+    setDrillPhase('focus');
+  }
+
+  function finishDrill(roundsDone) {
+    const r = drillRun;
+    stopTicker(); unlockScreen();
+    drillRun = null;
+    if (roundsDone > 0) {
+      const s = { t: Date.now(), rounds: roundsDone, latencies: r.latencies, catches: r.catches };
+      S.drill.sessions.push(s);
+      if (S.drill.sessions.length > 500) S.drill.sessions.shift();
+      save();
+      V.summary = s;
+      beep(660, 0.5);
+    }
+    render();
+  }
+
+  function setBlockPhase(phase) {
+    const b = findBlock(blockRun.gate, blockRun.id);
+    const sec = phaseSeconds(b, phase);
+    if (sec <= 0 && !phaseText(b, phase)) {
+      // empty phase: skip it
+      const next = phase === 'open' ? 'work' : phase === 'work' ? 'close' : null;
+      return next ? setBlockPhase(next) : finishBlock();
+    }
+    blockRun.phase = phase;
+    blockRun.total = Math.max(1, sec) * 1000;
+    blockRun.end = Date.now() + blockRun.total;
+    blockRun.paused = false;
+    beep(phase === 'open' ? 880 : phase === 'work' ? 660 : 440, 0.3);
+    renderBlockRun();
+  }
+
+  function advanceBlock() {
+    const p = blockRun.phase;
+    if (p === 'open') return setBlockPhase('work');
+    if (p === 'work') return setBlockPhase('close');
+    finishBlock();
+  }
+
+  function finishBlock() {
+    setDone(blockRun.id, true);
+    beep(660, 0.5);
+    V.gate = blockRun.gate;
+    blockRun = null;
+    stopTicker(); unlockScreen();
+    render();
+  }
+
+  /* ---------- events ---------- */
+
+  $app.addEventListener('click', e => {
+    const el = e.target.closest('[data-act]');
+    if (!el) return;
+    const act = el.dataset.act;
+
+    switch (act) {
+      case 'tab': V.tab = el.dataset.v; V.summary = null; render(); break;
+      case 'gate': V.gate = el.dataset.v; render(); break;
+
+      case 'step': {
+        const k = el.dataset.k, d = Number(el.dataset.d);
+        const lim = { focus: [10, 300, 5], release: [10, 300, 5], rounds: [1, 30, 1] }[k];
+        S.drill[k] = Math.min(lim[1], Math.max(lim[0], S.drill[k] + d * lim[2]));
+        save(); render(); break;
+      }
+      case 'drill-start':
+        unlockAudio();
+        drillRun = { round: 1, latencies: [], catches: 0 };
+        lockScreen(); startTicker(); setDrillPhase('focus'); break;
+      case 'lock':
+        if (drillRun && drillRun.phase === 'focus' && !drillRun.locked) {
+          drillRun.latencies.push(Math.round((Date.now() - drillRun.start) / 100) / 10);
+          drillRun.locked = true;
+          try { navigator.vibrate && navigator.vibrate(30); } catch (e) {}
+          renderDrillRun();
+        }
+        break;
+      case 'catch':
+        if (drillRun) {
+          drillRun.catches++;
+          try { navigator.vibrate && navigator.vibrate(30); } catch (e) {}
+          renderDrillRun();
+        }
+        break;
+      case 'drill-stop': {
+        const r = drillRun;
+        const done = r.phase === 'release' ? r.round : r.round - 1;
+        finishDrill(done); break;
+      }
+      case 'summary-ok': V.summary = null; render(); break;
+
+      case 'toggle': setDone(el.dataset.id, !isDone(el.dataset.id)); render(); break;
+      case 'add':
+        V.edit = { gate: V.gate, isNew: true, block: block('', '12:00', 30, '', 15, '', '', 10) };
+        render(); break;
+      case 'edit': {
+        const b = findBlock(V.gate, el.dataset.id);
+        V.edit = { gate: V.gate, isNew: false, block: { ...b } };
+        render(); break;
+      }
+      case 'edit-cancel-bg': if (e.target !== el) break; // only when tapping the backdrop
+      // fallthrough
+      case 'edit-cancel': V.edit = null; render(); break;
+      case 'delete':
+        if (confirm('Delete this block?')) {
+          S.gates[V.edit.gate] = S.gates[V.edit.gate].filter(b => b.id !== V.edit.block.id);
+          save(); V.edit = null; render();
+        }
+        break;
+
+      case 'block-start':
+        unlockAudio();
+        blockRun = { gate: V.gate, id: el.dataset.id };
+        lockScreen(); startTicker(); setBlockPhase('open'); break;
+      case 'block-pause': {
+        const r = blockRun;
+        if (r.paused) { r.end = Date.now() + r.remaining; r.paused = false; }
+        else { r.remaining = r.end - Date.now(); r.paused = true; }
+        renderBlockRun(); break;
+      }
+      case 'block-next': advanceBlock(); break;
+      case 'block-stop':
+        if (confirm('Exit without marking this block done?')) { blockRun = null; stopTicker(); unlockScreen(); render(); }
+        break;
+    }
+  });
+
+  $app.addEventListener('submit', e => {
+    if (e.target.id !== 'editform') return;
+    e.preventDefault();
+    const f = new FormData(e.target), b = V.edit.block;
+    b.title = f.get('title').trim() || 'Untitled';
+    b.start = f.get('start') || '12:00';
+    b.minutes = Math.max(1, Number(f.get('minutes')) || 1);
+    b.open = f.get('open').trim();
+    b.openSec = Math.max(0, Number(f.get('openSec')) || 0);
+    b.work = f.get('work').trim();
+    b.close = f.get('close').trim();
+    b.closeSec = Math.max(0, Number(f.get('closeSec')) || 0);
+    const list = S.gates[V.edit.gate];
+    const i = list.findIndex(x => x.id === b.id);
+    if (i >= 0) list[i] = b; else list.push(b);
+    save(); V.edit = null; render();
+  });
+
+  // refresh "now" markers and done counts once a minute when idle
+  setInterval(() => { if (!drillRun && !blockRun && !V.edit) render(); }, 60000);
+
+  render();
+
+  if ('serviceWorker' in navigator && location.protocol !== 'file:') {
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+  }
+})();
+</script>
+</body>
+</html>
