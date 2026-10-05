@@ -121,8 +121,7 @@
   .blk .ti { font-weight: 600; font-size: 17px; }
   .blk.now { border-color: var(--accent); }
   .tag { font-size: 11px; color: var(--accent); letter-spacing: .1em; text-transform: uppercase; margin-left: 6px; }
-  .steps { margin: 12px 0 0; padding: 12px 0 0; border-top: 1px solid var(--line); display: grid; gap: 6px; font-size: 14px; }
-  .steps b { color: var(--muted); font-weight: 600; display: inline-block; width: 52px; font-size: 12px; letter-spacing: .08em; }
+  .steps { margin: 12px 0 0; padding: 12px 0 0; border-top: 1px solid var(--line); font-size: 15px; color: var(--muted); }
   .acts { display: flex; gap: 8px; margin-top: 12px; }
   .acts .btn { flex: 1; }
 
@@ -138,8 +137,6 @@
   }
   .field textarea { min-height: 64px; resize: vertical; }
   .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  .phasebox { border: 1px solid var(--line); border-radius: 12px; padding: 12px; margin-bottom: 12px; }
-  .phasebox .label { margin-bottom: 10px; }
 </style>
 </head>
 <body>
@@ -161,8 +158,8 @@
   const KEY = 'metamorph.v1';
   const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
 
-  function block(title, start, minutes, open, openSec, work, close, closeSec) {
-    return { id: uid(), title, start, minutes, open, openSec, work, close, closeSec };
+  function block(title, start, minutes, work) {
+    return { id: uid(), title, start, minutes, work };
   }
 
   function seed() {
@@ -170,19 +167,19 @@
       v: 1,
       gates: {
         sleep: [
-          block('Wind-down', '22:30', 30, 'Dim the lights. Assume the exit posture.', 30, 'No screens. Let the day go.', 'One line: how did the day end?', 30),
+          block('Wind-down', '22:30', 30, 'No screens. Let the day go.'),
         ],
         fitness: [
-          block('Training', '07:00', 40, 'Excitatory, 60s: hard breaths, shake out, move.', 60, 'Train.', 'Hard exhale. Cold water on the face.', 15),
+          block('Training', '07:00', 40, 'Train.'),
         ],
         nutrition: [
-          block('Breakfast', '08:00', 20, 'Pause. Notice hunger, 1–10.', 15, 'Eat. Water and protein.', 'Notice hunger again.', 15),
-          block('Lunch',     '12:30', 30, 'Pause. Notice hunger, 1–10.', 15, 'Eat. Water and protein.', 'Notice hunger again.', 15),
-          block('Dinner',    '18:30', 30, 'Pause. Notice hunger, 1–10.', 15, 'Eat. Water and protein.', 'Notice hunger again.', 15),
+          block('Breakfast', '08:00', 20, 'Eat. Water and protein.'),
+          block('Lunch',     '12:30', 30, 'Eat. Water and protein.'),
+          block('Dinner',    '18:30', 30, 'Eat. Water and protein.'),
         ],
         hygiene: [
-          block('Morning', '06:30', 15, 'Cold water. The day begins.', 15, 'Morning routine.', 'Hard exhale. Done.', 10),
-          block('Evening', '21:30', 15, 'Change the room or the lighting.', 10, 'Evening routine.', 'Hand off to wind-down.', 10),
+          block('Morning', '06:30', 15, 'Morning routine.'),
+          block('Evening', '21:30', 15, 'Evening routine.'),
         ],
       },
       done: {},
@@ -396,11 +393,7 @@
             </div>
             <span></span>
           </div>
-          <div class="steps">
-            ${b.open ? `<div><b>OPEN</b>${esc(b.open)} <span class="muted num">· ${b.openSec}s</span></div>` : ''}
-            ${b.work ? `<div><b>WORK</b>${esc(b.work)}</div>` : ''}
-            ${b.close ? `<div><b>CLOSE</b>${esc(b.close)} <span class="muted num">· ${b.closeSec}s</span></div>` : ''}
-          </div>
+          ${b.work ? `<div class="steps">${esc(b.work)}</div>` : ''}
           <div class="acts">
             <button class="btn small" data-act="edit" data-id="${b.id}">Edit</button>
             <button class="btn small primary" data-act="block-start" data-id="${b.id}">Start ritual</button>
@@ -422,20 +415,7 @@
             <div class="field"><label>Start</label><input name="start" type="time" required value="${esc(b.start)}"></div>
             <div class="field"><label>Duration (min)</label><input name="minutes" type="number" min="1" max="720" required value="${esc(b.minutes)}"></div>
           </div>
-          <div class="phasebox">
-            <p class="label">Open</p>
-            <div class="field"><textarea name="open" placeholder="The anchor that starts the block">${esc(b.open)}</textarea></div>
-            <div class="field" style="margin:0"><label>Seconds</label><input name="openSec" type="number" min="0" max="600" value="${esc(b.openSec)}"></div>
-          </div>
-          <div class="phasebox">
-            <p class="label">Work</p>
-            <div class="field" style="margin:0"><textarea name="work" placeholder="What the block is for">${esc(b.work)}</textarea></div>
-          </div>
-          <div class="phasebox">
-            <p class="label">Close</p>
-            <div class="field"><textarea name="close" placeholder="The gesture that ends it">${esc(b.close)}</textarea></div>
-            <div class="field" style="margin:0"><label>Seconds</label><input name="closeSec" type="number" min="0" max="600" value="${esc(b.closeSec)}"></div>
-          </div>
+          <div class="field"><label>Ritual</label><textarea name="work" placeholder="What the block is for">${esc(b.work)}</textarea></div>
           <button class="btn primary block" type="submit" style="margin-bottom:8px">Save</button>
           <div class="grid2">
             <button class="btn" type="button" data-act="edit-cancel">Cancel</button>
@@ -446,30 +426,23 @@
   }
 
   /* block run */
-  const PHASE_LABEL = { open: 'OPEN', work: 'WORK', close: 'CLOSE' };
-  const PHASE_COLOR = { open: 'var(--accent)', work: 'var(--text)', close: 'var(--release)' };
-
   function findBlock(gate, id) { return S.gates[gate].find(b => b.id === id); }
-  function phaseSeconds(b, p) { return p === 'open' ? Number(b.openSec) : p === 'work' ? Number(b.minutes) * 60 : Number(b.closeSec); }
-  function phaseText(b, p) { return p === 'open' ? b.open : p === 'work' ? b.work : b.close; }
 
   function renderBlockRun() {
     const r = blockRun, b = findBlock(r.gate, r.id);
     if (!b) { blockRun = null; return render(); }
-    const order = ['open', 'work', 'close'];
     $app.innerHTML = `
       <div class="run"><div class="inner">
-        <div class="top"><span>${esc(b.title)}</span><button class="btn small ghost" data-act="block-stop">Exit</button></div>
+        <div class="top"><span>${esc(GATES.find(g => g.id === r.gate).name)}</span><button class="btn small ghost" data-act="block-stop">Exit</button></div>
         <div class="center">
-          <div class="dots">${order.map(p => `<i class="${order.indexOf(p) < order.indexOf(r.phase) ? 'on' : p === r.phase ? 'now' : ''}"></i>`).join('')}</div>
-          <div class="phase" style="color:${PHASE_COLOR[r.phase]}">${PHASE_LABEL[r.phase]}</div>
-          <div class="ritual">${esc(phaseText(b, r.phase)) || '<span class="muted">—</span>'}</div>
+          <div class="phase" style="color:var(--accent)">${esc(b.title).toUpperCase()}</div>
+          ${b.work ? `<div class="ritual">${esc(b.work)}</div>` : ''}
           <div class="clock" id="clock" style="font-size:64px;margin-top:8px">${mmss(blockRemaining() / 1000)}</div>
-          <div class="bar" style="color:${PHASE_COLOR[r.phase]};max-width:280px"><i id="bar"></i></div>
+          <div class="bar" style="color:var(--accent);max-width:280px"><i id="bar"></i></div>
         </div>
         <div class="controls">
           <button class="btn" data-act="block-pause">${r.paused ? 'Resume' : 'Pause'}</button>
-          <button class="btn primary" data-act="block-next">${r.phase === 'close' ? 'Finish' : 'Next'}</button>
+          <button class="btn primary" data-act="block-next">Finish</button>
         </div>
       </div></div>`;
     tick();
@@ -491,7 +464,7 @@
       if (bar) bar.style.width = (100 * (1 - left / (r.end - r.start))) + '%';
     } else if (blockRun) {
       const r = blockRun, left = blockRemaining();
-      if (!r.paused && left <= 0) return advanceBlock();
+      if (!r.paused && left <= 0) return finishBlock();
       if (clock) clock.textContent = mmss(left / 1000);
       if (bar) bar.style.width = (100 * (1 - left / r.total)) + '%';
     }
@@ -530,27 +503,12 @@
     render();
   }
 
-  function setBlockPhase(phase) {
-    const b = findBlock(blockRun.gate, blockRun.id);
-    const sec = phaseSeconds(b, phase);
-    if (sec <= 0 && !phaseText(b, phase)) {
-      // empty phase: skip it
-      const next = phase === 'open' ? 'work' : phase === 'work' ? 'close' : null;
-      return next ? setBlockPhase(next) : finishBlock();
-    }
-    blockRun.phase = phase;
-    blockRun.total = Math.max(1, sec) * 1000;
-    blockRun.end = Date.now() + blockRun.total;
-    blockRun.paused = false;
-    beep(phase === 'open' ? 880 : phase === 'work' ? 660 : 440, 0.3);
+  function startBlock(gate, id) {
+    const b = findBlock(gate, id);
+    const total = Math.max(1, Number(b.minutes)) * 60000;
+    blockRun = { gate, id, total, end: Date.now() + total, paused: false };
+    beep(880, 0.3);
     renderBlockRun();
-  }
-
-  function advanceBlock() {
-    const p = blockRun.phase;
-    if (p === 'open') return setBlockPhase('work');
-    if (p === 'work') return setBlockPhase('close');
-    finishBlock();
   }
 
   function finishBlock() {
@@ -607,7 +565,7 @@
 
       case 'toggle': setDone(el.dataset.id, !isDone(el.dataset.id)); render(); break;
       case 'add':
-        V.edit = { gate: V.gate, isNew: true, block: block('', '12:00', 30, '', 15, '', '', 10) };
+        V.edit = { gate: V.gate, isNew: true, block: block('', '12:00', 30, '') };
         render(); break;
       case 'edit': {
         const b = findBlock(V.gate, el.dataset.id);
@@ -626,15 +584,14 @@
 
       case 'block-start':
         unlockAudio();
-        blockRun = { gate: V.gate, id: el.dataset.id };
-        lockScreen(); startTicker(); setBlockPhase('open'); break;
+        lockScreen(); startTicker(); startBlock(V.gate, el.dataset.id); break;
       case 'block-pause': {
         const r = blockRun;
         if (r.paused) { r.end = Date.now() + r.remaining; r.paused = false; }
         else { r.remaining = r.end - Date.now(); r.paused = true; }
         renderBlockRun(); break;
       }
-      case 'block-next': advanceBlock(); break;
+      case 'block-next': finishBlock(); break;
       case 'block-stop':
         if (confirm('Exit without marking this block done?')) { blockRun = null; stopTicker(); unlockScreen(); render(); }
         break;
@@ -648,11 +605,8 @@
     b.title = f.get('title').trim() || 'Untitled';
     b.start = f.get('start') || '12:00';
     b.minutes = Math.max(1, Number(f.get('minutes')) || 1);
-    b.open = f.get('open').trim();
-    b.openSec = Math.max(0, Number(f.get('openSec')) || 0);
     b.work = f.get('work').trim();
-    b.close = f.get('close').trim();
-    b.closeSec = Math.max(0, Number(f.get('closeSec')) || 0);
+    delete b.open; delete b.openSec; delete b.close; delete b.closeSec;
     const list = S.gates[V.edit.gate];
     const i = list.findIndex(x => x.id === b.id);
     if (i >= 0) list[i] = b; else list.push(b);

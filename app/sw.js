@@ -1,5 +1,5 @@
 // Bump the version whenever app files change so installed copies update.
-const CACHE = 'metamorph-v1';
+const CACHE = 'metamorph-v2';
 const ASSETS = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png'];
 
 self.addEventListener('install', e => {
