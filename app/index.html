@@ -95,6 +95,53 @@
   .gatehead .nm { font-size: 22px; font-weight: 600; }
   .gatehead .sub { color: var(--muted); font-size: 14px; }
 
+  /* ---------- calendar ---------- */
+  .seg { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 4px; margin-bottom: 16px; }
+  .seg button { padding: 9px 4px; border-radius: 9px; color: var(--muted); font-weight: 600; font-size: 14px; transition: background .2s, color .2s; }
+  .seg button.on { background: var(--surface-2); color: var(--text); }
+  .calnav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+  .calnav .ttl { font-weight: 600; text-align: center; }
+  .calnav .ttl small { display: block; color: var(--muted); font-weight: 400; font-size: 13px; }
+  .calnav button.arrow { width: 40px; height: 40px; border-radius: 10px; background: var(--surface); border: 1px solid var(--line); font-size: 18px; }
+  .linkbtn { color: var(--accent); font-size: 13px; font-weight: 600; }
+
+  .wk { display: grid; grid-template-columns: 30px repeat(7, 1fr); gap: 6px 2px; align-items: center; }
+  .wk .dh { text-align: center; font-size: 11px; color: var(--muted); padding: 6px 0; border-radius: 10px; cursor: pointer; }
+  .wk .dh b { display: block; font-size: 15px; color: var(--text); font-weight: 600; }
+  .wk .dh.today b { color: var(--accent); }
+  .wk .dh.sel { background: var(--surface-2); }
+  .wk .g .orb { width: 24px; height: 24px; filter: none; }
+  .wk .c { height: 28px; display: grid; place-items: center; color: var(--line); cursor: pointer; }
+  .ring { width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--gcol); }
+  .ring.full { background: var(--gcol); }
+  .ring.part { background: linear-gradient(90deg, var(--gcol) 50%, transparent 50%); }
+  .ring.miss { opacity: .3; }
+  .ring.future { opacity: .35; border-style: dashed; }
+
+  .mo { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+  .mo .wd { text-align: center; font-size: 11px; color: var(--muted); padding-bottom: 2px; }
+  .mo .d { aspect-ratio: 1; border-radius: 10px; background: var(--surface); border: 1px solid var(--line); padding: 5px; display: flex; flex-direction: column; justify-content: space-between; cursor: pointer; min-width: 0; }
+  .mo .d.blank { visibility: hidden; }
+  .mo .d.today { border-color: var(--accent); }
+  .mo .d.sel { background: var(--surface-2); border-color: var(--text); }
+  .mo .n { font-size: 12px; color: var(--muted); }
+  .mo .d.today .n { color: var(--accent); font-weight: 700; }
+  .mo .bars { display: flex; gap: 2px; }
+  .mo .bars i { flex: 1; height: 4px; border-radius: 2px; background: var(--gcol); }
+  .mo .bars i.none { background: transparent; }
+  .mo .bars i.miss { opacity: .18; }
+  .mo .bars i.future { opacity: .35; }
+  .mo .bars i.part { opacity: .6; }
+  .legend { display: flex; gap: 14px; justify-content: center; margin: 12px 0 0; font-size: 12px; color: var(--muted); }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; }
+
+  .daylist { list-style: none; margin: 0; padding: 0; }
+  .daylist li { display: grid; grid-template-columns: auto 1fr auto; gap: 12px; align-items: center; padding: 10px 0; border-top: 1px solid var(--line); }
+  .daylist li:first-child { border-top: 0; }
+  .daylist .orb { width: 28px; height: 28px; filter: none; }
+  .daylist .t { color: var(--muted); font-size: 13px; }
+  .daylist .chk:disabled { opacity: .35; }
+
   /* ---------- today ---------- */
   .hero { border-color: var(--gc, var(--accent)); }
   .hero .top { display: flex; gap: 14px; align-items: center; }
@@ -107,8 +154,8 @@
   .hero .chain s { text-decoration: none; color: var(--ok); }
 
   .tl { list-style: none; margin: 8px 0 0; padding: 0; position: relative; }
-  .tl::before { content: ""; position: absolute; left: 59px; top: 14px; bottom: 14px; width: 2px; background: var(--line); }
-  .tl li { display: grid; grid-template-columns: 44px 16px 1fr auto; gap: 10px; align-items: start; padding: 10px 0; position: relative; }
+  .tl::before { content: ""; position: absolute; left: 81px; top: 14px; bottom: 14px; width: 2px; background: var(--line); }
+  .tl li { display: grid; grid-template-columns: 66px 16px 1fr auto; gap: 10px; align-items: start; padding: 10px 0; position: relative; }
   .tl .t { font-size: 13px; color: var(--muted); padding-top: 2px; text-align: right; }
   .tl .dot { width: 14px; height: 14px; border-radius: 50%; background: var(--bg); border: 2px solid var(--line); margin-top: 4px; position: relative; z-index: 1; }
   .tl li.done .dot { background: var(--ok); border-color: var(--ok); }
@@ -140,8 +187,8 @@
   .tag { font-size: 11px; color: var(--accent); letter-spacing: .1em; text-transform: uppercase; margin-left: 6px; }
 
   .chainlist { list-style: none; margin: 12px 0 0; padding: 12px 0 0 0; border-top: 1px solid var(--line); }
-  .chainlist li { display: grid; grid-template-columns: 44px 12px 1fr auto; gap: 10px; align-items: center; font-size: 14px; padding: 3px 0; position: relative; }
-  .chainlist li + li::before { content: ""; position: absolute; left: 59px; top: -8px; height: 14px; width: 2px; background: var(--line); }
+  .chainlist li { display: grid; grid-template-columns: 66px 12px 1fr auto; gap: 10px; align-items: center; font-size: 14px; padding: 3px 0; position: relative; }
+  .chainlist li + li::before { content: ""; position: absolute; left: 81px; top: -8px; height: 14px; width: 2px; background: var(--line); }
   .chainlist .t { color: var(--muted); text-align: right; font-size: 13px; }
   .chainlist .d { width: 8px; height: 8px; border-radius: 50%; background: var(--line); margin-left: 2px; }
   .chainlist li.done .d { background: var(--ok); }
@@ -209,7 +256,16 @@
   }
   .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
   .srow { border: 1px solid var(--line); border-radius: 12px; padding: 10px; margin-bottom: 8px; display: grid; gap: 8px; }
-  .srow .top { display: grid; grid-template-columns: 26px 1fr 76px; gap: 8px; align-items: center; }
+  .srow .top { display: grid; grid-template-columns: 26px 1fr; gap: 8px; align-items: center; }
+  .srow .hm { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .srow .hm label { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: 14px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+  .chip { position: relative; }
+  .chip input { position: absolute; opacity: 0; pointer-events: none; }
+  .chip span { display: block; min-width: 40px; text-align: center; padding: 8px 10px; border-radius: 10px; background: var(--surface-2); border: 1px solid var(--line); color: var(--muted); font-size: 14px; cursor: pointer; }
+  .chip input:checked + span { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); font-weight: 600; }
+  .chips.days .chip span { min-width: 0; width: 38px; padding: 8px 0; }
+  .rep .tag { margin-left: 0; }
   .srow .n { width: 26px; height: 26px; border-radius: 50%; background: var(--surface-2); display: grid; place-items: center; font-size: 13px; color: var(--muted); }
   .srow input { padding: 10px; }
   .srow .tools { display: flex; gap: 6px; justify-content: flex-end; }
@@ -241,7 +297,7 @@
   const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
 
   const step = (title, minutes, work = '') => ({ id: uid(), title, minutes, work });
-  const routine = (title, start, steps) => ({ id: uid(), title, start, steps });
+  const routine = (title, start, steps, repeat = { type: 'daily' }) => ({ id: uid(), title, start, steps, repeat });
 
   function seed() {
     return {
@@ -294,15 +350,19 @@
   }
 
   const S = load();
-  const today = () => {
-    const d = new Date();
-    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-  };
+  // routines saved before schedules existed repeat every day
+  for (const g of Object.keys(S.gates)) for (const r of S.gates[g]) if (!r.repeat) r.repeat = { type: 'daily' };
 
-  // drop done-marks older than 60 days
+  // all dates are the device's local time (follows the phone's timezone)
+  const keyOf = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  const parseKey = k => { const [y, m, d] = k.split('-').map(Number); return new Date(y, m - 1, d); };
+  const addDays = (d, n) => new Date(d.getFullYear(), d.getMonth(), d.getDate() + n);
+  const today = () => keyOf(new Date());
+
+  // keep a bit over a year of history for the week/month views
   (() => {
-    const cutoff = Date.now() - 60 * 864e5;
-    for (const k of Object.keys(S.done)) if (new Date(k).getTime() < cutoff) delete S.done[k];
+    const cutoff = addDays(new Date(), -400);
+    for (const k of Object.keys(S.done)) if (parseKey(k) < cutoff) delete S.done[k];
     save();
   })();
 
@@ -318,7 +378,13 @@
     return h ? `${h}:${String(m).padStart(2, '0')}:${s}` : `${m}:${s}`;
   };
   const toMin = hhmm => { const [h, m] = hhmm.split(':').map(Number); return h * 60 + m; };
-  const fromMin = m => { m = ((m % 1440) + 1440) % 1440; return `${String(Math.floor(m / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`; };
+  // minutes since midnight -> "6:30 AM"
+  const fromMin = m => {
+    m = ((m % 1440) + 1440) % 1440;
+    const h = Math.floor(m / 60);
+    return `${h % 12 || 12}:${String(m % 60).padStart(2, '0')} ${h < 12 ? 'AM' : 'PM'}`;
+  };
+  const clock = hhmm => fromMin(toMin(hhmm));
   const dur = m => m < 60 ? `${m}m` : `${Math.floor(m / 60)}h${m % 60 ? ' ' + String(m % 60).padStart(2, '0') + 'm' : ''}`;
   const avg = a => a.length ? a.reduce((x, y) => x + y, 0) / a.length : null;
   const nowMin = () => { const d = new Date(); return d.getHours() * 60 + d.getMinutes(); };
@@ -326,12 +392,37 @@
   const total = r => r.steps.reduce((t, s) => t + Number(s.minutes), 0);
   const stepStarts = r => { let t = toMin(r.start); return r.steps.map(s => { const a = t; t += Number(s.minutes); return a; }); };
   const sorted = list => [...list].sort((a, b) => toMin(a.start) - toMin(b.start));
-  const allRoutines = () => GATES.flatMap(g => S.gates[g.id].map(r => ({ gate: g.id, r })))
+  const WD = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  function scheduledOn(r, d) {
+    const rp = r.repeat || { type: 'daily' };
+    if (rp.type === 'weekly') return rp.days.includes(d.getDay());
+    if (rp.type === 'monthly') {
+      const last = new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate(), n = d.getDate();
+      // a 29th-31st date runs on the last day of shorter months
+      return rp.dates.includes(n) || (n === last && rp.dates.some(x => x > last));
+    }
+    return true;
+  }
+  function repeatText(r) {
+    const rp = r.repeat || { type: 'daily' };
+    if (rp.type === 'weekly') {
+      const d = [...rp.days].sort((a, b) => ((a + 6) % 7) - ((b + 6) % 7));
+      if (d.length === 7) return 'Every day';
+      if (d.length === 5 && !d.includes(0) && !d.includes(6)) return 'Weekdays';
+      if (d.length === 2 && d.includes(0) && d.includes(6)) return 'Weekends';
+      return d.map(x => WD[x]).join(', ');
+    }
+    if (rp.type === 'monthly') {
+      const ord = n => n + (n % 10 === 1 && n !== 11 ? 'st' : n % 10 === 2 && n !== 12 ? 'nd' : n % 10 === 3 && n !== 13 ? 'rd' : 'th');
+      return 'Monthly on the ' + [...rp.dates].sort((a, b) => a - b).map(ord).join(', ');
+    }
+    return 'Every day';
+  }
+  const allRoutines = (d = new Date()) => GATES.flatMap(g => S.gates[g.id].filter(r => scheduledOn(r, d)).map(r => ({ gate: g.id, r })))
     .sort((a, b) => toMin(a.r.start) - toMin(b.r.start));
 
-  const isDone = id => !!(S.done[today()] && S.done[today()][id]);
-  function setDone(id, v) {
-    const k = today();
+  const isDone = (id, k = today()) => !!(S.done[k] && S.done[k][id]);
+  function setDone(id, v, k = today()) {
     S.done[k] = S.done[k] || {};
     if (v) S.done[k][id] = true; else delete S.done[k][id];
     save();
@@ -380,7 +471,7 @@
 
   /* ---------- view state ---------- */
 
-  const V = { tab: 'today', gate: 'sleep', edit: null, summary: null };
+  const V = { tab: 'today', gate: 'sleep', edit: null, summary: null, cal: 'day', anchor: null, sel: null };
   let drillRun = null;  // { round, phase, start, end, latencies[], catches, locked }
   let run = null;       // { gate, rid, idx, phase: step|between|complete, total, end, paused, remaining }
   let ticker = null;
@@ -396,9 +487,11 @@
 
     const sheetScroll = document.querySelector('.sheet')?.scrollTop || 0;
     const dateStr = new Date().toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
+    let tz = '';
+    try { tz = new Intl.DateTimeFormat(undefined, { timeZoneName: 'short' }).formatToParts(new Date()).find(x => x.type === 'timeZoneName').value; } catch (e) {}
     const body = V.tab === 'today' ? todayView() : V.tab === 'gates' ? gatesView() : drillView();
     $app.innerHTML = `
-      <header><h1>MetaMorph</h1><span class="date">${esc(dateStr)}</span></header>
+      <header><h1>MetaMorph</h1><span class="date">${esc(dateStr)}${tz ? ` · ${esc(tz)}` : ''}</span></header>
       <main>${body}</main>
       <nav class="tabs"><div class="inner">
         ${[['today', 'Today'], ['gates', 'Gates'], ['drill', 'Drill']].map(([k, l]) =>
@@ -431,8 +524,107 @@
   }
 
   function todayView() {
+    const seg = `<div class="seg">${[['day', 'Day'], ['week', 'Week'], ['month', 'Month']].map(([k, l]) =>
+      `<button data-act="cal" data-v="${k}" class="${V.cal === k ? 'on' : ''}">${l}</button>`).join('')}</div>`;
+    return seg + (V.cal === 'week' ? weekView() : V.cal === 'month' ? monthView() : dayView());
+  }
+
+  // held / scheduled for one gate on one date
+  function gateDay(gid, d) {
+    const k = keyOf(d), rs = S.gates[gid].filter(r => scheduledOn(r, d));
+    return { n: rs.length, held: rs.filter(r => isDone(r.id, k)).length };
+  }
+  function mark(gd, d) {
+    if (!gd.n) return 'none';
+    if (gd.held >= gd.n) return 'full';
+    if (gd.held) return 'part';
+    // today isn't over yet, so unheld routines are still to come
+    return keyOf(d) >= today() ? 'future' : 'miss';
+  }
+
+  function calNav(title, sub) {
+    return `<div class="calnav">
+      <button class="arrow" data-act="cal-prev" aria-label="Previous">‹</button>
+      <div class="ttl">${title}<small>${sub}</small></div>
+      <button class="arrow" data-act="cal-next" aria-label="Next">›</button>
+    </div>`;
+  }
+
+  function dayDetail() {
+    const k = V.sel || today(), d = parseKey(k), items = allRoutines(d), future = k > today();
+    const label = k === today() ? 'Today' : d.toLocaleDateString(undefined, { weekday: 'long', month: 'short', day: 'numeric' });
+    const held = items.filter(x => isDone(x.r.id, k)).length;
+    return `<div class="card" style="margin-top:14px">
+      <div class="row spread"><p class="label" style="margin:0">${esc(label)}</p><span class="muted num" style="font-size:13px">${items.length ? `${held}/${items.length} held` : ''}</span></div>
+      ${items.length ? `<ul class="daylist" style="margin-top:6px">${items.map(({ gate, r }) => `
+        <li>${orb(gate, 28)}
+          <span><div style="font-weight:600">${esc(r.title)}</div><div class="t num">${clock(r.start)} · ${dur(total(r))}</div></span>
+          <button class="chk ${isDone(r.id, k) ? 'done' : ''}" data-act="toggle-day" data-date="${k}" data-gate="${gate}" data-id="${r.id}" ${future ? 'disabled' : ''} aria-label="Mark held">✓</button>
+        </li>`).join('')}</ul>` : '<p class="muted" style="margin:8px 0 0">Nothing scheduled.</p>'}
+    </div>`;
+  }
+
+  function weekView() {
+    const a = parseKey(V.anchor || today());
+    const mon = addDays(a, -((a.getDay() + 6) % 7));
+    const days = Array.from({ length: 7 }, (_, i) => addDays(mon, i));
+    const sun = days[6];
+    const fmt = d => d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+    let held = 0, n = 0;
+    for (const g of GATES) for (const d of days) { const x = gateDay(g.id, d); if (keyOf(d) <= today()) { held += x.held; n += x.n; } }
+    const isThis = days.some(d => keyOf(d) === today());
+    return `
+      ${calNav(`${fmt(mon)} – ${fmt(sun)}`, isThis ? 'This week' : `<button class="linkbtn" data-act="cal-today">Back to this week</button>`)}
+      <div class="card">
+        <div class="wk">
+          <span></span>
+          ${days.map(d => { const k = keyOf(d); return `<div class="dh ${k === today() ? 'today' : ''} ${k === (V.sel || today()) ? 'sel' : ''}" data-act="sel" data-v="${k}">${WD[d.getDay()][0]}<b class="num">${d.getDate()}</b></div>`; }).join('')}
+          ${GATES.map(g => `<span class="g" title="${g.name}">${orb(g.id, 24)}</span>` + days.map(d => {
+            const m = mark(gateDay(g.id, d), d);
+            return `<div class="c" data-act="sel" data-v="${keyOf(d)}">${m === 'none' ? '·' : `<i class="ring ${m}" style="--gcol:${g.color}"></i>`}</div>`;
+          }).join('')).join('')}
+        </div>
+        <div class="legend"><span><i class="ring full" style="--gcol:var(--muted)"></i>held</span><span><i class="ring part" style="--gcol:var(--muted)"></i>partly</span><span><i class="ring miss" style="--gcol:var(--muted)"></i>missed</span></div>
+        ${n ? `<p class="muted num" style="text-align:center;margin:10px 0 0;font-size:13px">${held}/${n} held so far · ${Math.round(100 * held / n)}%</p>` : ''}
+      </div>
+      ${dayDetail()}`;
+  }
+
+  function monthView() {
+    const a = parseKey(V.anchor || today());
+    const first = new Date(a.getFullYear(), a.getMonth(), 1);
+    const daysIn = new Date(a.getFullYear(), a.getMonth() + 1, 0).getDate();
+    const lead = (first.getDay() + 6) % 7;
+    let held = 0, n = 0;
+    const cells = [];
+    for (let i = 0; i < lead; i++) cells.push('<div class="d blank"></div>');
+    for (let day = 1; day <= daysIn; day++) {
+      const d = new Date(a.getFullYear(), a.getMonth(), day), k = keyOf(d);
+      const bars = GATES.map(g => {
+        const x = gateDay(g.id, d);
+        if (k <= today()) { held += x.held; n += x.n; }
+        return `<i class="${mark(x, d)}" style="--gcol:${g.color}"></i>`;
+      }).join('');
+      cells.push(`<div class="d ${k === today() ? 'today' : ''} ${k === (V.sel || today()) ? 'sel' : ''}" data-act="sel" data-v="${k}"><span class="n num">${day}</span><span class="bars">${bars}</span></div>`);
+    }
+    const isThis = a.getFullYear() === new Date().getFullYear() && a.getMonth() === new Date().getMonth();
+    const title = first.toLocaleDateString(undefined, { month: 'long', year: 'numeric' });
+    return `
+      ${calNav(esc(title), isThis ? 'This month' : `<button class="linkbtn" data-act="cal-today">Back to this month</button>`)}
+      <div class="card">
+        <div class="mo">
+          ${['M', 'T', 'W', 'T', 'F', 'S', 'S'].map(x => `<div class="wd">${x}</div>`).join('')}
+          ${cells.join('')}
+        </div>
+        <div class="legend">${GATES.map(g => `<span><i class="ring full" style="--gcol:${g.color};width:10px;height:10px"></i>${g.name}</span>`).join('')}</div>
+        ${n ? `<p class="muted num" style="text-align:center;margin:10px 0 0;font-size:13px">${held}/${n} held so far · ${Math.round(100 * held / n)}%</p>` : ''}
+      </div>
+      ${dayDetail()}`;
+  }
+
+  function dayView() {
     const items = allRoutines();
-    if (!items.length) return `<p class="muted">No routines yet. Add some in Gates.</p>`;
+    if (!items.length) return `<div class="nexus">${orb('chaos', 150, 'spin')}<div class="cap">Nothing scheduled today</div></div>`;
 
     const pick = items.find(x => status(x.r) === 'now')
       || items.find(x => status(x.r) === 'upcoming')
@@ -448,7 +640,7 @@
           <div class="top">${orb(gate, 56)}<div>
           <div class="when">${when}</div>
           <div class="ti">${esc(r.title)}</div>
-          <div class="meta">${gateOf(gate).name} · <span class="num">${r.start}–${fromMin(toMin(r.start) + total(r))}</span> · ${dur(total(r))}${sd ? ` · ${sd}/${r.steps.length} steps` : ''}</div>
+          <div class="meta">${gateOf(gate).name} · <span class="num">${clock(r.start)} – ${fromMin(toMin(r.start) + total(r))}</span> · ${dur(total(r))}${sd ? ` · ${sd}/${r.steps.length} steps` : ''}</div>
           </div></div>
           <div class="chain">${chainText(r, firstOpen)}</div>
           <button class="btn primary block" data-act="run" data-gate="${gate}" data-id="${r.id}">${sd ? 'Continue' : 'Start'} ${r.steps.length > 1 ? 'routine' : ''}</button>
@@ -468,7 +660,7 @@
           const st = status(r), sd = stepsDone(r);
           const right = st === 'done' ? '✓ done' : st === 'now' ? 'now' : st === 'upcoming' ? untilText(r) : (sd ? `${sd}/${r.steps.length}` : 'open');
           return `<li class="${st}" data-act="run" data-gate="${gate}" data-id="${r.id}">
-            <span class="t num">${r.start}</span>
+            <span class="t num">${clock(r.start)}</span>
             <span class="dot"></span>
             <span><div class="nm">${orb(gate, 22)}${esc(r.title)}</div>
               <div class="sub">${r.steps.length > 1 ? r.steps.map(s => esc(s.title)).join(' → ') + ' · ' : ''}${dur(total(r))}</div></span>
@@ -483,31 +675,34 @@
   function gatesView() {
     const g = gateOf(V.gate);
     const list = sorted(S.gates[V.gate]);
+    const now0 = new Date();
+    const todays = list.filter(r => scheduledOn(r, now0));
     return `
       <div class="gatebar">${GATES.map(x => {
-        const rs = S.gates[x.id], n = rs.filter(r => isDone(r.id)).length;
+        const rs = S.gates[x.id].filter(r => scheduledOn(r, now0)), n = rs.filter(r => isDone(r.id)).length;
         return `<button data-act="gate" data-v="${x.id}" class="${x.id === V.gate ? 'on' : ''}" style="--gc:${x.color}">
           ${orb(x.id, 40)}<span class="nm">${x.name}</span><span class="ct num">${n}/${rs.length}</span></button>`;
       }).join('')}</div>
       <div class="gatehead">${orb(g.id, 92, V.gateFx ? 'enter' : 'spin')}<div>
         <div class="nm" style="color:${g.color}">${g.name}</div>
-        <div class="sub">${list.length} routine${list.length === 1 ? '' : 's'} · ${dur(list.reduce((t, r) => t + total(r), 0))} · ${list.filter(r => isDone(r.id)).length} held today</div>
+        <div class="sub">${list.length} routine${list.length === 1 ? '' : 's'} · ${dur(list.reduce((t, r) => t + total(r), 0))} · ${todays.filter(r => isDone(r.id)).length}/${todays.length} held today</div>
       </div></div>
       ${list.map(r => {
-        const done = isDone(r.id), now = isNow(r) && !done, starts = stepStarts(r), sd = stepsDone(r);
-        return `<div class="card ${now ? 'now' : ''}" style="--gc:${g.color}">
+        const on = scheduledOn(r, now0), done = isDone(r.id), now = on && isNow(r) && !done, starts = stepStarts(r), sd = stepsDone(r);
+        return `<div class="card ${now ? 'now' : ''}" style="--gc:${g.color}${on ? '' : ';opacity:.6'}">
           <div class="rhead">
             <button class="chk ${done ? 'done' : ''}" data-act="toggle" data-id="${r.id}" aria-label="Mark routine done">✓</button>
             <div>
-              <div class="t num">${r.start}–${fromMin(toMin(r.start) + total(r))} · ${dur(total(r))}${now ? '<span class="tag">now</span>' : ''}</div>
+              <div class="t num">${clock(r.start)} – ${fromMin(toMin(r.start) + total(r))} · ${dur(total(r))}${now ? '<span class="tag">now</span>' : ''}</div>
               <div class="ti">${esc(r.title)}</div>
+              <div class="t rep">${esc(repeatText(r))}${on ? '' : ' · <span class="tag">not today</span>'}</div>
             </div>
           </div>
           <ul class="chainlist">
             ${r.steps.map((s, i) => `<li class="${isDone(s.id) ? 'done' : ''}">
               <span class="t num">${fromMin(starts[i])}</span><span class="d"></span>
               <span>${esc(s.title)}${s.work ? ` <span class="muted">· ${esc(s.work)}</span>` : ''}</span>
-              <span class="m num">${s.minutes}m</span></li>`).join('')}
+              <span class="m num">${dur(s.minutes)}</span></li>`).join('')}
           </ul>
           <div class="acts">
             <button class="btn small" data-act="edit" data-id="${r.id}">Edit</button>
@@ -529,13 +724,25 @@
             <div class="field"><label>Name</label><input name="r_title" required value="${esc(r.title)}" placeholder="Morning routine"></div>
             <div class="field"><label>Starts at</label><input name="r_start" type="time" required value="${esc(r.start)}"></div>
           </div>
+          <p class="label" style="margin-top:4px">Repeats</p>
+          <div class="chips">
+            ${[['daily', 'Every day'], ['weekly', 'Weekly'], ['monthly', 'Monthly']].map(([k, l]) =>
+              `<label class="chip"><input type="radio" name="rt" value="${k}" ${r.repeat.type === k ? 'checked' : ''}><span>${l}</span></label>`).join('')}
+          </div>
+          ${r.repeat.type === 'weekly' ? `<div class="chips days">${[1, 2, 3, 4, 5, 6, 0].map(i =>
+              `<label class="chip"><input type="checkbox" name="wd" value="${i}" ${(r.repeat.days || []).includes(i) ? 'checked' : ''}><span>${WD[i].slice(0, 2)}</span></label>`).join('')}</div>` : ''}
+          ${r.repeat.type === 'monthly' ? `<div class="chips days">${Array.from({ length: 31 }, (_, j) => j + 1).map(i =>
+              `<label class="chip"><input type="checkbox" name="md" value="${i}" ${(r.repeat.dates || []).includes(i) ? 'checked' : ''}><span class="num">${i}</span></label>`).join('')}</div>` : ''}
           <p class="label" style="margin-top:4px">Steps · chained in order</p>
           ${r.steps.map((s, i) => `
             <div class="srow">
               <div class="top">
                 <span class="n">${i + 1}</span>
                 <input name="st${i}" value="${esc(s.title)}" placeholder="Step" required>
-                <input name="sm${i}" type="number" min="1" max="720" value="${esc(s.minutes)}" aria-label="Minutes">
+              </div>
+              <div class="hm">
+                <label><input name="sh${i}" type="number" inputmode="numeric" min="0" max="23" value="${Math.floor(s.minutes / 60)}" aria-label="Hours">hr</label>
+                <label><input name="sm${i}" type="number" inputmode="numeric" min="0" max="59" value="${s.minutes % 60}" aria-label="Minutes">min</label>
               </div>
               <input name="sw${i}" value="${esc(s.work)}" placeholder="Ritual line (optional)">
               <div class="tools">
@@ -564,9 +771,18 @@
     r.start = el.r_start.value || r.start;
     r.steps.forEach((s, i) => {
       s.title = el['st' + i].value;
-      s.minutes = Math.max(1, Number(el['sm' + i].value) || 1);
+      const h = Math.min(23, Math.max(0, Math.floor(Number(el['sh' + i].value) || 0)));
+      const m = Math.min(59, Math.max(0, Math.floor(Number(el['sm' + i].value) || 0)));
+      s.minutes = Math.max(1, h * 60 + m);
       s.work = el['sw' + i].value;
     });
+    const type = (f.querySelector('input[name=rt]:checked') || {}).value || 'daily';
+    const picked = name => [...f.querySelectorAll(`input[name=${name}]:checked`)].map(x => Number(x.value));
+    const prev = r.repeat || {};
+    r.repeat = { type };
+    // keep earlier picks when switching between types, so nothing is lost by tapping around
+    r.repeat.days = type === 'weekly' ? picked('wd') : (prev.days || []);
+    r.repeat.dates = type === 'monthly' ? picked('md') : (prev.dates || []);
   }
 
   /* ----- routine run ----- */
@@ -633,7 +849,7 @@
         <div class="stepname">${esc(s.title)}</div>
         ${s.work ? `<div class="instr">${esc(s.work)}</div>` : ''}
         <div class="clock" id="clock" style="font-size:72px;margin-top:10px">${mmss(runLeft() / 1000)}</div>
-        ${next ? `<div class="muted" style="font-size:14px">then ${esc(next.title)} · ${next.minutes}m</div>` : ''}`;
+        ${next ? `<div class="muted" style="font-size:14px">then ${esc(next.title)} · ${dur(next.minutes)}</div>` : ''}`;
       controls = `<div class="controls">
           <button class="btn" data-act="r-pause">${run.paused ? 'Resume' : 'Pause'}</button>
           <button class="btn primary" data-act="r-done">Done</button>
@@ -645,7 +861,7 @@
         <div class="muted">${esc(s.title)} done</div>
         <div class="upnext">UP NEXT</div>
         <div class="stepname">${esc(nx.title)}</div>
-        <div class="muted num">${nx.minutes} min${nx.work ? ` · ${esc(nx.work)}` : ''}</div>`;
+        <div class="muted num">${dur(nx.minutes)}${nx.work ? ` · ${esc(nx.work)}` : ''}</div>`;
       controls = `<div class="controls">
           <button class="btn" data-act="r-end">End here</button>
           <button class="btn primary" data-act="r-next">Start</button>
@@ -811,6 +1027,25 @@
       case 'tab': V.tab = el.dataset.v; V.summary = null; V.gateFx = V.tab === 'gates'; render(); break;
       case 'gate': V.gate = el.dataset.v; V.gateFx = true; render(); break;
 
+      /* calendar */
+      case 'cal': V.cal = el.dataset.v; V.anchor = null; V.sel = null; render(); break;
+      case 'cal-prev': case 'cal-next': {
+        const a = parseKey(V.anchor || today()), dir = act === 'cal-next' ? 1 : -1;
+        const nd = V.cal === 'month' ? new Date(a.getFullYear(), a.getMonth() + dir, 1) : addDays(a, 7 * dir);
+        V.anchor = keyOf(nd);
+        V.sel = V.cal === 'month' ? keyOf(nd) : keyOf(addDays(nd, -((nd.getDay() + 6) % 7)));
+        if (keyOf(nd).slice(0, 7) === today().slice(0, 7) && V.cal === 'month') V.sel = today();
+        render(); break;
+      }
+      case 'cal-today': V.anchor = null; V.sel = null; render(); break;
+      case 'sel': V.sel = el.dataset.v; render(); break;
+      case 'toggle-day': {
+        const k = el.dataset.date, r = findRoutine(el.dataset.gate, el.dataset.id), v = !isDone(r.id, k);
+        setDone(r.id, v, k);
+        r.steps.forEach(x => setDone(x.id, v, k));
+        render(); break;
+      }
+
       /* routines */
       case 'run': startRoutine(el.dataset.gate, el.dataset.id); break;
       case 'toggle': {
@@ -889,11 +1124,18 @@
     }
   });
 
+  // switching the repeat type shows its day/date pickers
+  $app.addEventListener('change', e => {
+    if (e.target.name === 'rt') { syncEdit(); render(); }
+  });
+
   $app.addEventListener('submit', e => {
     if (e.target.id !== 'editform') return;
     e.preventDefault();
     syncEdit();
     const r = V.edit.r;
+    if (r.repeat.type === 'weekly' && !r.repeat.days.length) return alert('Pick at least one day of the week.');
+    if (r.repeat.type === 'monthly' && !r.repeat.dates.length) return alert('Pick at least one date of the month.');
     r.title = r.title.trim() || 'Untitled';
     r.steps.forEach(s => { s.title = s.title.trim() || 'Step'; s.work = s.work.trim(); });
     const list = S.gates[V.edit.gate];
