@@ -1,0 +1,9 @@
+{
+  "name": "metamorph",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Switch drilling and the four Gates, as an offline PWA.",
+  "scripts": {
+    "dev": "python -m http.server 5173 --bind 127.0.0.1 -d app"
+  }
+}

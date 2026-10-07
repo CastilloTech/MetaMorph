@@ -77,9 +77,29 @@
   @keyframes slideup { from { transform: translateY(100%); } to { transform: none; } }
   @keyframes pulse { 0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 55%, transparent); } 50% { box-shadow: 0 0 0 6px transparent; } }
 
+  /* ---------- orbs ---------- */
+  .orb { display: block; filter: drop-shadow(0 0 10px color-mix(in srgb, var(--glow) 45%, transparent)); user-select: none; -webkit-user-drag: none; }
+  .orb.spin { animation: spin 90s linear infinite; }
+  .orb.enter { animation: enter .7s cubic-bezier(.2,.8,.2,1), spin 90s linear .7s infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @keyframes enter { from { opacity: 0; transform: scale(.55) rotate(-40deg); filter: drop-shadow(0 0 40px var(--glow)) brightness(1.6); } to { opacity: 1; transform: none; } }
+  @media (prefers-reduced-motion: reduce) { .orb.spin, .orb.enter { animation: none; } }
+
+  .nexus { display: flex; flex-direction: column; align-items: center; margin: 4px 0 16px; text-align: center; }
+  .nexus .orb { width: 150px; height: 150px; }
+  .nexus .cap { margin-top: 8px; color: var(--muted); font-size: 13px; letter-spacing: .12em; text-transform: uppercase; }
+  .nexus .cap b { color: var(--text); font-weight: 600; }
+
+  .gatehead { display: flex; align-items: center; gap: 16px; margin: 0 0 14px; }
+  .gatehead .orb { width: 92px; height: 92px; flex: none; }
+  .gatehead .nm { font-size: 22px; font-weight: 600; }
+  .gatehead .sub { color: var(--muted); font-size: 14px; }
+
   /* ---------- today ---------- */
-  .hero { border-color: var(--accent); }
-  .hero .when { color: var(--accent); font-size: 12px; font-weight: 700; letter-spacing: .2em; }
+  .hero { border-color: var(--gc, var(--accent)); }
+  .hero .top { display: flex; gap: 14px; align-items: center; }
+  .hero .top .orb { width: 56px; height: 56px; flex: none; }
+  .hero .when { color: var(--gc, var(--accent)); font-size: 12px; font-weight: 700; letter-spacing: .2em; }
   .hero .ti { font-size: 22px; font-weight: 600; margin: 4px 0 2px; }
   .hero .meta { color: var(--muted); font-size: 14px; }
   .hero .chain { margin: 12px 0 14px; font-size: 14px; color: var(--muted); }
@@ -93,7 +113,8 @@
   .tl .dot { width: 14px; height: 14px; border-radius: 50%; background: var(--bg); border: 2px solid var(--line); margin-top: 4px; position: relative; z-index: 1; }
   .tl li.done .dot { background: var(--ok); border-color: var(--ok); }
   .tl li.now .dot { border-color: var(--accent); background: var(--accent); animation: pulse 2s infinite; }
-  .tl .nm { font-weight: 600; }
+  .tl .nm { font-weight: 600; display: flex; align-items: center; gap: 6px; }
+  .tl .nm .orb { width: 22px; height: 22px; filter: none; }
   .tl .sub { font-size: 13px; color: var(--muted); }
   .tl li.done .nm { color: var(--muted); }
   .tl .st { font-size: 13px; color: var(--muted); padding-top: 2px; white-space: nowrap; }
@@ -104,8 +125,9 @@
   /* ---------- gates ---------- */
   .gatebar { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-bottom: 14px; }
   .gatebar button { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 10px 4px; text-align: center; transition: border-color .2s, background .2s; }
-  .gatebar button.on { border-color: var(--accent); background: var(--surface-2); }
-  .gatebar .ic { font-size: 20px; display: block; }
+  .gatebar button.on { border-color: var(--gc); background: var(--surface-2); }
+  .gatebar .orb { width: 40px; height: 40px; margin: 0 auto 2px; filter: none; transition: transform .25s, filter .25s; }
+  .gatebar button.on .orb { transform: scale(1.12); filter: drop-shadow(0 0 8px var(--glow)); }
   .gatebar .nm { font-size: 13px; font-weight: 600; display: block; }
   .gatebar .ct { font-size: 12px; color: var(--muted); display: block; }
 
@@ -114,7 +136,7 @@
   .chk.done { background: var(--ok); border-color: var(--ok); color: #0d1a12; }
   .rhead .t { color: var(--muted); font-size: 14px; }
   .rhead .ti { font-weight: 600; font-size: 17px; }
-  .card.now { border-color: var(--accent); }
+  .card.now { border-color: var(--gc, var(--accent)); }
   .tag { font-size: 11px; color: var(--accent); letter-spacing: .1em; text-transform: uppercase; margin-left: 6px; }
 
   .chainlist { list-style: none; margin: 12px 0 0; padding: 12px 0 0 0; border-top: 1px solid var(--line); }
@@ -164,9 +186,10 @@
 
   .segs { display: flex; gap: 4px; margin: 14px 0 0; }
   .segs > span { height: 5px; border-radius: 3px; background: var(--surface-2); overflow: hidden; min-width: 8px; }
-  .segs > span > i { display: block; height: 100%; width: 0; background: var(--accent); }
+  .segs > span > i { display: block; height: 100%; width: 0; background: var(--gc, var(--accent)); }
   .segs > span.done > i { width: 100%; background: var(--ok); }
   .seglabels { display: flex; justify-content: space-between; font-size: 13px; color: var(--muted); margin-top: 8px; }
+  .run .orb { width: 150px; height: 150px; margin-bottom: 6px; }
   .check { width: 64px; height: 64px; border-radius: 50%; background: var(--ok); color: #0d1a12; display: grid; place-items: center; font-size: 30px; }
   .upnext { color: var(--muted); font-size: 12px; letter-spacing: .25em; font-weight: 700; margin-top: 18px; }
   .recap { list-style: none; padding: 0; margin: 4px 0 0; color: var(--muted); font-size: 15px; }
@@ -205,11 +228,13 @@
   /* ---------- data ---------- */
 
   const GATES = [
-    { id: 'sleep',     name: 'Sleep',     icon: '☾' },
-    { id: 'fitness',   name: 'Fitness',   icon: '△' },
-    { id: 'nutrition', name: 'Nutrition', icon: '◐' },
-    { id: 'hygiene',   name: 'Hygiene',   icon: '◇' },
+    { id: 'sleep',     name: 'Sleep',     color: '#a66bff' },
+    { id: 'fitness',   name: 'Fitness',   color: '#ff5a3c' },
+    { id: 'nutrition', name: 'Nutrition', color: '#63d84a' },
+    { id: 'hygiene',   name: 'Hygiene',   color: '#3d8bff' },
   ];
+  const orb = (id, size, cls = '') =>
+    `<img class="orb ${cls}" src="img/orb-${id}.webp" width="${size}" height="${size}" alt="" style="--glow:${id === 'chaos' ? '#8a6bff' : gateOf(id).color}">`;
   const gateOf = id => GATES.find(g => g.id === id);
 
   const KEY = 'metamorph.v1';
@@ -381,6 +406,7 @@
       </div></nav>
       ${V.edit ? editSheet() : ''}
     `;
+    V.gateFx = false;
     if (V.edit) {
       const sh = document.querySelector('.sheet');
       if (sh) sh.scrollTop = sheetScroll;
@@ -418,10 +444,12 @@
       const when = st === 'now' ? 'NOW' : st === 'upcoming' ? `UP NEXT · ${untilText(r).toUpperCase()}` : 'STILL OPEN';
       const firstOpen = r.steps.findIndex(s => !isDone(s.id));
       hero = `
-        <div class="card hero">
+        <div class="card hero" style="--gc:${gateOf(gate).color}">
+          <div class="top">${orb(gate, 56)}<div>
           <div class="when">${when}</div>
           <div class="ti">${esc(r.title)}</div>
-          <div class="meta">${gateOf(gate).icon} ${gateOf(gate).name} · <span class="num">${r.start}–${fromMin(toMin(r.start) + total(r))}</span> · ${dur(total(r))}${sd ? ` · ${sd}/${r.steps.length} steps` : ''}</div>
+          <div class="meta">${gateOf(gate).name} · <span class="num">${r.start}–${fromMin(toMin(r.start) + total(r))}</span> · ${dur(total(r))}${sd ? ` · ${sd}/${r.steps.length} steps` : ''}</div>
+          </div></div>
           <div class="chain">${chainText(r, firstOpen)}</div>
           <button class="btn primary block" data-act="run" data-gate="${gate}" data-id="${r.id}">${sd ? 'Continue' : 'Start'} ${r.steps.length > 1 ? 'routine' : ''}</button>
         </div>`;
@@ -431,6 +459,8 @@
 
     const doneCount = items.filter(x => isDone(x.r.id)).length;
     return `
+      <div class="nexus">${orb('chaos', 150, 'spin')}
+        <div class="cap"><b class="num">${doneCount}/${items.length}</b> held today</div></div>
       ${hero}
       <div class="row spread" style="margin-top:18px"><p class="label" style="margin:0">Timeline</p><span class="muted num" style="font-size:13px">${doneCount}/${items.length} done</span></div>
       <ul class="tl">
@@ -440,7 +470,7 @@
           return `<li class="${st}" data-act="run" data-gate="${gate}" data-id="${r.id}">
             <span class="t num">${r.start}</span>
             <span class="dot"></span>
-            <span><div class="nm">${gateOf(gate).icon} ${esc(r.title)}</div>
+            <span><div class="nm">${orb(gate, 22)}${esc(r.title)}</div>
               <div class="sub">${r.steps.length > 1 ? r.steps.map(s => esc(s.title)).join(' → ') + ' · ' : ''}${dur(total(r))}</div></span>
             <span class="st">${right}</span>
           </li>`;
@@ -456,12 +486,16 @@
     return `
       <div class="gatebar">${GATES.map(x => {
         const rs = S.gates[x.id], n = rs.filter(r => isDone(r.id)).length;
-        return `<button data-act="gate" data-v="${x.id}" class="${x.id === V.gate ? 'on' : ''}">
-          <span class="ic">${x.icon}</span><span class="nm">${x.name}</span><span class="ct num">${n}/${rs.length}</span></button>`;
+        return `<button data-act="gate" data-v="${x.id}" class="${x.id === V.gate ? 'on' : ''}" style="--gc:${x.color}">
+          ${orb(x.id, 40)}<span class="nm">${x.name}</span><span class="ct num">${n}/${rs.length}</span></button>`;
       }).join('')}</div>
+      <div class="gatehead">${orb(g.id, 92, V.gateFx ? 'enter' : 'spin')}<div>
+        <div class="nm" style="color:${g.color}">${g.name}</div>
+        <div class="sub">${list.length} routine${list.length === 1 ? '' : 's'} · ${dur(list.reduce((t, r) => t + total(r), 0))} · ${list.filter(r => isDone(r.id)).length} held today</div>
+      </div></div>
       ${list.map(r => {
         const done = isDone(r.id), now = isNow(r) && !done, starts = stepStarts(r), sd = stepsDone(r);
-        return `<div class="card ${now ? 'now' : ''}">
+        return `<div class="card ${now ? 'now' : ''}" style="--gc:${g.color}">
           <div class="rhead">
             <button class="chk ${done ? 'done' : ''}" data-act="toggle" data-id="${r.id}" aria-label="Mark routine done">✓</button>
             <div>
@@ -589,12 +623,13 @@
 
     const segs = `<div class="segs">${r.steps.map((x, i) =>
       `<span class="${isDone(x.id) && !(run.phase === 'step' && i === run.idx) ? 'done' : ''}" style="flex:${x.minutes}"><i ${i === run.idx && run.phase === 'step' ? 'id="seg"' : ''}></i></span>`).join('')}</div>
-      <div class="seglabels"><span>${g.icon} ${esc(r.title)}</span><span class="num">${run.phase === 'complete' ? r.steps.length : run.idx + 1}/${r.steps.length}</span></div>`;
+      <div class="seglabels"><span>${esc(r.title)}</span><span class="num">${run.phase === 'complete' ? r.steps.length : run.idx + 1}/${r.steps.length}</span></div>`;
 
     let center, controls;
     if (run.phase === 'step') {
       center = `
-        <div class="phase" style="color:var(--accent)">STEP ${run.idx + 1}</div>
+        ${orb(run.gate, 150, run.entered ? 'spin' : 'enter')}
+        <div class="phase" style="color:${g.color}">STEP ${run.idx + 1}</div>
         <div class="stepname">${esc(s.title)}</div>
         ${s.work ? `<div class="instr">${esc(s.work)}</div>` : ''}
         <div class="clock" id="clock" style="font-size:72px;margin-top:10px">${mmss(runLeft() / 1000)}</div>
@@ -617,21 +652,22 @@
         </div>`;
     } else {
       center = `
-        <div class="check">✓</div>
+        ${orb(run.gate, 150, 'spin')}
+        <div class="phase" style="color:${g.color}">GATE HELD</div>
         <div class="stepname">${esc(r.title)}</div>
-        <div class="muted">complete</div>
         <ul class="recap">${r.steps.map(x => `<li>${esc(x.title)}</li>`).join('')}</ul>`;
       controls = `<div class="controls one"><button class="btn primary" data-act="r-close">Close</button></div>`;
     }
 
     $app.innerHTML = `
-      <div class="run"><div class="inner">
-        <div class="top"><span>${g.name}</span>
+      <div class="run" style="--gc:${g.color}"><div class="inner">
+        <div class="top"><span style="color:${g.color}">${g.name}</span>
           ${run.phase === 'complete' ? '<span></span>' : '<button class="btn small ghost" data-act="r-exit">Exit</button>'}</div>
         ${segs}
         <div class="center">${center}</div>
         ${controls}
       </div></div>`;
+    run.entered = true;
     tick();
   }
 
@@ -772,8 +808,8 @@
     const act = el.dataset.act;
 
     switch (act) {
-      case 'tab': V.tab = el.dataset.v; V.summary = null; render(); break;
-      case 'gate': V.gate = el.dataset.v; render(); break;
+      case 'tab': V.tab = el.dataset.v; V.summary = null; V.gateFx = V.tab === 'gates'; render(); break;
+      case 'gate': V.gate = el.dataset.v; V.gateFx = true; render(); break;
 
       /* routines */
       case 'run': startRoutine(el.dataset.gate, el.dataset.id); break;
