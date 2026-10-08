@@ -8,8 +8,9 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>MetaMorph</title>
 <link rel="manifest" href="manifest.webmanifest">
-<link rel="icon" href="icon-192.png">
-<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="icon" href="favicon-32.png" sizes="32x32">
+<link rel="icon" href="icon-192.png" sizes="192x192">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <style>
   :root {
     --bg: #0f1115;
@@ -153,21 +154,67 @@
   .hero .chain b { color: var(--text); font-weight: 500; }
   .hero .chain s { text-decoration: none; color: var(--ok); }
 
-  .tl { list-style: none; margin: 8px 0 0; padding: 0; position: relative; }
-  .tl::before { content: ""; position: absolute; left: 81px; top: 14px; bottom: 14px; width: 2px; background: var(--line); }
-  .tl li { display: grid; grid-template-columns: 66px 16px 1fr auto; gap: 10px; align-items: start; padding: 10px 0; position: relative; }
+  .tl { list-style: none; margin: 8px 0 0; padding: 0; }
+  .tl > li { position: relative; overflow: hidden; border-radius: 12px; }
+  .tl .it { user-select: none; -webkit-user-select: none; display: grid; grid-template-columns: 66px 16px 1fr auto; gap: 10px; align-items: start; padding: 10px 0; position: relative;
+            background: var(--bg); cursor: pointer; touch-action: pan-y; will-change: transform; }
+  .tl .it.snap { transition: transform .25s cubic-bezier(.2,.8,.2,1); }
+  .tl .it::before { content: ""; position: absolute; left: 81px; top: 0; bottom: 0; width: 2px; background: var(--line); }
+  .tl > li:first-child .it::before { top: 14px; }
+  .tl > li:last-child .it::before { bottom: calc(100% - 18px); }
   .tl .t { font-size: 13px; color: var(--muted); padding-top: 2px; text-align: right; }
   .tl .dot { width: 14px; height: 14px; border-radius: 50%; background: var(--bg); border: 2px solid var(--line); margin-top: 4px; position: relative; z-index: 1; }
-  .tl li.done .dot { background: var(--ok); border-color: var(--ok); }
-  .tl li.now .dot { border-color: var(--accent); background: var(--accent); animation: pulse 2s infinite; }
+  .tl .it.done .dot { background: var(--ok); border-color: var(--ok); }
+  .tl .it.now .dot { border-color: var(--accent); background: var(--accent); animation: pulse 2s infinite; }
   .tl .nm { font-weight: 600; display: flex; align-items: center; gap: 6px; }
   .tl .nm .orb { width: 22px; height: 22px; filter: none; }
   .tl .sub { font-size: 13px; color: var(--muted); }
-  .tl li.done .nm { color: var(--muted); }
+  .tl .it.done .nm { color: var(--muted); }
   .tl .st { font-size: 13px; color: var(--muted); padding-top: 2px; white-space: nowrap; }
-  .tl li.now .st { color: var(--accent); font-weight: 600; }
-  .tl li.done .st { color: var(--ok); }
-  .tl li[data-act] { cursor: pointer; }
+  .tl .it.now .st { color: var(--accent); font-weight: 600; }
+  .tl .it.done .st { color: var(--ok); }
+  .swbg { position: absolute; inset: 0; display: flex; align-items: center; justify-content: space-between; padding: 0 18px; font-weight: 700; font-size: 14px; opacity: 0; transition: opacity .15s; }
+  .swbg .l { color: #0d1a12; } .swbg .r { color: var(--text); }
+  .tl > li[data-dir="r"] .swbg { opacity: 1; background: color-mix(in srgb, var(--ok) 55%, var(--bg)); }
+  .tl > li[data-dir="l"] .swbg { opacity: 1; background: var(--surface-2); }
+  .tl > li[data-dir="r"] .swbg .r, .tl > li[data-dir="l"] .swbg .l { visibility: hidden; }
+  .tl > li.armed[data-dir="r"] .swbg { background: var(--ok); }
+  .tl > li.armed[data-dir="l"] .swbg { background: var(--danger); }
+  .swhint { text-align: center; color: var(--muted); font-size: 12px; margin: 6px 0 0; }
+
+  /* ---------- slide transitions ---------- */
+  @keyframes inR { from { opacity: 0; transform: translateX(28px); } to { opacity: 1; transform: none; } }
+  @keyframes inL { from { opacity: 0; transform: translateX(-28px); } to { opacity: 1; transform: none; } }
+  .slide-r { animation: inR .28s cubic-bezier(.2,.8,.2,1); }
+  .slide-l { animation: inL .28s cubic-bezier(.2,.8,.2,1); }
+  @media (prefers-reduced-motion: reduce) { .slide-r, .slide-l { animation: none; } }
+
+  /* ---------- update prompt ---------- */
+  .toast { position: fixed; left: 16px; right: 16px; bottom: calc(84px + env(safe-area-inset-bottom)); max-width: 528px; margin: 0 auto;
+           background: var(--surface-2); border: 1px solid var(--accent); border-radius: 14px; padding: 12px 12px 12px 14px;
+           display: flex; align-items: center; gap: 12px; z-index: 15; box-shadow: 0 12px 30px rgba(0,0,0,.45); }
+  .toast.anim { animation: rise .3s ease; }
+  .toast .orb { width: 36px; height: 36px; flex: none; }
+  .toast .msg { flex: 1; font-size: 13px; color: var(--muted); }
+  .toast .msg b { display: block; font-size: 15px; color: var(--text); }
+  .toast .btn { padding: 9px 12px; font-size: 14px; }
+  .news { margin: 0 0 6px; padding-left: 20px; }
+  .news li { margin: 6px 0; }
+  .whatsnew-head { display: flex; align-items: center; gap: 14px; margin-bottom: 10px; }
+  .whatsnew-head .orb { width: 56px; height: 56px; }
+  .whatsnew-head h2 { margin: 0; }
+
+  /* ---------- header + data sheet ---------- */
+  header .right { display: flex; align-items: center; gap: 10px; }
+  .iconbtn { position: relative; width: 34px; height: 34px; border-radius: 10px; background: var(--surface); border: 1px solid var(--line); color: var(--muted); font-size: 16px; display: grid; place-items: center; }
+  .iconbtn .badge { position: absolute; top: -3px; right: -3px; width: 10px; height: 10px; border-radius: 50%; background: var(--accent); border: 2px solid var(--bg); }
+  .kv { display: flex; justify-content: space-between; gap: 12px; padding: 10px 0; border-top: 1px solid var(--line); font-size: 15px; }
+  .kv:first-of-type { border-top: 0; }
+  .kv .v { color: var(--muted); text-align: right; }
+  .kv .v.good { color: var(--ok); }
+  .kv .v.warn { color: var(--accent); }
+  .stack { display: grid; gap: 8px; margin-top: 14px; }
+  .note { color: var(--muted); font-size: 13px; margin: 12px 0 0; line-height: 1.5; }
 
   /* ---------- gates ---------- */
   .gatebar { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-bottom: 14px; }
@@ -294,6 +341,22 @@
   const gateOf = id => GATES.find(g => g.id === id);
 
   const KEY = 'metamorph.v1';
+
+  // Keep in step with CACHE in sw.js. Add a CHANGELOG entry for each release.
+  const APP_VERSION = 7;
+  const CHANGELOG = {
+    7: [
+      'Element orbs for each Gate, and the chaos orb on the timeline and as the app icon',
+      'Routines repeat daily, on chosen weekdays, or on dates of the month',
+      'Day, Week and Month views, and you can check off past days',
+      'Steps take hours and minutes; times show as 12-hour',
+      'Swipe a timeline item right to mark it held, left to undo',
+      'Backup & data (the ⋯ button): share, download and restore backups',
+      'A routine in progress survives closing the app',
+      'Routines that run past midnight count for the day they started',
+      'This update prompt',
+    ],
+  };
   const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
 
   const step = (title, minutes, work = '') => ({ id: uid(), title, minutes, work });
@@ -338,20 +401,65 @@
     return s;
   }
 
+  const valid = s => s && (s.v === 1 || s.v === 2) && s.gates && s.done && s.drill;
+  function normalize(s) {
+    migrate(s);
+    // routines saved before schedules existed repeat every day
+    for (const g of Object.keys(s.gates)) for (const r of s.gates[g]) if (!r.repeat) r.repeat = { type: 'daily' };
+    if (!s.created) s.created = Date.now();
+    if (!('run' in s)) s.run = null;
+    return s;
+  }
+
+  // A second copy in IndexedDB: if localStorage is lost, the app restores from it on the next open.
+  const idb = (() => {
+    let dbp = null;
+    const open = () => dbp || (dbp = new Promise((res, rej) => {
+      const q = indexedDB.open('metamorph', 1);
+      q.onupgradeneeded = () => q.result.createObjectStore('kv');
+      q.onsuccess = () => {
+        const db = q.result;
+        // let another tab or a newer version take over instead of blocking it
+        db.onversionchange = () => { db.close(); dbp = null; };
+        res(db);
+      };
+      q.onerror = () => rej(q.error);
+    }));
+    const tx = (mode, fn) => open().then(db => new Promise((res, rej) => {
+      const t = db.transaction('kv', mode), out = fn(t.objectStore('kv'));
+      t.oncomplete = () => res(out && out.result);
+      t.onerror = () => rej(t.error);
+    }));
+    return {
+      get: k => tx('readonly', st => st.get(k)),
+      set: (k, v) => tx('readwrite', st => { st.put(v, k); }),
+    };
+  })();
+
+  let fromLocal = false;
   function load() {
     try {
       const s = JSON.parse(localStorage.getItem(KEY));
-      if (s && (s.v === 1 || s.v === 2)) return migrate(s);
+      if (valid(s)) { fromLocal = true; return normalize(s); }
     } catch (e) {}
-    return seed();
+    return normalize(seed());
   }
+  let mirrorTimer = null;
+  // the IndexedDB copy is only written once we know it isn't needed for recovery
+  let mirrorReady = false;
   function save() {
-    try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {}
+    const json = JSON.stringify(S);
+    try { localStorage.setItem(KEY, json); } catch (e) {}
+    if (!mirrorReady) return;
+    clearTimeout(mirrorTimer);
+    mirrorTimer = setTimeout(() => { idb.set('state', JSON.stringify(S)).catch(() => {}); }, 400);
   }
 
   const S = load();
-  // routines saved before schedules existed repeat every day
-  for (const g of Object.keys(S.gates)) for (const r of S.gates[g]) if (!r.repeat) r.repeat = { type: 'daily' };
+  function replaceState(next) {
+    for (const k of Object.keys(S)) delete S[k];
+    Object.assign(S, normalize(next));
+  }
 
   // all dates are the device's local time (follows the phone's timezone)
   const keyOf = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
@@ -366,7 +474,29 @@
     save();
   })();
 
-  try { navigator.storage && navigator.storage.persist && navigator.storage.persist(); } catch (e) {}
+  // ask the browser not to clear this app's storage under pressure
+  const storageInfo = { persisted: null };
+  (async () => {
+    try {
+      if (!navigator.storage || !navigator.storage.persist) return;
+      storageInfo.persisted = await navigator.storage.persisted() || await navigator.storage.persist();
+    } catch (e) {}
+  })();
+
+  // localStorage came back empty: recover from the IndexedDB copy if there is one
+  if (!fromLocal) {
+    idb.get('state').then(json => {
+      const s = json && JSON.parse(json);
+      if (valid(s)) {
+        replaceState(s);
+        resumeRun();
+        render();
+      }
+    }).catch(() => {}).finally(() => { mirrorReady = true; save(); });
+  } else {
+    mirrorReady = true;
+    idb.set('state', JSON.stringify(S)).catch(() => {});
+  }
 
   /* ---------- helpers ---------- */
 
@@ -427,7 +557,7 @@
     if (v) S.done[k][id] = true; else delete S.done[k][id];
     save();
   }
-  const stepsDone = r => r.steps.filter(s => isDone(s.id)).length;
+  const stepsDone = (r, k = today()) => r.steps.filter(s => isDone(s.id, k)).length;
 
   function isNow(r) {
     const n = nowMin(), s = toMin(r.start), e = s + total(r);
@@ -471,7 +601,10 @@
 
   /* ---------- view state ---------- */
 
-  const V = { tab: 'today', gate: 'sleep', edit: null, summary: null, cal: 'day', anchor: null, sel: null };
+  const V = { tab: 'today', gate: 'sleep', edit: null, summary: null, cal: 'day', anchor: null, sel: null, data: false, slide: null,
+              update: null, whatsNew: false };
+  const TABS = ['today', 'gates', 'drill'], CALS = ['day', 'week', 'month'];
+  const slideTo = (list, from, to) => list.indexOf(to) > list.indexOf(from) ? 'r' : list.indexOf(to) < list.indexOf(from) ? 'l' : null;
   let drillRun = null;  // { round, phase, start, end, latencies[], catches, locked }
   let run = null;       // { gate, rid, idx, phase: step|between|complete, total, end, paused, remaining }
   let ticker = null;
@@ -491,15 +624,27 @@
     try { tz = new Intl.DateTimeFormat(undefined, { timeZoneName: 'short' }).formatToParts(new Date()).find(x => x.type === 'timeZoneName').value; } catch (e) {}
     const body = V.tab === 'today' ? todayView() : V.tab === 'gates' ? gatesView() : drillView();
     $app.innerHTML = `
-      <header><h1>MetaMorph</h1><span class="date">${esc(dateStr)}${tz ? ` · ${esc(tz)}` : ''}</span></header>
-      <main>${body}</main>
+      <header><h1>MetaMorph</h1><div class="right"><span class="date">${esc(dateStr)}${tz ? ` · ${esc(tz)}` : ''}</span>
+        <button class="iconbtn" data-act="data" aria-label="Backup and data">⋯${backupDue() ? '<span class="badge"></span>' : ''}</button></div></header>
+      <main><div class="${V.slide ? 'slide-' + V.slide : ''}">${body}</div></main>
       <nav class="tabs"><div class="inner">
         ${[['today', 'Today'], ['gates', 'Gates'], ['drill', 'Drill']].map(([k, l]) =>
           `<button data-act="tab" data-v="${k}" class="${V.tab === k ? 'on' : ''}">${l}</button>`).join('')}
       </div></nav>
       ${V.edit ? editSheet() : ''}
+      ${V.data ? dataSheet() : ''}
+      ${V.whatsNew ? whatsNewSheet() : ''}
+      ${V.update && !V.edit && !V.data && !V.whatsNew ? `
+        <div class="toast ${V.toastFx ? 'anim' : ''}" role="status">${orb('chaos', 36)}
+          <div class="msg"><b>Update ready</b>A new version of MetaMorph</div>
+          <button class="btn ghost" data-act="update-later">Later</button>
+          <button class="btn primary" data-act="update-now">Update</button>
+        </div>` : ''}
     `;
     V.gateFx = false;
+    V.slide = null;
+    V.toastFx = false;
+    if (V.data) V.data = 'open';
     if (V.edit) {
       const sh = document.querySelector('.sheet');
       if (sh) sh.scrollTop = sheetScroll;
@@ -659,15 +804,75 @@
         ${items.map(({ gate, r }) => {
           const st = status(r), sd = stepsDone(r);
           const right = st === 'done' ? '✓ done' : st === 'now' ? 'now' : st === 'upcoming' ? untilText(r) : (sd ? `${sd}/${r.steps.length}` : 'open');
-          return `<li class="${st}" data-act="run" data-gate="${gate}" data-id="${r.id}">
+          return `<li><div class="swbg"><span class="l">✓ Held</span><span class="r">Undo</span></div>
+            <div class="it ${st}" data-act="run" data-gate="${gate}" data-id="${r.id}">
             <span class="t num">${clock(r.start)}</span>
             <span class="dot"></span>
             <span><div class="nm">${orb(gate, 22)}${esc(r.title)}</div>
               <div class="sub">${r.steps.length > 1 ? r.steps.map(s => esc(s.title)).join(' → ') + ' · ' : ''}${dur(total(r))}</div></span>
             <span class="st">${right}</span>
-          </li>`;
+          </div></li>`;
         }).join('')}
-      </ul>`;
+      </ul>
+      <p class="swhint">Swipe right to mark held · left to undo</p>`;
+  }
+
+  /* ----- what's new ----- */
+
+  function whatsNewSheet() {
+    const from = typeof S.seenVersion === 'number' ? S.seenVersion : APP_VERSION - 1;
+    const notes = Object.keys(CHANGELOG).map(Number).filter(v => v > from && v <= APP_VERSION)
+      .sort((a, b) => b - a).flatMap(v => CHANGELOG[v]);
+    return `
+      <div class="sheet-bg enter" data-act="whatsnew-close-bg">
+        <div class="sheet">
+          <div class="whatsnew-head">${orb('chaos', 56, 'enter')}<div><h2>What's new</h2><span class="muted num">Version ${APP_VERSION}</span></div></div>
+          <ul class="news">${(notes.length ? notes : ['Small fixes and improvements']).map(n => `<li>${esc(n)}</li>`).join('')}</ul>
+          <button class="btn primary block" data-act="whatsnew-close" style="margin-top:12px">Got it</button>
+        </div>
+      </div>`;
+  }
+
+  /* ----- backup / data ----- */
+
+  const DAY = 864e5;
+  const backupDue = () => Date.now() - (S.lastBackup || S.created) > 14 * DAY;
+  function ago(t) {
+    const d = Math.floor((Date.now() - t) / DAY);
+    return d <= 0 ? 'today' : d === 1 ? 'yesterday' : `${d} days ago`;
+  }
+  function backupBlob() {
+    const payload = { app: 'metamorph', exported: new Date().toISOString(), data: S };
+    return new Blob([JSON.stringify(payload, null, 1)], { type: 'application/json' });
+  }
+  const backupName = () => `metamorph-backup-${today()}.json`;
+  function markBackedUp() { S.lastBackup = Date.now(); save(); render(); }
+
+  function dataSheet() {
+    const p = storageInfo.persisted;
+    const canShare = !!(navigator.canShare && navigator.canShare({ files: [new File(['x'], 'x.json', { type: 'application/json' })] }));
+    const nDays = Object.keys(S.done).length;
+    return `
+      <div class="sheet-bg ${V.data === true ? 'enter' : ''}" data-act="data-close-bg">
+        <div class="sheet">
+          <h2>Backup &amp; data</h2>
+          <div class="kv"><span>Saved on this device</span><span class="v good">Automatically, every change</span></div>
+          <div class="kv"><span>Second copy (IndexedDB)</span><span class="v ${typeof indexedDB !== 'undefined' ? 'good' : 'warn'}">${typeof indexedDB !== 'undefined' ? 'On' : 'Unavailable'}</span></div>
+          <div class="kv"><span>Protected from auto-clearing</span><span class="v ${p ? 'good' : 'warn'}">${p === null ? 'Unknown' : p ? 'Yes' : 'Not granted'}</span></div>
+          <div class="kv"><span>Last backup file</span><span class="v ${backupDue() ? 'warn' : 'good'}">${S.lastBackup ? ago(S.lastBackup) : 'Never'}</span></div>
+          <div class="kv"><span>History</span><span class="v num">${nDays} day${nDays === 1 ? '' : 's'} · ${S.drill.sessions.length} drills</span></div>
+          <div class="stack">
+            ${canShare ? '<button class="btn primary block" data-act="backup-share">Share backup (Drive, Files…)</button>' : ''}
+            <button class="btn ${canShare ? '' : 'primary'} block" data-act="backup-save">Download backup file</button>
+            <button class="btn block" data-act="backup-restore">Restore from a backup file</button>
+            <input type="file" id="restorefile" accept="application/json,.json" hidden>
+            ${p ? '' : '<button class="btn block" data-act="persist">Ask browser to protect storage</button>'}
+          </div>
+          <p class="note">Everything is saved automatically on this device. Uninstalling the app or clearing site data
+            erases it, so keep a backup file somewhere else (Drive, iCloud, email) and you can restore on any device.</p>
+          <button class="btn ghost block" data-act="data-close" style="margin-top:8px">Close</button>
+        </div>
+      </div>`;
   }
 
   /* ----- gates ----- */
@@ -789,14 +994,28 @@
 
   function findRoutine(gate, id) { return S.gates[gate].find(r => r.id === id); }
 
+  // A run belongs to the day it started, so a routine finished after midnight still counts for that night.
   function startRoutine(gate, id) {
     const r = findRoutine(gate, id);
     if (!r) return;
-    let idx = r.steps.findIndex(s => !isDone(s.id));
-    if (idx < 0 || isDone(r.id)) idx = 0;
+    const key = today();
+    let idx = r.steps.findIndex(s => !isDone(s.id, key));
+    if (idx < 0 || isDone(r.id, key)) idx = 0;
     unlockAudio(); lockScreen(); startTicker();
-    run = { gate, rid: id, idx };
+    run = { gate, rid: id, idx, key };
     beginStep(idx);
+  }
+
+  // keep the run in saved state so closing the app doesn't lose it
+  function saveRun() { S.run = run ? { ...run } : null; save(); }
+  function resumeRun() {
+    const r0 = S.run;
+    if (!r0 || !findRoutine(r0.gate, r0.rid)) { S.run = null; return; }
+    // abandon runs left open for more than a day
+    if (Date.now() - (r0.paused ? Date.now() : r0.end) > DAY) { S.run = null; save(); return; }
+    run = { ...r0, entered: true };
+    startTicker();
+    lockScreen();
   }
 
   function beginStep(i) {
@@ -807,25 +1026,28 @@
     run.end = Date.now() + run.total;
     run.paused = false;
     beep(880, 0.3);
+    saveRun();
     renderRun();
   }
 
   function finishStep() {
     const r = findRoutine(run.gate, run.rid);
-    setDone(r.steps[run.idx].id, true);
+    setDone(r.steps[run.idx].id, true, run.key);
     if (run.idx >= r.steps.length - 1) {
-      setDone(r.id, true);
+      setDone(r.id, true, run.key);
       run.phase = 'complete';
       beep(660, 0.6);
     } else {
       run.phase = 'between';
       beep(660, 0.3);
     }
+    saveRun();
     renderRun();
   }
 
   function endRun() {
     run = null;
+    saveRun();
     stopTicker(); unlockScreen();
     render();
   }
@@ -838,7 +1060,7 @@
     const g = gateOf(run.gate), s = r.steps[run.idx], next = r.steps[run.idx + 1];
 
     const segs = `<div class="segs">${r.steps.map((x, i) =>
-      `<span class="${isDone(x.id) && !(run.phase === 'step' && i === run.idx) ? 'done' : ''}" style="flex:${x.minutes}"><i ${i === run.idx && run.phase === 'step' ? 'id="seg"' : ''}></i></span>`).join('')}</div>
+      `<span class="${isDone(x.id, run.key) && !(run.phase === 'step' && i === run.idx) ? 'done' : ''}" style="flex:${x.minutes}"><i ${i === run.idx && run.phase === 'step' ? 'id="seg"' : ''}></i></span>`).join('')}</div>
       <div class="seglabels"><span>${esc(r.title)}</span><span class="num">${run.phase === 'complete' ? r.steps.length : run.idx + 1}/${r.steps.length}</span></div>`;
 
     let center, controls;
@@ -1024,20 +1246,21 @@
     const act = el.dataset.act;
 
     switch (act) {
-      case 'tab': V.tab = el.dataset.v; V.summary = null; V.gateFx = V.tab === 'gates'; render(); break;
+      case 'tab': V.slide = slideTo(TABS, V.tab, el.dataset.v); V.tab = el.dataset.v; V.summary = null; V.gateFx = V.tab === 'gates'; render(); break;
       case 'gate': V.gate = el.dataset.v; V.gateFx = true; render(); break;
 
       /* calendar */
-      case 'cal': V.cal = el.dataset.v; V.anchor = null; V.sel = null; render(); break;
+      case 'cal': V.slide = slideTo(CALS, V.cal, el.dataset.v); V.cal = el.dataset.v; V.anchor = null; V.sel = null; render(); break;
       case 'cal-prev': case 'cal-next': {
         const a = parseKey(V.anchor || today()), dir = act === 'cal-next' ? 1 : -1;
         const nd = V.cal === 'month' ? new Date(a.getFullYear(), a.getMonth() + dir, 1) : addDays(a, 7 * dir);
         V.anchor = keyOf(nd);
         V.sel = V.cal === 'month' ? keyOf(nd) : keyOf(addDays(nd, -((nd.getDay() + 6) % 7)));
         if (keyOf(nd).slice(0, 7) === today().slice(0, 7) && V.cal === 'month') V.sel = today();
+        V.slide = dir > 0 ? 'r' : 'l';
         render(); break;
       }
-      case 'cal-today': V.anchor = null; V.sel = null; render(); break;
+      case 'cal-today': V.slide = parseKey(V.anchor || today()) > new Date() ? 'l' : 'r'; V.anchor = null; V.sel = null; render(); break;
       case 'sel': V.sel = el.dataset.v; render(); break;
       case 'toggle-day': {
         const k = el.dataset.date, r = findRoutine(el.dataset.gate, el.dataset.id), v = !isDone(r.id, k);
@@ -1046,8 +1269,42 @@
         render(); break;
       }
 
+      /* updates */
+      case 'update-later': V.update = null; render(); break;
+      case 'update-now': applyUpdate(); break;
+      case 'whatsnew-close-bg': if (e.target !== el) break;
+      // fallthrough
+      case 'whatsnew-close': V.whatsNew = false; S.seenVersion = APP_VERSION; save(); render(); break;
+
+      /* backup */
+      case 'data': V.data = true; render(); break;
+      case 'data-close-bg': if (e.target !== el) break;
+      // fallthrough
+      case 'data-close': V.data = false; render(); break;
+      case 'backup-save': {
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(backupBlob());
+        a.download = backupName();
+        document.body.appendChild(a); a.click(); a.remove();
+        setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+        markBackedUp(); break;
+      }
+      case 'backup-share': {
+        const file = new File([backupBlob()], backupName(), { type: 'application/json' });
+        navigator.share({ files: [file], title: 'MetaMorph backup' }).then(markBackedUp).catch(() => {});
+        break;
+      }
+      case 'backup-restore': document.getElementById('restorefile').click(); break;
+      case 'persist':
+        (async () => {
+          try { storageInfo.persisted = await navigator.storage.persist(); } catch (e) {}
+          if (!storageInfo.persisted) alert('The browser declined. Installing the app to your home screen usually lets it protect storage.');
+          render();
+        })();
+        break;
+
       /* routines */
-      case 'run': startRoutine(el.dataset.gate, el.dataset.id); break;
+      case 'run': if (swipe.justSwiped) break; startRoutine(el.dataset.gate, el.dataset.id); break;
       case 'toggle': {
         const id = el.dataset.id, r = findRoutine(V.gate, id), v = !isDone(id);
         setDone(id, v);
@@ -1057,7 +1314,7 @@
       case 'r-pause':
         if (run.paused) { run.end = Date.now() + run.remaining; run.paused = false; }
         else { run.remaining = run.end - Date.now(); run.paused = true; }
-        renderRun(); break;
+        saveRun(); renderRun(); break;
       case 'r-done': finishStep(); break;
       case 'r-next': beginStep(run.idx + 1); break;
       case 'r-end':
@@ -1124,10 +1381,72 @@
     }
   });
 
-  // switching the repeat type shows its day/date pickers
+  // switching the repeat type shows its day/date pickers; restore reads the chosen backup file
   $app.addEventListener('change', e => {
     if (e.target.name === 'rt') { syncEdit(); render(); }
+    if (e.target.id === 'restorefile' && e.target.files[0]) {
+      e.target.files[0].text().then(txt => {
+        let payload;
+        try { payload = JSON.parse(txt); } catch (err) { return alert('That file is not a MetaMorph backup.'); }
+        const data = payload && payload.app === 'metamorph' ? payload.data : payload;
+        if (!valid(data)) return alert('That file is not a MetaMorph backup.');
+        const when = payload.exported ? new Date(payload.exported).toLocaleString() : 'an unknown date';
+        if (!confirm(`Replace everything on this device with the backup from ${when}?`)) return;
+        stopTicker(); run = null; drillRun = null;
+        replaceState(data);
+        S.run = null;
+        save();
+        V.data = false;
+        render();
+        alert('Backup restored.');
+      });
+    }
   });
+
+  /* ---------- swipe a timeline item: right = held, left = undo ---------- */
+  const swipe = { s: null, justSwiped: false };
+  const TRIGGER = 80;
+  $app.addEventListener('pointerdown', e => {
+    const it = e.target.closest('.tl .it');
+    if (!it || e.button > 0) return;
+    swipe.s = { it, li: it.parentElement, id: e.pointerId, x: e.clientX, y: e.clientY, dx: 0, on: false };
+  });
+  $app.addEventListener('pointermove', e => {
+    const w = swipe.s;
+    if (!w || e.pointerId !== w.id) return;
+    const dx = e.clientX - w.x, dy = e.clientY - w.y;
+    if (!w.on) {
+      if (Math.abs(dx) > 10 && Math.abs(dx) > Math.abs(dy) * 1.5) {
+        w.on = true;
+        try { w.it.setPointerCapture(e.pointerId); } catch (err) {}
+      } else if (Math.abs(dy) > 10) { swipe.s = null; return; }
+    }
+    if (!w.on) return;
+    w.dx = dx;
+    w.it.classList.remove('snap');
+    w.it.style.transform = `translateX(${dx}px)`;
+    w.li.dataset.dir = dx > 0 ? 'r' : 'l';
+    const armed = Math.abs(dx) > TRIGGER;
+    if (armed !== w.li.classList.contains('armed')) { w.li.classList.toggle('armed', armed); if (armed) buzz(); }
+  });
+  function endSwipe(e) {
+    const w = swipe.s;
+    if (!w || e.pointerId !== w.id) return;
+    swipe.s = null;
+    if (!w.on) return;
+    swipe.justSwiped = true;
+    setTimeout(() => { swipe.justSwiped = false; }, 350);
+    const go = Math.abs(w.dx) > TRIGGER && e.type === 'pointerup';
+    w.it.classList.add('snap');
+    w.it.style.transform = go ? `translateX(${w.dx > 0 ? '100%' : '-100%'})` : '';
+    if (!go) { setTimeout(() => { delete w.li.dataset.dir; w.li.classList.remove('armed'); }, 250); return; }
+    const r = findRoutine(w.it.dataset.gate, w.it.dataset.id), v = w.dx > 0;
+    setDone(r.id, v);
+    r.steps.forEach(x => setDone(x.id, v));
+    setTimeout(render, 220);
+  }
+  $app.addEventListener('pointerup', endSwipe);
+  $app.addEventListener('pointercancel', endSwipe);
 
   $app.addEventListener('submit', e => {
     if (e.target.id !== 'editform') return;
@@ -1145,12 +1464,58 @@
   });
 
   // keep "now" / "in Xm" fresh while idle
-  setInterval(() => { if (!drillRun && !run && !V.edit) render(); }, 30000);
+  setInterval(() => { if (!drillRun && !run && !V.edit && !V.data && !V.whatsNew && !swipe.s) render(); }, 30000);
 
+  // after an update (or the first open of a new version), show what changed
+  try {
+    if (localStorage.getItem('metamorph.updated')) { V.whatsNew = true; localStorage.removeItem('metamorph.updated'); }
+  } catch (e) {}
+  if (S.seenVersion !== APP_VERSION) {
+    if (fromLocal) V.whatsNew = true;      // existing user on a new version
+    else S.seenVersion = APP_VERSION;      // fresh install: nothing to announce
+  }
+
+  resumeRun();
   render();
 
+  /* ---------- updates ---------- */
+
+  let updating = false;
+  function showUpdate(worker) {
+    V.update = worker;
+    V.toastFx = true;
+    if (!run && !drillRun) render();
+  }
+  function applyUpdate() {
+    const w = V.update;
+    if (!w) return;
+    if (drillRun && !confirm('Updating ends the current drill session. Update now?')) return;
+    updating = true;
+    try { localStorage.setItem('metamorph.updated', '1'); } catch (e) {}
+    save();
+    w.postMessage({ type: 'SKIP_WAITING' });
+    // fallback in case the controller change event doesn't arrive
+    setTimeout(() => location.reload(), 3000);
+  }
+
   if ('serviceWorker' in navigator && location.protocol !== 'file:') {
-    navigator.serviceWorker.register('sw.js').catch(() => {});
+    navigator.serviceWorker.register('sw.js').then(reg => {
+      const watch = w => w && w.addEventListener('statechange', () => {
+        if (w.state === 'installed' && navigator.serviceWorker.controller) showUpdate(w);
+      });
+      // a new version may already be downloaded and waiting
+      if (reg.waiting && navigator.serviceWorker.controller) showUpdate(reg.waiting);
+      watch(reg.installing);
+      reg.addEventListener('updatefound', () => watch(reg.installing));
+      // look for new versions when the app comes back to the front, and hourly while open
+      const check = () => reg.update().catch(() => {});
+      document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') check(); });
+      setInterval(check, 60 * 60 * 1000);
+    }).catch(() => {});
+
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (updating) location.reload();
+    });
   }
 })();
 </script>
