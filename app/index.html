@@ -308,6 +308,69 @@
   .checkrow { display: flex; gap: 10px; align-items: center; margin: 10px 0 14px; font-size: 14px; color: var(--muted); }
   .checkrow input { width: 18px; height: 18px; accent-color: var(--accent); }
 
+  /* ---------- routine clock ---------- */
+  :root { --late: #f0a05a; }
+  .late, .tag.late, .tl .st.late { color: var(--late) !important; }
+  .clockbar { display: flex; gap: 3px; margin: 14px 0 6px; }
+  .clockbar > span { height: 8px; border-radius: 4px; background: var(--surface-2); overflow: hidden; min-width: 6px; }
+  .clockbar > span > i { display: block; height: 100%; width: 0; background: var(--gc, var(--accent)); transition: width 1s linear; }
+  .clockbar > span.done > i { width: 100% !important; background: var(--ok); }
+  .clockbar.over > span:not(.done) > i { background: var(--late); }
+  .clockbar.thin { margin: 6px 0 2px; }
+  .clockbar.thin > span { height: 4px; }
+  .cleft { font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .cleft.over { color: var(--late); font-weight: 600; }
+  .hero .chain { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 0; }
+  .stepchip { padding: 6px 11px; border-radius: 999px; background: var(--surface-2); border: 1px solid var(--line); font-size: 13px; color: var(--text); }
+  .stepchip.done { color: var(--ok); border-color: color-mix(in srgb, var(--ok) 45%, var(--line)); }
+  .chain .arrow { color: var(--muted); margin: 0 5px; }
+  .tl .dot.sq { border-radius: 4px; }
+  .tl .it.todo .nm { font-weight: 500; }
+  .tl .it.todo.done .nm { text-decoration: line-through; }
+
+  /* ---------- to-do ---------- */
+  .todos { list-style: none; margin: 0; padding: 0; }
+  .todos li { display: grid; grid-template-columns: auto 1fr auto; gap: 12px; align-items: center; padding: 10px 0; border-top: 1px solid var(--line); }
+  .todos li:first-child { border-top: 0; }
+  .todos .tx { cursor: pointer; min-width: 0; }
+  .todos .tx > div:first-child { overflow-wrap: anywhere; }
+  .todos li.done .tx > div:first-child { color: var(--muted); text-decoration: line-through; }
+  .todos .t { font-size: 13px; color: var(--muted); }
+  .todos .t.overdue { color: var(--late); }
+  .todos .x { color: var(--muted); padding: 6px 8px; }
+  .grouphead { display: flex; justify-content: space-between; align-items: baseline; margin: 18px 0 8px; }
+  .grouphead h3 { margin: 0; font-size: 13px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+  .grouphead.overdue h3 { color: var(--late); }
+
+  /* ---------- nutrition ---------- */
+  .sechead { display: flex; justify-content: space-between; align-items: baseline; margin: 22px 0 10px; }
+  .sechead h3 { margin: 0; font-size: 18px; }
+  .mac { margin-bottom: 12px; font-size: 14px; }
+  .mac:last-child { margin-bottom: 0; }
+  .mbar { height: 8px; background: var(--surface-2); border-radius: 4px; overflow: hidden; margin-top: 5px; }
+  .mbar i { display: block; height: 100%; background: var(--gc, var(--accent)); border-radius: 4px; transition: width .5s; }
+  .mbar i.over { background: var(--late) !important; }
+  .meal + .meal { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--line); }
+  .flog, .foodlist { list-style: none; margin: 8px 0 0; padding: 0; }
+  .flog li, .foodlist li { display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: center; padding: 8px 0; border-top: 1px solid var(--line); font-size: 15px; }
+  .flog li:first-child, .foodlist li:first-child { border-top: 0; }
+  .flog .t, .foodlist .t { font-size: 12px; color: var(--muted); }
+  .flog button { color: var(--muted); padding: 4px 8px; }
+  .foodlist { max-height: 46vh; overflow-y: auto; }
+  .search { width: 100%; background: var(--surface-2); border: 1px solid var(--line); border-radius: 10px; padding: 12px; }
+  .qty { display: inline-flex; align-items: center; gap: 10px; }
+  .qty button { width: 34px; height: 34px; border-radius: 10px; background: var(--surface-2); border: 1px solid var(--line); font-size: 18px; }
+  .qty b { min-width: 34px; text-align: center; }
+  .grid4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+  .grid4 .field input { padding: 10px 8px; }
+  .ing { border: 1px solid var(--line); border-radius: 12px; padding: 10px; margin-bottom: 8px; display: grid; gap: 8px; }
+  .ing .top { display: grid; grid-template-columns: 1fr 40px; gap: 8px; }
+  .ing input, .sheet select { width: 100%; background: var(--surface-2); border: 1px solid var(--line); border-radius: 10px; padding: 10px 8px; color: var(--text); }
+  .ing .top button { border-radius: 10px; background: var(--surface-2); color: var(--muted); }
+  .ing .grid4 input { text-align: center; }
+  .ing .lbls { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; font-size: 11px; color: var(--muted); text-align: center; margin-bottom: -4px; }
+  .preptot { background: var(--surface-2); border-radius: 12px; padding: 12px; font-size: 14px; margin: 6px 0 12px; }
+
   /* ---------- header + data sheet ---------- */
   header .right { display: flex; align-items: center; gap: 10px; }
   .iconbtn { position: relative; width: 34px; height: 34px; border-radius: 10px; background: var(--surface); border: 1px solid var(--line); color: var(--muted); font-size: 16px; display: grid; place-items: center; }
@@ -321,12 +384,12 @@
   .note { color: var(--muted); font-size: 13px; margin: 12px 0 0; line-height: 1.5; }
 
   /* ---------- gates ---------- */
-  .gatebar { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-bottom: 14px; }
+  .gatebar { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; margin-bottom: 14px; }
   .gatebar button { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 10px 4px; text-align: center; transition: border-color .2s, background .2s; }
   .gatebar button.on { border-color: var(--gc); background: var(--surface-2); }
   .gatebar .orb { width: 40px; height: 40px; margin: 0 auto 2px; filter: none; transition: transform .25s, filter .25s; }
   .gatebar button.on .orb { transform: scale(1.12); filter: drop-shadow(0 0 8px var(--glow)); }
-  .gatebar .nm { font-size: 13px; font-weight: 600; display: block; }
+  .gatebar .nm { font-size: 12px; font-weight: 600; display: block; overflow: hidden; text-overflow: ellipsis; }
   .gatebar .ct { font-size: 12px; color: var(--muted); display: block; }
 
   .rhead { display: grid; grid-template-columns: auto 1fr; gap: 12px; align-items: center; }
@@ -386,8 +449,22 @@
   .segs > span { height: 5px; border-radius: 3px; background: var(--surface-2); overflow: hidden; min-width: 8px; }
   .segs > span > i { display: block; height: 100%; width: 0; background: var(--gc, var(--accent)); }
   .segs > span.done > i { width: 100%; background: var(--ok); }
+  .segs > span.over > i { width: 100% !important; background: var(--late); }
+  .clock.late { color: var(--late); }
+  .latebars { display: grid; gap: 6px; width: 100%; max-width: 420px; }
+  .latebar { display: grid; grid-template-columns: 1fr auto auto; gap: 10px; align-items: center; padding: 8px 8px 8px 14px; border-radius: 12px;
+             background: color-mix(in srgb, var(--late) 14%, var(--surface)); border: 1px solid color-mix(in srgb, var(--late) 45%, var(--line)); text-align: left; font-size: 14px; }
+  .latebar b { color: var(--late); font-variant-numeric: tabular-nums; }
+  .latebar .btn { padding: 7px 12px; font-size: 13px; }
+  .recap .ot { color: var(--late); font-variant-numeric: tabular-nums; }
   .seglabels { display: flex; justify-content: space-between; font-size: 13px; color: var(--muted); margin-top: 8px; }
   .run .orb { width: 150px; height: 150px; margin-bottom: 6px; }
+  .autonext { font-size: 15px; color: var(--muted); }
+  .autonext b { color: var(--text); font-variant-numeric: tabular-nums; }
+  .autoring { width: 64px; height: 64px; }
+  .autoring circle { fill: none; stroke-width: 5; }
+  .autoring .bg { stroke: var(--surface-2); }
+  .autoring .fg { stroke: var(--gc, var(--accent)); stroke-linecap: round; transform: rotate(-90deg); transform-origin: 50% 50%; }
   .check { width: 64px; height: 64px; border-radius: 50%; background: var(--ok); color: #0d1a12; display: grid; place-items: center; font-size: 30px; }
   .upnext { color: var(--muted); font-size: 12px; letter-spacing: .25em; font-weight: 700; margin-top: 18px; }
   .recap { list-style: none; padding: 0; margin: 4px 0 0; color: var(--muted); font-size: 15px; }
@@ -439,6 +516,8 @@
     { id: 'fitness',   name: 'Fitness',   color: '#ff5a3c' },
     { id: 'nutrition', name: 'Nutrition', color: '#63d84a' },
     { id: 'hygiene',   name: 'Hygiene',   color: '#3d8bff' },
+    // not a Gate: everything that doesn't fit the four, still on the timeline
+    { id: 'other',     name: 'Other',     color: '#aab4c3', other: true },
   ];
   const orb = (id, size, cls = '') =>
     `<img class="orb ${cls}" src="img/orb-${id}.webp" width="${size}" height="${size}" alt="" style="--glow:${id === 'chaos' ? '#8a6bff' : gateOf(id).color}">`;
@@ -447,8 +526,22 @@
   const KEY = 'metamorph.v1';
 
   // Keep in step with CACHE in sw.js. Add a CHANGELOG entry for each release.
-  const APP_VERSION = 8;
+  const APP_VERSION = 10;
   const CHANGELOG = {
+    10: [
+      'When a step’s time is up, the next step starts and the unfinished one stays open in orange, counting overtime until you tap its Done',
+      'If the last step runs over, its timer keeps going in orange (LATE) until you tap Done',
+      'After you tap Done, the next step starts by itself after a 5-second countdown',
+      'When a routine ends, the next routine on today’s timeline starts the same way if it’s due within 15 minutes',
+      'Hold stops a countdown; Start now skips it',
+    ],
+    9: [
+      'Routine timers run on the clock: a timer bar fills from the start time, steps check off as you go, and finishing late is marked with the time you finished',
+      'Nutrition: calorie and macro tracking by meal, saved foods, and meal prep you cook once and log by the portion',
+      'To-do list, with timed tasks shown on the timeline',
+      'Other: a fifth section for activities that don’t fit the four Gates',
+      'Feature Law and Switch Drill now share the Practice tab',
+    ],
     8: [
       'Water: a fill vessel with a pace marker, an editable spaced schedule, reminders when a sip is due, and calendar alerts',
       'Feature: the Feature Law, with a phrasing check, a 30-second hold, check-ins and control trials',
@@ -525,6 +618,10 @@
                   since: `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}` };
     }
     if (!s.features) s.features = { items: [], experiment: true };
+    if (!s.gates.other) s.gates.other = [];
+    if (!s.fin) s.fin = {};
+    if (!s.todos) s.todos = [];
+    if (!s.nutri) s.nutri = { goals: { kcal: 2200, p: 150, c: 220, f: 70 }, foods: [], preps: [], log: {} };
     return s;
   }
 
@@ -588,6 +685,8 @@
   (() => {
     const cutoff = addDays(new Date(), -400);
     for (const k of Object.keys(S.done)) if (parseKey(k) < cutoff) delete S.done[k];
+    for (const k of Object.keys(S.fin)) if (parseKey(k) < cutoff) delete S.fin[k];
+    for (const k of Object.keys(S.nutri.log)) if (parseKey(k) < cutoff) delete S.nutri.log[k];
     save();
   })();
 
@@ -720,8 +819,9 @@
   /* ---------- view state ---------- */
 
   const V = { tab: 'today', gate: 'sleep', edit: null, summary: null, cal: 'day', anchor: null, sel: null, data: false, slide: null,
-              update: null, whatsNew: false, wedit: null, wFrom: null, fcheck: null, fDraft: { ctx: 'Today', text: '' } };
-  const TABS = ['today', 'gates', 'water', 'feature', 'drill'], CALS = ['day', 'week', 'month'];
+              update: null, whatsNew: false, wedit: null, wFrom: null, fcheck: null, fDraft: { ctx: 'Today', text: '' },
+              ptab: 'feature', tedit: null, todoWhen: 'today', todoDraft: { text: '', date: '', time: '' }, nadd: null, ngoals: null, nprep: null };
+  const TABS = ['today', 'gates', 'water', 'todo', 'practice'], CALS = ['day', 'week', 'month'];
   const slideTo = (list, from, to) => list.indexOf(to) > list.indexOf(from) ? 'r' : list.indexOf(to) < list.indexOf(from) ? 'l' : null;
   let drillRun = null;  // { phase: settle|focus|release, round, doneRounds, start, end, latencies[], catches, falseTaps, locked }
   let featRun = null;   // { id, mode: loaded|control, end, held }
@@ -742,14 +842,14 @@
     const dateStr = new Date().toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
     let tz = '';
     try { tz = new Intl.DateTimeFormat(undefined, { timeZoneName: 'short' }).formatToParts(new Date()).find(x => x.type === 'timeZoneName').value; } catch (e) {}
-    const body = { today: todayView, gates: gatesView, water: waterView, feature: featureView, drill: drillView }[V.tab]();
+    const body = { today: todayView, gates: gatesView, water: waterView, todo: todoView, practice: practiceView }[V.tab]();
     const wd = waterDue();
     $app.innerHTML = `
       <header><h1>MetaMorph</h1><div class="right"><span class="date">${esc(dateStr)}${tz ? ` · ${esc(tz)}` : ''}</span>
         <button class="iconbtn" data-act="data" aria-label="Backup and data">⋯${backupDue() ? '<span class="badge"></span>' : ''}</button></div></header>
       <main><div class="${V.slide ? 'slide-' + V.slide : ''}">${body}</div></main>
       <nav class="tabs"><div class="inner">
-        ${[['today', 'Today'], ['gates', 'Gates'], ['water', 'Water'], ['feature', 'Feature'], ['drill', 'Drill']].map(([k, l]) =>
+        ${[['today', 'Today'], ['gates', 'Gates'], ['water', 'Water'], ['todo', 'To-do'], ['practice', 'Practice']].map(([k, l]) =>
           `<button data-act="tab" data-v="${k}" class="${V.tab === k ? 'on' : ''}">${l}</button>`).join('')}
       </div></nav>
       ${V.edit ? editSheet() : ''}
@@ -757,6 +857,10 @@
       ${V.whatsNew ? whatsNewSheet() : ''}
       ${V.wedit ? waterSheet() : ''}
       ${V.fcheck ? checkSheet() : ''}
+      ${V.tedit ? todoSheet() : ''}
+      ${V.nadd ? addFoodSheet() : ''}
+      ${V.ngoals ? goalsSheet() : ''}
+      ${V.nprep ? prepSheet() : ''}
       ${wd && V.tab !== 'water' && !anySheet() ? `
         <div class="toast watert ${V.toastFx || V.lastDue !== wd.next.id ? 'anim' : ''}" role="status">${DROP}
           <div class="msg"><b>Time for water</b>${fmtW(wd.next.cum - wd.got)} · since ${clock(wd.next.time)}</div>
@@ -776,6 +880,8 @@
     if (V.data) V.data = 'open';
     if (V.wedit) V.wedit.fresh = false;
     if (V.fcheck) V.fcheck.fresh = false;
+    for (const k of ['tedit', 'nadd', 'ngoals', 'nprep']) if (V[k]) V[k].fresh = false;
+    updateClocks();
     // let the water fill rise from where it was
     if (V.wFrom != null) {
       V.wFrom = null;
@@ -908,8 +1014,11 @@
   }
 
   function dayView() {
-    const items = allRoutines();
-    if (!items.length) return `<div class="nexus">${orb('chaos', 150, 'spin')}<div class="cap">Nothing scheduled today</div></div>`;
+    const items = allRoutines(), k = today();
+    const timed = S.todos.filter(x => x.date === k && x.time);
+    const loose = S.todos.filter(x => !x.done && x.date && (x.date < k || (x.date === k && !x.time)));
+    if (!items.length && !timed.length && !loose.length)
+      return `<div class="nexus">${orb('chaos', 150, 'spin')}<div class="cap">Nothing scheduled today</div></div>`;
 
     const pick = items.find(x => status(x.r) === 'now')
       || items.find(x => status(x.r) === 'upcoming')
@@ -917,44 +1026,57 @@
 
     let hero;
     if (pick) {
-      const { gate, r } = pick, st = status(r), sd = stepsDone(r);
-      const when = st === 'now' ? 'NOW' : st === 'upcoming' ? `UP NEXT · ${untilText(r).toUpperCase()}` : 'STILL OPEN';
-      const firstOpen = r.steps.findIndex(s => !isDone(s.id));
+      const { gate, r } = pick, st = status(r), sd = stepsDone(r), g = gateOf(gate);
+      const live = st === 'now' || st === 'open', w = windowOf(r);
+      const when = st === 'now' ? 'NOW' : st === 'upcoming' ? `UP NEXT · ${untilText(r).toUpperCase()}` : 'OVERDUE';
+      const chips = r.steps.map((x, i) => `<button class="stepchip ${isDone(x.id) ? 'done' : ''}" data-act="step-toggle" data-gate="${gate}" data-id="${r.id}" data-i="${i}">${isDone(x.id) ? '✓ ' : ''}${esc(x.title)}</button>`).join('<span class="arrow">→</span>');
       hero = `
-        <div class="card hero" style="--gc:${gateOf(gate).color}">
+        <div class="card hero" style="--gc:${g.color}">
           <div class="top">${orb(gate, 56)}<div>
           <div class="when">${when}</div>
           <div class="ti">${esc(r.title)}</div>
-          <div class="meta">${gateOf(gate).name} · <span class="num">${clock(r.start)} – ${fromMin(toMin(r.start) + total(r))}</span> · ${dur(total(r))}${sd ? ` · ${sd}/${r.steps.length} steps` : ''}</div>
+          <div class="meta">${g.name} · <span class="num">${clock(r.start)} – ${fromMin(toMin(r.start) + total(r))}</span> · ${dur(total(r))}</div>
           </div></div>
-          <div class="chain">${chainText(r, firstOpen)}</div>
-          <button class="btn primary block" data-act="run" data-gate="${gate}" data-id="${r.id}">${sd ? 'Continue' : 'Start'} ${r.steps.length > 1 ? 'routine' : ''}</button>
+          ${live ? `${clockBar(r)}<div class="row spread"><span class="cleft" data-left="${w.end}"></span><span class="muted num" style="font-size:13px">${sd}/${r.steps.length} steps</span></div>` : ''}
+          <div class="chain">${chips}</div>
+          ${live
+            ? `<div class="acts"><button class="btn" data-act="run" data-gate="${gate}" data-id="${r.id}">Open timer</button><button class="btn primary" data-act="complete" data-gate="${gate}" data-id="${r.id}">Complete</button></div>`
+            : `<button class="btn primary block" data-act="run" data-gate="${gate}" data-id="${r.id}">Start early</button>`}
         </div>`;
-    } else {
+    } else if (items.length) {
       hero = `<div class="card hero"><div class="when">ALL GATES HELD</div><div class="ti">Every routine is done today.</div></div>`;
-    }
+    } else hero = '';
 
     const doneCount = items.filter(x => isDone(x.r.id)).length;
+    const entries = [...items.map(x => ({ m: toMin(x.r.start), kind: 'r', ...x })), ...timed.map(t => ({ m: toMin(t.time), kind: 't', t }))]
+      .sort((a, b) => a.m - b.m);
     return `
       <div class="nexus">${orb('chaos', 150, 'spin')}
         <div class="cap"><b class="num">${doneCount}/${items.length}</b> held today</div></div>
       ${hero}
       <div class="row spread" style="margin-top:18px"><p class="label" style="margin:0">Timeline</p><span class="muted num" style="font-size:13px">${doneCount}/${items.length} done</span></div>
       <ul class="tl">
-        ${items.map(({ gate, r }) => {
-          const st = status(r), sd = stepsDone(r);
-          const right = st === 'done' ? '✓ done' : st === 'now' ? 'now' : st === 'upcoming' ? untilText(r) : (sd ? `${sd}/${r.steps.length}` : 'open');
-          return `<li><div class="swbg"><span class="l">✓ Held</span><span class="r">Undo</span></div>
+        ${entries.map(en => en.kind === 't' ? todoTimelineItem(en.t) : (() => {
+          const { gate, r } = en, st = status(r), sd = stepsDone(r);
+          let right;
+          if (st === 'done') { const fi = finText(r); right = `<span class="st ${fi.late ? 'late' : ''}">${fi.txt}</span>`; }
+          else if (st === 'now') right = `<span class="st cleft" data-left="${windowOf(r).end}"></span>`;
+          else if (st === 'upcoming') right = `<span class="st">${untilText(r)}</span>`;
+          else right = `<span class="st late">${sd ? `${sd}/${r.steps.length} · ` : ''}overdue</span>`;
+          return `<li style="--gc:${gateOf(gate).color}"><div class="swbg"><span class="l">✓ Held</span><span class="r">Undo</span></div>
             <div class="it ${st}" data-act="run" data-gate="${gate}" data-id="${r.id}">
             <span class="t num">${clock(r.start)}</span>
             <span class="dot"></span>
             <span><div class="nm">${orb(gate, 22)}${esc(r.title)}</div>
-              <div class="sub">${r.steps.length > 1 ? r.steps.map(s => esc(s.title)).join(' → ') + ' · ' : ''}${dur(total(r))}</div></span>
-            <span class="st">${right}</span>
+              <div class="sub">${r.steps.length > 1 ? r.steps.map(x => esc(x.title)).join(' → ') + ' · ' : ''}${dur(total(r))}</div>
+              ${st === 'now' ? clockBar(r, true) : ''}</span>
+            ${right}
           </div></li>`;
-        }).join('')}
+        })()).join('')}
       </ul>
-      <p class="swhint">Swipe right to mark held · left to undo</p>`;
+      <p class="swhint">Swipe right to mark done · left to undo</p>
+      ${loose.length ? `<div class="card" style="margin-top:14px"><div class="row spread"><p class="label" style="margin:0">To-do today</p><button class="linkbtn" data-act="tab" data-v="todo">Open list</button></div>
+        <ul class="todos">${loose.map(todoRow).join('')}</ul></div>` : ''}`;
   }
 
   /* ----- what's new ----- */
@@ -1031,32 +1153,35 @@
       }).join('')}</div>
       <div class="gatehead">${orb(g.id, 92, V.gateFx ? 'enter' : 'spin')}<div>
         <div class="nm" style="color:${g.color}">${g.name}</div>
-        <div class="sub">${list.length} routine${list.length === 1 ? '' : 's'} · ${dur(list.reduce((t, r) => t + total(r), 0))} · ${todays.filter(r => isDone(r.id)).length}/${todays.length} held today</div>
+        <div class="sub">${g.other ? 'Everything outside the four Gates<br>' : ''}${list.length} routine${list.length === 1 ? '' : 's'} · ${dur(list.reduce((t, r) => t + total(r), 0))} · ${todays.filter(r => isDone(r.id)).length}/${todays.length} ${g.other ? 'done' : 'held'} today</div>
       </div></div>
       ${list.map(r => {
         const on = scheduledOn(r, now0), done = isDone(r.id), now = on && isNow(r) && !done, starts = stepStarts(r), sd = stepsDone(r);
+        const fi = done ? finText(r) : null;
         return `<div class="card ${now ? 'now' : ''}" style="--gc:${g.color}${on ? '' : ';opacity:.6'}">
           <div class="rhead">
             <button class="chk ${done ? 'done' : ''}" data-act="toggle" data-id="${r.id}" aria-label="Mark routine done">✓</button>
             <div>
-              <div class="t num">${clock(r.start)} – ${fromMin(toMin(r.start) + total(r))} · ${dur(total(r))}${now ? '<span class="tag">now</span>' : ''}</div>
+              <div class="t num">${clock(r.start)} – ${fromMin(toMin(r.start) + total(r))} · ${dur(total(r))}${now ? '<span class="tag">now</span>' : ''}${fi ? `<span class="tag ${fi.late ? 'late' : ''}" style="${fi.late ? '' : 'color:var(--ok)'}">${fi.txt}</span>` : ''}</div>
               <div class="ti">${esc(r.title)}</div>
               <div class="t rep">${esc(repeatText(r))}${on ? '' : ' · <span class="tag">not today</span>'}</div>
             </div>
           </div>
+          ${now ? `${clockBar(r, true)}<div class="cleft" data-left="${windowOf(r).end}"></div>` : ''}
           <ul class="chainlist">
-            ${r.steps.map((s, i) => `<li class="${isDone(s.id) ? 'done' : ''}">
+            ${r.steps.map((x, i) => `<li class="${isDone(x.id) ? 'done' : ''}">
               <span class="t num">${fromMin(starts[i])}</span><span class="d"></span>
-              <span>${esc(s.title)}${s.work ? ` <span class="muted">· ${esc(s.work)}</span>` : ''}</span>
-              <span class="m num">${dur(s.minutes)}</span></li>`).join('')}
+              <span>${esc(x.title)}${x.work ? ` <span class="muted">· ${esc(x.work)}</span>` : ''}</span>
+              <span class="m num">${dur(x.minutes)}</span></li>`).join('')}
           </ul>
           <div class="acts">
             <button class="btn small" data-act="edit" data-id="${r.id}">Edit</button>
             <button class="btn small primary" data-act="run" data-gate="${V.gate}" data-id="${r.id}">${sd && !done ? 'Continue' : 'Start'}</button>
           </div>
         </div>`;
-      }).join('') || `<p class="muted">No routines for ${g.name} yet.</p>`}
-      <button class="btn block" data-act="add">+ Add ${g.name} routine</button>`;
+      }).join('') || `<p class="muted">No ${g.other ? 'activities' : 'routines for ' + g.name} yet.</p>`}
+      <button class="btn block" data-act="add">+ Add ${g.other ? 'activity' : g.name + ' routine'}</button>
+      ${V.gate === 'nutrition' ? nutritionPanel() : ''}`;
   }
 
   function editSheet() {
@@ -1156,6 +1281,7 @@
     if (Date.now() - (r0.paused ? Date.now() : r0.end) > DAY) { S.run = null; save(); return; }
     run = { ...r0, entered: true };
     startTicker();
+    if (run.autoAt && run.autoAt < Date.now()) run.autoAt = Date.now() + 1500;
     lockScreen();
   }
 
@@ -1163,6 +1289,8 @@
     const r = findRoutine(run.gate, run.rid);
     run.idx = i;
     run.phase = 'step';
+    run.autoAt = null;
+    run.over = false;
     run.total = Math.max(1, Number(r.steps[i].minutes)) * 60000;
     run.end = Date.now() + run.total;
     run.paused = false;
@@ -1173,17 +1301,68 @@
 
   function finishStep() {
     const r = findRoutine(run.gate, run.rid);
+    if (run.over) {
+      run.late = run.late || {};
+      run.late[r.steps[run.idx].id] = Math.round((Date.now() - run.end) / 1000);
+      run.over = false;
+    }
     setDone(r.steps[run.idx].id, true, run.key);
     if (run.idx >= r.steps.length - 1) {
+      for (const o of [...(run.open || [])]) closeLate(o);
       setDone(r.id, true, run.key);
+      setFin(r.id, Date.now(), run.key); save();
       run.phase = 'complete';
+      run.next = nextRoutine();
+      run.autoAt = run.next && run.next.auto ? Date.now() + AUTO_MS : null;
       beep(660, 0.6);
     } else {
       run.phase = 'between';
+      run.autoAt = Date.now() + AUTO_MS;
       beep(660, 0.3);
     }
     saveRun();
     renderRun();
+  }
+
+  // A step's time ran out. If another step follows, it starts now and the unfinished one stays open,
+  // counting overtime until it's marked done. The last step has nowhere to go, so it runs over in place.
+  function timeUp() {
+    const r = findRoutine(run.gate, run.rid);
+    if (run.idx < r.steps.length - 1) {
+      run.open = run.open || [];
+      run.open.push({ id: r.steps[run.idx].id, end: run.end });
+      beep(440, 0.4, 0);
+      beginStep(run.idx + 1);
+    } else {
+      run.over = true;
+      beep(440, 0.5);
+      saveRun();
+      renderRun();
+    }
+  }
+  // close a late step, recording how far past its time it ran
+  function closeLate(o) {
+    run.late = run.late || {};
+    run.late[o.id] = Math.round((Date.now() - o.end) / 1000);
+    setDone(o.id, true, run.key);
+    run.open = (run.open || []).filter(x => x.id !== o.id);
+  }
+
+  const AUTO_MS = 5000;              // countdown before the next step or routine starts by itself
+  const CHAIN_WINDOW = 15 * 60000;   // only auto-start a routine due within this long
+
+  // the next undone routine on today's timeline after the one just finished
+  function nextRoutine() {
+    const cur = findRoutine(run.gate, run.rid);
+    const items = allRoutines().filter(x => x.r.id !== run.rid && !isDone(x.r.id) && toMin(x.r.start) >= toMin(cur.start));
+    if (!items.length) return null;
+    const x = items[0], startAt = windowOf(x.r).start;
+    return { gate: x.gate, id: x.r.id, title: x.r.title, start: x.r.start, auto: startAt - Date.now() <= CHAIN_WINDOW };
+  }
+
+  function autoRing() {
+    const C = 2 * Math.PI * 28;
+    return `<svg class="autoring" viewBox="0 0 64 64" aria-hidden="true"><circle class="bg" cx="32" cy="32" r="28"/><circle class="fg" id="autofg" cx="32" cy="32" r="28" stroke-dasharray="${C}" stroke-dashoffset="0"/></svg>`;
   }
 
   function endRun() {
@@ -1191,6 +1370,14 @@
     saveRun();
     stopTicker(); unlockScreen();
     render();
+  }
+
+  // finish this run and start the next routine on the timeline
+  function chainNext() {
+    const nx = run && run.next;
+    if (!nx || !findRoutine(nx.gate, nx.id)) return endRun();
+    run = null;
+    startRoutine(nx.gate, nx.id);
   }
 
   const runLeft = () => run.paused ? run.remaining : run.end - Date.now();
@@ -1201,41 +1388,54 @@
     const g = gateOf(run.gate), s = r.steps[run.idx], next = r.steps[run.idx + 1];
 
     const segs = `<div class="segs">${r.steps.map((x, i) =>
-      `<span class="${isDone(x.id, run.key) && !(run.phase === 'step' && i === run.idx) ? 'done' : ''}" style="flex:${x.minutes}"><i ${i === run.idx && run.phase === 'step' ? 'id="seg"' : ''}></i></span>`).join('')}</div>
+      `<span class="${(run.phase === 'step' && i === run.idx && run.over) || (run.open || []).some(o => o.id === x.id) ? 'over' : isDone(x.id, run.key) && !(run.phase === 'step' && i === run.idx) ? 'done' : ''}" style="flex:${x.minutes}"><i ${i === run.idx && run.phase === 'step' ? 'id="seg"' : ''}></i></span>`).join('')}</div>
       <div class="seglabels"><span>${esc(r.title)}</span><span class="num">${run.phase === 'complete' ? r.steps.length : run.idx + 1}/${r.steps.length}</span></div>`;
 
     let center, controls;
     if (run.phase === 'step') {
       center = `
-        ${orb(run.gate, 150, run.entered ? 'spin' : 'enter')}
-        <div class="phase" style="color:${g.color}">STEP ${run.idx + 1}</div>
+        ${(run.open || []).length ? `<div class="latebars">${run.open.map(o => {
+          const st = r.steps.find(x => x.id === o.id);
+          return `<div class="latebar"><span>${esc(st ? st.title : 'Step')}</span><b data-late-from="${o.end}">late +${mmss((Date.now() - o.end) / 1000)}</b><button class="btn" data-act="r-late-done" data-id="${o.id}">Done</button></div>`;
+        }).join('')}</div>` : ''}
+        ${orb(run.gate, (run.open || []).length ? 110 : 150, run.entered ? 'spin' : 'enter')}
+        <div class="phase" style="color:${run.over ? 'var(--late)' : g.color}">STEP ${run.idx + 1}${run.over ? ' · LATE' : ''}</div>
         <div class="stepname">${esc(s.title)}</div>
         ${s.work ? `<div class="instr">${esc(s.work)}</div>` : ''}
-        <div class="clock" id="clock" style="font-size:72px;margin-top:10px">${mmss(runLeft() / 1000)}</div>
+        <div class="clock ${run.over ? 'late' : ''}" id="clock" style="font-size:72px;margin-top:10px">${run.over ? '+' + mmss(-runLeft() / 1000) : mmss(runLeft() / 1000)}</div>
         ${next ? `<div class="muted" style="font-size:14px">then ${esc(next.title)} · ${dur(next.minutes)}</div>` : ''}`;
-      controls = `<div class="controls">
+      // in overtime the only way forward is Done
+      controls = run.over
+        ? `<div class="controls one"><button class="btn primary" data-act="r-done">Done</button></div>`
+        : `<div class="controls">
           <button class="btn" data-act="r-pause">${run.paused ? 'Resume' : 'Pause'}</button>
           <button class="btn primary" data-act="r-done">Done</button>
         </div>`;
     } else if (run.phase === 'between') {
       const nx = r.steps[run.idx + 1];
       center = `
-        <div class="check">✓</div>
+        ${run.autoAt ? autoRing() : '<div class="check">✓</div>'}
         <div class="muted">${esc(s.title)} done</div>
         <div class="upnext">UP NEXT</div>
         <div class="stepname">${esc(nx.title)}</div>
-        <div class="muted num">${dur(nx.minutes)}${nx.work ? ` · ${esc(nx.work)}` : ''}</div>`;
-      controls = `<div class="controls">
-          <button class="btn" data-act="r-end">End here</button>
-          <button class="btn primary" data-act="r-next">Start</button>
-        </div>`;
+        <div class="muted num">${dur(nx.minutes)}${nx.work ? ` · ${esc(nx.work)}` : ''}</div>
+        ${run.autoAt ? `<div class="autonext">Starts in <b id="autoleft">${Math.ceil((run.autoAt - Date.now()) / 1000)}</b>s</div>` : ''}`;
+      controls = run.autoAt
+        ? `<div class="controls"><button class="btn" data-act="r-hold">Hold</button><button class="btn primary" data-act="r-next">Start now</button></div>`
+        : `<div class="controls"><button class="btn" data-act="r-end">End here</button><button class="btn primary" data-act="r-next">Start</button></div>`;
     } else {
+      const nx = run.next;
       center = `
         ${orb(run.gate, 150, 'spin')}
-        <div class="phase" style="color:${g.color}">GATE HELD</div>
+        <div class="phase" style="color:${g.color}">${g.other ? 'DONE' : 'GATE HELD'}</div>
         <div class="stepname">${esc(r.title)}</div>
-        <ul class="recap">${r.steps.map(x => `<li>${esc(x.title)}</li>`).join('')}</ul>`;
-      controls = `<div class="controls one"><button class="btn primary" data-act="r-close">Close</button></div>`;
+        <ul class="recap">${r.steps.map(x => `<li>${esc(x.title)}${run.late && run.late[x.id] ? ` <span class="ot">· late +${mmss(run.late[x.id])}</span>` : ''}</li>`).join('')}</ul>
+        ${nx ? `<div class="upnext">NEXT ROUTINE</div>
+          <div style="font-size:20px;font-weight:600">${esc(nx.title)} <span class="muted" style="font-weight:400;font-size:15px">· ${gateOf(nx.gate).name} · ${clock(nx.start)}</span></div>
+          ${run.autoAt ? `<div class="autonext">Starts in <b id="autoleft">${Math.ceil((run.autoAt - Date.now()) / 1000)}</b>s</div>` : ''}` : ''}`;
+      if (nx && run.autoAt) controls = `<div class="controls"><button class="btn" data-act="r-close">Stop here</button><button class="btn primary" data-act="r-chain">Start now</button></div>`;
+      else if (nx) controls = `<div class="controls"><button class="btn" data-act="r-close">Close</button><button class="btn primary" data-act="r-chain">Start early</button></div>`;
+      else controls = `<div class="controls one"><button class="btn primary" data-act="r-close">Close</button></div>`;
     }
 
     $app.innerHTML = `
@@ -1606,6 +1806,290 @@
     setTimeout(() => URL.revokeObjectURL(a.href), 2000);
   }
 
+  /* ----- routine clock ----- */
+
+  // A routine's timer runs on the clock from its start time; no tap needed.
+  function windowOf(r, d = new Date()) {
+    let s0 = new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime() + toMin(r.start) * 60000;
+    const len = total(r) * 60000;
+    // a window that began yesterday and runs past midnight
+    if (d.getTime() < s0 && s0 - DAY + len > d.getTime()) s0 -= DAY;
+    return { start: s0, end: s0 + len };
+  }
+  function clockBar(r, thin = false) {
+    const w = windowOf(r);
+    let t = w.start;
+    const segs = r.steps.map(x => {
+      const a = t; t += x.minutes * 60000;
+      return `<span class="${isDone(x.id) ? 'done' : ''}" style="flex:${x.minutes}"><i data-s="${a}" data-e="${t}"></i></span>`;
+    }).join('');
+    return `<div class="clockbar ${thin ? 'thin' : ''}" data-end="${w.end}">${segs}</div>`;
+  }
+  // moves the bars and "left / over" labels every second without a full re-render
+  function updateClocks() {
+    const now = Date.now();
+    document.querySelectorAll('.clockbar i[data-s]').forEach(i => {
+      const a = +i.dataset.s, b = +i.dataset.e;
+      i.style.width = Math.max(0, Math.min(100, 100 * (now - a) / (b - a))) + '%';
+    });
+    document.querySelectorAll('.clockbar[data-end]').forEach(b => b.classList.toggle('over', now > +b.dataset.end));
+    document.querySelectorAll('[data-left]').forEach(x => {
+      const d = (+x.dataset.left - now) / 1000;
+      x.textContent = d >= 0 ? `${mmss(d)} left` : `+${mmss(-d)} over`;
+      x.classList.toggle('over', d < 0);
+    });
+  }
+  setInterval(() => { if (!drillRun && !run && !featRun) updateClocks(); }, 1000);
+
+  // when a routine was finished, and whether that was after its scheduled end
+  const finOf = (id, k = today()) => (S.fin[k] || {})[id] || null;
+  function setFin(id, ts, k = today()) {
+    S.fin[k] = S.fin[k] || {};
+    if (ts) S.fin[k][id] = ts; else delete S.fin[k][id];
+  }
+  function completeRoutine(r, v, k = today(), stamp = true) {
+    setDone(r.id, v, k);
+    r.steps.forEach(x => setDone(x.id, v, k));
+    setFin(r.id, v && stamp ? Date.now() : null, k);
+    save();
+  }
+  const hm = ts => new Date(ts).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
+  function finText(r, k = today()) {
+    const ts = finOf(r.id, k);
+    if (!ts) return { txt: '✓ done', late: false };
+    const end = parseKey(k).getTime() + (toMin(r.start) + total(r)) * 60000;
+    return ts > end + 60000 ? { txt: `late · ${hm(ts)}`, late: true } : { txt: `✓ ${hm(ts)}`, late: false };
+  }
+
+  /* ----- practice ----- */
+
+  function practiceView() {
+    const seg = `<div class="seg" style="grid-template-columns:1fr 1fr">${[['feature', 'Feature Law'], ['drill', 'Switch Drill']].map(([k, l]) =>
+      `<button data-act="ptab" data-v="${k}" class="${V.ptab === k ? 'on' : ''}">${l}</button>`).join('')}</div>`;
+    return seg + (V.ptab === 'drill' ? drillView() : featureView());
+  }
+
+  /* ----- to-do ----- */
+
+  // due moment: the set time, or the end of the day for untimed tasks
+  const todoDue = x => x.date ? parseKey(x.date).getTime() + (x.time ? toMin(x.time) * 60000 : DAY - 1) : null;
+  const todoLate = x => x.done && x.doneAt && x.date && x.doneAt > todoDue(x) + 60000;
+  function dayLabel(k) {
+    if (k === today()) return 'Today';
+    if (k === keyOf(addDays(new Date(), 1))) return 'Tomorrow';
+    if (k === keyOf(addDays(new Date(), -1))) return 'Yesterday';
+    return parseKey(k).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
+  }
+  function todoMeta(x) {
+    const parts = [];
+    if (x.date) parts.push(dayLabel(x.date));
+    if (x.time) parts.push(clock(x.time));
+    if (x.done && x.doneAt) parts.push(todoLate(x) ? `<span class="late">late · ${hm(x.doneAt)}</span>` : `done ${hm(x.doneAt)}`);
+    return parts.join(' · ');
+  }
+  function todoRow(x) {
+    const overdue = !x.done && x.date && todoDue(x) < Date.now();
+    return `<li class="${x.done ? 'done' : ''}">
+      <button class="chk ${x.done ? 'done' : ''}" data-act="todo-toggle" data-id="${x.id}" aria-label="${x.done ? 'Mark not done' : 'Mark done'}">✓</button>
+      <span class="tx" data-act="todo-edit" data-id="${x.id}"><div>${esc(x.text)}</div>${x.date || x.done ? `<div class="t ${overdue ? 'overdue' : ''}">${todoMeta(x)}${overdue ? ' · overdue' : ''}</div>` : ''}</span>
+      <button class="x" data-act="todo-del" data-id="${x.id}" aria-label="Delete">✕</button>
+    </li>`;
+  }
+  function todoTimelineItem(x) {
+    const due = todoDue(x), late = todoLate(x);
+    const st = x.done ? 'done' : due < Date.now() ? 'open' : 'upcoming';
+    const right = x.done ? `<span class="st ${late ? 'late' : ''}">${late ? 'late · ' : '✓ '}${hm(x.doneAt)}</span>`
+      : st === 'open' ? '<span class="st late">overdue</span>' : `<span class="st">in ${dur(Math.max(1, Math.round((due - Date.now()) / 60000)))}</span>`;
+    return `<li><div class="swbg"><span class="l">✓ Done</span><span class="r">Undo</span></div>
+      <div class="it todo ${st}" data-act="todo-toggle" data-id="${x.id}" data-todo="1">
+        <span class="t num">${clock(x.time)}</span><span class="dot sq"></span>
+        <span><div class="nm">${esc(x.text)}</div><div class="sub">To-do</div></span>
+        ${right}
+      </div></li>`;
+  }
+  function setTodo(x, v) { x.done = v; x.doneAt = v ? Date.now() : null; save(); }
+
+  function todoView() {
+    const k = today(), open = S.todos.filter(x => !x.done);
+    const by = (a, b) => (a.date || '~').localeCompare(b.date || '~') || (a.time || '~').localeCompare(b.time || '~') || a.created - b.created;
+    const groups = [
+      ['Overdue', open.filter(x => x.date && x.date < k).sort(by), 'overdue'],
+      ['Today', open.filter(x => x.date === k).sort(by), ''],
+      ['Upcoming', open.filter(x => x.date && x.date > k).sort(by), ''],
+      ['Someday', open.filter(x => !x.date).sort(by), ''],
+    ];
+    const done = S.todos.filter(x => x.done).sort((a, b) => b.doneAt - a.doneAt).slice(0, 20);
+    const when = V.todoWhen;
+    return `
+      <form class="card" id="todoadd" autocomplete="off">
+        <div class="custom" style="margin:0"><input name="text" placeholder="Add a task…" aria-label="New task" value="${esc(V.todoDraft.text)}"><button class="btn primary" type="submit">Add</button></div>
+        <div class="opts" style="margin-top:10px">${[['today', 'Today'], ['tomorrow', 'Tomorrow'], ['someday', 'Someday']].map(([v, l]) =>
+          `<button type="button" data-act="todo-when" data-v="${v}" class="${when === v ? 'on' : ''}">${l}</button>`).join('')}</div>
+        <div class="grid2" style="margin-top:10px">
+          <div class="field" style="margin:0"><label>Or a date</label><input name="date" type="date" value="${V.todoDraft.date}"></div>
+          <div class="field" style="margin:0"><label>Time (puts it on the timeline)</label><input name="time" type="time" value="${V.todoDraft.time}"></div>
+        </div>
+      </form>
+      ${groups.map(([name, list, cls]) => list.length ? `
+        <div class="grouphead ${cls}"><h3>${name}</h3><span class="muted num" style="font-size:13px">${list.length}</span></div>
+        <div class="card" style="padding-top:6px;padding-bottom:6px"><ul class="todos">${list.map(todoRow).join('')}</ul></div>` : '').join('')}
+      ${!open.length ? `<p class="muted" style="text-align:center;margin:24px 0">Nothing to do. Add a task above.</p>` : ''}
+      ${done.length ? `
+        <div class="grouphead"><h3>Done</h3><button class="linkbtn" data-act="todo-clear">Clear done</button></div>
+        <div class="card" style="padding-top:6px;padding-bottom:6px"><ul class="todos">${done.map(todoRow).join('')}</ul></div>` : ''}`;
+  }
+
+  function todoSheet() {
+    const e = V.tedit;
+    return `<div class="sheet-bg ${e.fresh ? 'enter' : ''}" data-act="todo-cancel-bg">
+      <form class="sheet" id="todoform" autocomplete="off">
+        <h2>Edit task</h2>
+        <div class="field"><label>Task</label><input name="text" required value="${esc(e.text)}"></div>
+        <div class="grid2">
+          <div class="field"><label>Date</label><input name="date" type="date" value="${e.date || ''}"></div>
+          <div class="field"><label>Time</label><input name="time" type="time" value="${e.time || ''}"></div>
+        </div>
+        <button class="btn primary block" type="submit" style="margin-bottom:8px">Save</button>
+        <div class="grid2"><button class="btn" type="button" data-act="todo-cancel">Cancel</button><button class="btn danger" type="button" data-act="todo-del" data-id="${e.id}">Delete</button></div>
+      </form></div>`;
+  }
+
+  /* ----- nutrition: calories & macros ----- */
+
+  const N = () => S.nutri;
+  const MEALS = ['Breakfast', 'Lunch', 'Dinner', 'Snacks'];
+  const MAC = [['kcal', 'Calories', ' kcal'], ['p', 'Protein', 'g'], ['c', 'Carbs', 'g'], ['f', 'Fat', 'g']];
+  const MCOL = { kcal: 'var(--gc)', p: '#ff7a59', c: '#f2c14e', f: '#6fb7ff' };
+  const r1 = n => Math.round(n * 10) / 10;
+  const kcalOf = (p, c, f) => Math.round(4 * p + 4 * c + 9 * f);
+  const nLog = (k = today()) => N().log[k] || [];
+  const nTotals = (k = today()) => nLog(k).reduce((t, e) => { for (const [m] of MAC) t[m] += e[m] * e.qty; return t; }, { kcal: 0, p: 0, c: 0, f: 0 });
+  const macLine = (x, q = 1) => `${Math.round(x.kcal * q)} kcal · P ${r1(x.p * q)} · C ${r1(x.c * q)} · F ${r1(x.f * q)}`;
+  function mealNow() { const h = new Date().getHours(); return h < 11 ? 'Breakfast' : h < 15 ? 'Lunch' : h < 21 ? 'Dinner' : 'Snacks'; }
+  function logFood(meal, item, qty, src, ref) {
+    const k = today();
+    (N().log[k] = N().log[k] || []).push({ id: uid(), t: Date.now(), meal, name: item.name, qty,
+      kcal: +item.kcal || 0, p: +item.p || 0, c: +item.c || 0, f: +item.f || 0, src, ref: ref || null });
+    if (src === 'prep') { const pr = N().preps.find(x => x.id === ref); if (pr) pr.left = Math.max(0, r1(pr.left - qty)); }
+    save();
+  }
+
+  function nutritionPanel() {
+    const n = N(), tot = nTotals(), g = n.goals, log = nLog();
+    const bars = MAC.map(([m, label, u]) => {
+      const pct = g[m] ? Math.min(100, 100 * tot[m] / g[m]) : 0, over = g[m] && tot[m] > g[m] * 1.02;
+      return `<div class="mac"><div class="row spread"><span>${label}</span><span class="num muted"><b class="${over ? 'late' : ''}" style="color:var(--text)">${Math.round(tot[m]).toLocaleString()}</b> / ${g[m].toLocaleString()}${u}</span></div>
+        <div class="mbar"><i class="${over ? 'over' : ''}" style="width:${pct}%;background:${MCOL[m]}"></i></div></div>`;
+    }).join('');
+    const meals = MEALS.map(meal => {
+      const es = log.filter(e => e.meal === meal), mk = es.reduce((t, e) => t + e.kcal * e.qty, 0);
+      return `<div class="meal"><div class="row spread"><b>${meal}</b><span class="row" style="gap:10px"><span class="muted num" style="font-size:13px">${Math.round(mk)} kcal</span><button class="btn small" data-act="n-add" data-meal="${meal}">+ Add</button></span></div>
+        ${es.length ? `<ul class="flog">${es.map(e => `<li><span><div>${esc(e.name)}${e.qty !== 1 ? ` <span class="muted">× ${r1(e.qty)}</span>` : ''}</div><div class="t num">${macLine(e, e.qty)}</div></span><button data-act="n-del" data-id="${e.id}" aria-label="Remove">✕</button></li>`).join('')}</ul>` : ''}</div>`;
+    }).join('');
+    const preps = n.preps.filter(x => x.left > 0 || Date.now() - x.created < 7 * DAY);
+    return `
+      <div class="sechead"><h3>Fuel</h3><button class="linkbtn" data-act="n-goals">Daily goals</button></div>
+      <div class="card" style="--gc:${gateOf('nutrition').color}">${bars}</div>
+      <div class="card">${meals}</div>
+      <div class="sechead"><h3>Meal prep</h3><button class="linkbtn" data-act="n-prep-new">+ New prep</button></div>
+      ${preps.length ? preps.map(x => `<div class="card" style="--gc:${gateOf('nutrition').color}"><div class="row spread" style="align-items:flex-start"><div>
+          <b>${esc(x.name)}</b>
+          <div class="muted num" style="font-size:13px">${r1(x.left)}/${x.portions} portions left · made ${dayLabel(x.made)}</div>
+          <div class="muted num" style="font-size:13px">Per portion: ${macLine(x.per)}</div></div>
+          <div class="row" style="gap:6px"><button class="btn small ghost" data-act="n-prep-del" data-id="${x.id}" aria-label="Delete prep">✕</button><button class="btn small primary" data-act="n-prep-log" data-id="${x.id}" ${x.left > 0 ? '' : 'disabled'}>Eat 1</button></div></div>
+          <div class="mbar" style="margin-top:10px"><i style="width:${100 * x.left / x.portions}%"></i></div></div>`).join('')
+        : '<p class="muted" style="margin:0 0 12px">Cook once, log portions all week. Add a prep to start.</p>'}`;
+  }
+
+  function addFoodSheet() {
+    const a = V.nadd, n = N(), q = a.q.toLowerCase();
+    const rows = [
+      ...n.preps.filter(x => x.left > 0).map(x => ({ kind: 'prep', id: x.id, name: x.name, sub: `Meal prep · ${r1(x.left)} left`, ...x.per })),
+      ...n.foods.map(x => ({ kind: 'food', id: x.id, name: x.name, sub: x.serving || '1 serving', kcal: x.kcal, p: x.p, c: x.c, f: x.f })),
+    ];
+    const fld = (name, label, extra = '') => `<div class="field"><label>${label}</label><input name="${name}" type="number" inputmode="decimal" min="0" step="any" ${extra}></div>`;
+    return `<div class="sheet-bg ${a.fresh ? 'enter' : ''}" data-act="n-cancel-bg"><div class="sheet">
+      <h2>Add to ${a.meal}</h2>
+      <div class="seg" style="grid-template-columns:1fr 1fr">${[['saved', 'Saved'], ['new', 'New food']].map(([k, l]) => `<button data-act="n-mode" data-v="${k}" class="${a.mode === k ? 'on' : ''}">${l}</button>`).join('')}</div>
+      ${a.mode === 'saved' ? `
+        <div class="row spread" style="margin-bottom:10px"><span class="muted" style="font-size:14px">Servings</span>
+          <span class="qty"><button data-act="n-qty" data-d="-0.5" aria-label="Fewer">−</button><b class="num">${r1(a.qty)}</b><button data-act="n-qty" data-d="0.5" aria-label="More">+</button></span></div>
+        <input id="nsearch" class="search" placeholder="Search saved foods and preps" value="${esc(a.q)}" autocomplete="off">
+        <ul class="foodlist">${rows.map(x => `<li data-name="${esc(x.name.toLowerCase())}" ${q && !x.name.toLowerCase().includes(q) ? 'hidden' : ''}>
+            <span><div>${esc(x.name)}</div><div class="t num">${esc(x.sub)} · ${macLine(x)}</div></span>
+            <span class="row" style="gap:6px">${x.kind === 'food' ? `<button class="btn small ghost" data-act="n-food-del" data-id="${x.id}" aria-label="Forget this food">✕</button>` : ''}<button class="btn small primary" data-act="n-pick" data-kind="${x.kind}" data-id="${x.id}">Add</button></span></li>`).join('')
+          || '<li><span class="muted">Nothing saved yet. Use “New food”.</span></li>'}</ul>` : `
+        <form id="nnew" autocomplete="off">
+          <div class="grid2"><div class="field"><label>Name</label><input name="name" required></div><div class="field"><label>Serving</label><input name="serving" placeholder="1 cup, 100 g…"></div></div>
+          <div class="grid4">${fld('kcal', 'kcal', 'placeholder="auto"')}${fld('p', 'Protein g')}${fld('c', 'Carbs g')}${fld('f', 'Fat g')}</div>
+          <p class="note" style="margin:0 0 12px">Leave calories blank to work them out from the macros (4 / 4 / 9 per gram).</p>
+          <div class="field"><label>Servings eaten</label><input name="qty" type="number" inputmode="decimal" min="0.25" step="any" value="1"></div>
+          <label class="checkrow"><input type="checkbox" name="keep" checked> Save to my foods</label>
+          <button class="btn primary block" type="submit">Add to ${a.meal}</button>
+        </form>`}
+      <button class="btn ghost block" data-act="n-cancel" style="margin-top:8px">Close</button>
+    </div></div>`;
+  }
+
+  function goalsSheet() {
+    const e = V.ngoals;
+    return `<div class="sheet-bg ${e.fresh ? 'enter' : ''}" data-act="n-goals-cancel-bg">
+      <form class="sheet" id="ngoalf" autocomplete="off">
+        <h2>Daily goals</h2>
+        <div class="grid2">${MAC.map(([m, label, u]) => `<div class="field"><label>${label} (${u.trim()})</label><input name="${m}" type="number" inputmode="numeric" min="0" step="1" value="${e[m]}"></div>`).join('')}</div>
+        <button class="btn block" type="button" data-act="n-goals-calc" style="margin-bottom:8px">Set calories from macros</button>
+        <button class="btn primary block" type="submit" style="margin-bottom:8px">Save</button>
+        <button class="btn block" type="button" data-act="n-goals-cancel">Cancel</button>
+      </form></div>`;
+  }
+
+  function prepTotals(items) {
+    return items.reduce((t, x) => {
+      const kc = x.kcal === '' || x.kcal == null ? kcalOf(+x.p || 0, +x.c || 0, +x.f || 0) : +x.kcal;
+      t.kcal += kc; t.p += +x.p || 0; t.c += +x.c || 0; t.f += +x.f || 0; return t;
+    }, { kcal: 0, p: 0, c: 0, f: 0 });
+  }
+  function prepTotalsText(e) {
+    const t = prepTotals(e.items), n = Math.max(1, +e.portions || 1);
+    return `<b>Batch:</b> ${macLine(t)}<br><b>Per portion (${n}):</b> ${macLine({ kcal: t.kcal / n, p: t.p / n, c: t.c / n, f: t.f / n })}`;
+  }
+  function prepSheet() {
+    const e = V.nprep, n = N();
+    const v = x => x === '' || x == null ? '' : x;
+    return `<div class="sheet-bg ${e.fresh ? 'enter' : ''}" data-act="n-prep-cancel-bg">
+      <form class="sheet" id="nprepf" autocomplete="off">
+        <h2>New meal prep</h2>
+        <div class="grid2">
+          <div class="field"><label>Name</label><input name="name" required value="${esc(e.name)}" placeholder="Chicken &amp; rice"></div>
+          <div class="field"><label>Portions</label><input name="portions" type="number" inputmode="numeric" min="1" step="1" value="${e.portions}"></div>
+        </div>
+        <p class="label">Ingredients · amounts used in the whole batch</p>
+        ${e.items.map((x, i) => `<div class="ing">
+          <div class="top"><input name="in${i}" value="${esc(x.name)}" placeholder="Ingredient"><button type="button" data-act="n-ing-rm" data-i="${i}" aria-label="Remove ingredient">✕</button></div>
+          <div class="lbls"><span>kcal</span><span>Protein g</span><span>Carbs g</span><span>Fat g</span></div>
+          <div class="grid4"><input name="ik${i}" type="number" inputmode="decimal" min="0" step="any" value="${v(x.kcal)}" placeholder="auto"><input name="ip${i}" type="number" inputmode="decimal" min="0" step="any" value="${v(x.p)}"><input name="ic${i}" type="number" inputmode="decimal" min="0" step="any" value="${v(x.c)}"><input name="if${i}" type="number" inputmode="decimal" min="0" step="any" value="${v(x.f)}"></div>
+        </div>`).join('')}
+        <button class="btn block" type="button" data-act="n-ing-add" style="margin-bottom:8px">+ Add ingredient</button>
+        ${n.foods.length ? `<div class="custom" style="margin:0 0 8px"><select name="pickfood" aria-label="Saved food">${n.foods.map(x => `<option value="${x.id}">${esc(x.name)}${x.serving ? ` (${esc(x.serving)})` : ''}</option>`).join('')}</select><input name="pickqty" type="number" inputmode="decimal" min="0.25" step="any" value="1" style="width:80px" aria-label="Servings"></div>
+          <button class="btn block" type="button" data-act="n-ing-food" style="margin-bottom:8px">+ Add from my foods</button>` : ''}
+        <div class="preptot num" id="preptot">${prepTotalsText(e)}</div>
+        <button class="btn primary block" type="submit" style="margin-bottom:8px">Save meal prep</button>
+        <button class="btn block" type="button" data-act="n-prep-cancel">Cancel</button>
+      </form></div>`;
+  }
+  function syncPrep() {
+    const f = document.getElementById('nprepf');
+    if (!f || !V.nprep) return;
+    const e = V.nprep, el = f.elements;
+    e.name = el.name.value;
+    e.portions = Math.max(1, Math.round(+el.portions.value || 1));
+    e.items.forEach((x, i) => {
+      x.name = el['in' + i].value;
+      x.kcal = el['ik' + i].value === '' ? '' : +el['ik' + i].value;
+      for (const [m, n] of [['p', 'ip'], ['c', 'ic'], ['f', 'if']]) x[m] = el[n + i].value === '' ? '' : +el[n + i].value;
+    });
+  }
+
   /* ----- feature law ----- */
 
   const F = () => S.features;
@@ -1716,7 +2200,7 @@
     </div></div>`;
   }
 
-  const anySheet = () => !!(V.edit || V.data || V.whatsNew || V.wedit || V.fcheck);
+  const anySheet = () => !!(V.edit || V.data || V.whatsNew || V.wedit || V.fcheck || V.tedit || V.nadd || V.ngoals || V.nprep);
 
   /* ---------- timers ---------- */
 
@@ -1730,11 +2214,18 @@
       if (left <= 0) { featRun.held = true; stopTicker(); beep(784, 0.35); return renderFeatRun(); }
       if (clock) clock.textContent = mmss(left / 1000);
       if (bar) bar.style.width = (100 * (1 - left / 30000)) + '%';
+    } else if (run && run.autoAt && run.phase !== 'step') {
+      const left = run.autoAt - Date.now();
+      if (left <= 0) return run.phase === 'between' ? beginStep(run.idx + 1) : chainNext();
+      const a = document.getElementById('autoleft'), fg = document.getElementById('autofg');
+      if (a) a.textContent = Math.ceil(left / 1000);
+      if (fg) fg.style.strokeDashoffset = String(2 * Math.PI * 28 * (1 - left / AUTO_MS));
     } else if (run && run.phase === 'step') {
       const left = runLeft(), seg = document.getElementById('seg');
-      if (!run.paused && left <= 0) return finishStep();
-      if (clock) clock.textContent = mmss(left / 1000);
-      if (seg) seg.style.width = (100 * (1 - left / run.total)) + '%';
+      if (!run.paused && left <= 0 && !run.over) return timeUp();
+      if (clock) clock.textContent = run.over ? `+${mmss(-left / 1000)}` : mmss(left / 1000);
+      document.querySelectorAll('[data-late-from]').forEach(x => { x.textContent = `late +${mmss((Date.now() - +x.dataset.lateFrom) / 1000)}`; });
+      if (seg && !run.over) seg.style.width = (100 * (1 - left / run.total)) + '%';
     }
   }
 
@@ -1763,9 +2254,9 @@
       case 'cal-today': V.slide = parseKey(V.anchor || today()) > new Date() ? 'l' : 'r'; V.anchor = null; V.sel = null; render(); break;
       case 'sel': V.sel = el.dataset.v; render(); break;
       case 'toggle-day': {
+        // a finish time only means something when it's logged on the day itself
         const k = el.dataset.date, r = findRoutine(el.dataset.gate, el.dataset.id), v = !isDone(r.id, k);
-        setDone(r.id, v, k);
-        r.steps.forEach(x => setDone(x.id, v, k));
+        completeRoutine(r, v, k, k === today());
         render(); break;
       }
 
@@ -1806,17 +2297,98 @@
       /* routines */
       case 'run': if (swipe.justSwiped) break; startRoutine(el.dataset.gate, el.dataset.id); break;
       case 'toggle': {
-        const id = el.dataset.id, r = findRoutine(V.gate, id), v = !isDone(id);
-        setDone(id, v);
-        r.steps.forEach(s => setDone(s.id, v));
+        const r = findRoutine(V.gate, el.dataset.id);
+        completeRoutine(r, !isDone(r.id));
         render(); break;
       }
+      case 'complete': completeRoutine(findRoutine(el.dataset.gate, el.dataset.id), true); buzz(); render(); break;
+      case 'step-toggle': {
+        const r = findRoutine(el.dataset.gate, el.dataset.id), x = r.steps[Number(el.dataset.i)], v = !isDone(x.id);
+        setDone(x.id, v);
+        if (v && r.steps.every(y => isDone(y.id))) completeRoutine(r, true);
+        else if (!v && isDone(r.id)) { setDone(r.id, false); setFin(r.id, null); save(); }
+        buzz(); render(); break;
+      }
+
+      /* practice */
+      case 'ptab': V.slide = slideTo(['feature', 'drill'], V.ptab, el.dataset.v); V.ptab = el.dataset.v; render(); break;
+
+      /* to-do */
+      case 'todo-when': V.todoWhen = el.dataset.v; render(); break;
+      case 'todo-toggle': {
+        if (swipe.justSwiped) break;
+        const x = S.todos.find(t => t.id === el.dataset.id);
+        if (x) { setTodo(x, !x.done); if (x.done) buzz(); }
+        render(); break;
+      }
+      case 'todo-edit': { const x = S.todos.find(t => t.id === el.dataset.id); V.tedit = { ...x, fresh: true }; render(); break; }
+      case 'todo-del':
+        if (confirm('Delete this task?')) { S.todos = S.todos.filter(t => t.id !== el.dataset.id); V.tedit = null; save(); render(); }
+        break;
+      case 'todo-clear': S.todos = S.todos.filter(t => !t.done); save(); render(); break;
+      case 'todo-cancel-bg': if (e.target !== el) break;
+      // fallthrough
+      case 'todo-cancel': V.tedit = null; render(); break;
+
+      /* nutrition */
+      case 'n-add': V.nadd = { meal: el.dataset.meal, mode: N().foods.length || N().preps.some(x => x.left > 0) ? 'saved' : 'new', q: '', qty: 1, fresh: true }; render(); break;
+      case 'n-mode': V.nadd.mode = el.dataset.v; render(); break;
+      case 'n-qty': V.nadd.qty = Math.max(0.5, r1(V.nadd.qty + Number(el.dataset.d))); render(); break;
+      case 'n-pick': {
+        const a = V.nadd;
+        if (el.dataset.kind === 'prep') { const x = N().preps.find(y => y.id === el.dataset.id); logFood(a.meal, { name: x.name, ...x.per }, Math.min(a.qty, x.left), 'prep', x.id); }
+        else { const x = N().foods.find(y => y.id === el.dataset.id); logFood(a.meal, x, a.qty, 'food', x.id); }
+        V.nadd = null; buzz(); render(); break;
+      }
+      case 'n-food-del':
+        if (confirm('Forget this saved food? Past entries stay.')) { N().foods = N().foods.filter(x => x.id !== el.dataset.id); save(); render(); }
+        break;
+      case 'n-del': {
+        const k = today(), x = nLog(k).find(y => y.id === el.dataset.id);
+        if (x && x.src === 'prep') { const pr = N().preps.find(y => y.id === x.ref); if (pr) pr.left = Math.min(pr.portions, r1(pr.left + x.qty)); }
+        N().log[k] = nLog(k).filter(y => y.id !== el.dataset.id); save(); render(); break;
+      }
+      case 'n-cancel-bg': if (e.target !== el) break;
+      // fallthrough
+      case 'n-cancel': V.nadd = null; render(); break;
+      case 'n-goals': V.ngoals = { ...N().goals, fresh: true }; render(); break;
+      case 'n-goals-calc': {
+        const f = document.getElementById('ngoalf'); const el2 = f.elements;
+        el2.kcal.value = kcalOf(+el2.p.value || 0, +el2.c.value || 0, +el2.f.value || 0); break;
+      }
+      case 'n-goals-cancel-bg': if (e.target !== el) break;
+      // fallthrough
+      case 'n-goals-cancel': V.ngoals = null; render(); break;
+      case 'n-prep-new': V.nprep = { fresh: true, name: '', portions: 4, items: [{ name: '', kcal: '', p: '', c: '', f: '' }] }; render(); break;
+      case 'n-ing-add': syncPrep(); V.nprep.items.push({ name: '', kcal: '', p: '', c: '', f: '' }); render(); break;
+      case 'n-ing-rm': syncPrep(); V.nprep.items.splice(Number(el.dataset.i), 1); render(); break;
+      case 'n-ing-food': {
+        syncPrep();
+        const f = document.getElementById('nprepf'), x = N().foods.find(y => y.id === f.elements.pickfood.value), q = +f.elements.pickqty.value || 1;
+        if (x) V.nprep.items.push({ name: `${x.name}${q !== 1 ? ' × ' + r1(q) : ''}`, kcal: r1(x.kcal * q), p: r1(x.p * q), c: r1(x.c * q), f: r1(x.f * q) });
+        render(); break;
+      }
+      case 'n-prep-cancel-bg': if (e.target !== el) break;
+      // fallthrough
+      case 'n-prep-cancel': V.nprep = null; render(); break;
+      case 'n-prep-log': { const x = N().preps.find(y => y.id === el.dataset.id); logFood(mealNow(), { name: x.name, ...x.per }, 1, 'prep', x.id); buzz(); render(); break; }
+      case 'n-prep-del':
+        if (confirm('Delete this meal prep? Logged portions stay in your history.')) { N().preps = N().preps.filter(x => x.id !== el.dataset.id); save(); render(); }
+        break;
       case 'r-pause':
+        if (run.over) break;
         if (run.paused) { run.end = Date.now() + run.remaining; run.paused = false; }
         else { run.remaining = run.end - Date.now(); run.paused = true; }
         saveRun(); renderRun(); break;
       case 'r-done': finishStep(); break;
       case 'r-next': beginStep(run.idx + 1); break;
+      case 'r-late-done': {
+        const o = (run.open || []).find(x => x.id === el.dataset.id);
+        if (o) { closeLate(o); buzz(); saveRun(); renderRun(); }
+        break;
+      }
+      case 'r-hold': run.autoAt = null; saveRun(); renderRun(); break;
+      case 'r-chain': chainNext(); break;
       case 'r-end':
       case 'r-close': endRun(); break;
       case 'r-exit':
@@ -1995,9 +2567,9 @@
     w.it.classList.add('snap');
     w.it.style.transform = go ? `translateX(${w.dx > 0 ? '100%' : '-100%'})` : '';
     if (!go) { setTimeout(() => { delete w.li.dataset.dir; w.li.classList.remove('armed'); }, 250); return; }
-    const r = findRoutine(w.it.dataset.gate, w.it.dataset.id), v = w.dx > 0;
-    setDone(r.id, v);
-    r.steps.forEach(x => setDone(x.id, v));
+    const v = w.dx > 0;
+    if (w.it.dataset.todo) { const x = S.todos.find(t => t.id === w.it.dataset.id); if (x) setTodo(x, v); }
+    else completeRoutine(findRoutine(w.it.dataset.gate, w.it.dataset.id), v);
     setTimeout(render, 220);
   }
   $app.addEventListener('pointerup', endSwipe);
@@ -2005,6 +2577,18 @@
 
   // live phrasing check for the Feature Law, without re-rendering while typing
   $app.addEventListener('input', e => {
+    const ta = e.target.closest && e.target.closest('#todoadd');
+    if (ta) V.todoDraft = { text: ta.elements.text.value, date: ta.elements.date.value, time: ta.elements.time.value };
+    if (e.target.id === 'nsearch') {
+      const q = e.target.value.toLowerCase();
+      V.nadd.q = e.target.value;
+      document.querySelectorAll('.foodlist li[data-name]').forEach(li => { li.hidden = !!q && !li.dataset.name.includes(q); });
+    }
+    if (e.target.closest && e.target.closest('#nprepf')) {
+      syncPrep();
+      const t = document.getElementById('preptot');
+      if (t) t.innerHTML = prepTotalsText(V.nprep);
+    }
     if (e.target.id === 'fctx') V.fDraft.ctx = e.target.value;
     if (e.target.id === 'ftext') {
       V.fDraft.text = e.target.value;
@@ -2014,6 +2598,53 @@
   });
 
   $app.addEventListener('submit', e => {
+    const f = e.target;
+    if (f.id === 'todoadd') {
+      e.preventDefault();
+      const text = f.elements.text.value.trim();
+      if (!text) return;
+      const date = f.elements.date.value || (V.todoWhen === 'today' ? today() : V.todoWhen === 'tomorrow' ? keyOf(addDays(new Date(), 1)) : null);
+      S.todos.push({ id: uid(), text, date, time: f.elements.time.value || null, done: false, doneAt: null, created: Date.now() });
+      V.todoDraft = { text: '', date: '', time: '' };
+      save(); render();
+      const inp = document.querySelector('#todoadd input[name=text]'); if (inp) inp.focus();
+      return;
+    }
+    if (f.id === 'todoform') {
+      e.preventDefault();
+      const x = S.todos.find(t => t.id === V.tedit.id);
+      if (x) Object.assign(x, { text: f.elements.text.value.trim() || x.text, date: f.elements.date.value || null, time: f.elements.time.value || null });
+      save(); V.tedit = null; render();
+      return;
+    }
+    if (f.id === 'nnew') {
+      e.preventDefault();
+      const el = f.elements, p = +el.p.value || 0, c = +el.c.value || 0, fat = +el.f.value || 0;
+      const item = { id: uid(), name: el.name.value.trim(), serving: el.serving.value.trim(), p, c, f: fat, kcal: el.kcal.value === '' ? kcalOf(p, c, fat) : +el.kcal.value };
+      if (!item.name) return;
+      if (el.keep.checked) N().foods.push(item);
+      logFood(V.nadd.meal, item, Math.max(0.25, +el.qty.value || 1), el.keep.checked ? 'food' : 'quick', el.keep.checked ? item.id : null);
+      V.nadd = null; buzz(); render();
+      return;
+    }
+    if (f.id === 'ngoalf') {
+      e.preventDefault();
+      for (const [m] of MAC) N().goals[m] = Math.max(0, Math.round(+f.elements[m].value || 0));
+      save(); V.ngoals = null; render();
+      return;
+    }
+    if (f.id === 'nprepf') {
+      e.preventDefault();
+      syncPrep();
+      const ed = V.nprep, items = ed.items.filter(x => x.name.trim() || x.kcal !== '' || +x.p || +x.c || +x.f)
+        .map(x => { const p = +x.p || 0, c = +x.c || 0, fat = +x.f || 0; return { name: x.name.trim() || 'Ingredient', kcal: x.kcal === '' ? kcalOf(p, c, fat) : x.kcal, p, c, f: fat }; });
+      if (!items.length) return alert('Add at least one ingredient.');
+      const t = prepTotals(items), n = ed.portions;
+      N().preps.unshift({ id: uid(), name: ed.name.trim() || 'Meal prep', portions: n, left: n, made: today(), created: Date.now(), items,
+        per: { kcal: t.kcal / n, p: t.p / n, c: t.c / n, f: t.f / n } });
+      save(); V.nprep = null; render();
+      return;
+    }
     if (e.target.id === 'wcustom') {
       e.preventDefault();
       const v = Number(e.target.elements.amt.value);
