@@ -54,8 +54,8 @@
     border-top: 1px solid var(--line);
     padding: 8px 16px calc(8px + env(safe-area-inset-bottom));
   }
-  nav.tabs .inner { max-width: 560px; margin: 0 auto; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-  nav.tabs button { padding: 12px 6px; border-radius: 12px; color: var(--muted); font-weight: 600; transition: background .2s, color .2s; }
+  nav.tabs .inner { max-width: 560px; margin: 0 auto; display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; }
+  nav.tabs button { padding: 12px 2px; font-size: 14px; border-radius: 12px; color: var(--muted); font-weight: 600; transition: background .2s, color .2s; }
   nav.tabs button.on { background: var(--surface-2); color: var(--text); }
 
   .card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px; margin-bottom: 12px; }
@@ -72,6 +72,7 @@
   .btn.danger { color: var(--danger); }
   .btn.block { width: 100%; }
   .btn.small { padding: 8px 12px; font-size: 14px; }
+  .btn:disabled { opacity: .45; }
 
   @keyframes rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
   @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
@@ -203,6 +204,109 @@
   .whatsnew-head { display: flex; align-items: center; gap: 14px; margin-bottom: 10px; }
   .whatsnew-head .orb { width: 56px; height: 56px; }
   .whatsnew-head h2 { margin: 0; }
+
+  /* ---------- drill ---------- */
+  .orb.still { animation: none !important; filter: brightness(.72) saturate(.85); }
+  .drillhero { display: flex; gap: 16px; align-items: center; }
+  .drillhero .orb { width: 96px; height: 96px; flex: none; }
+  .drillhero h2 { margin: 0 0 4px; font-size: 20px; }
+  .bigstat { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+  .bigstat b { font-size: 40px; font-weight: 300; font-variant-numeric: tabular-nums; line-height: 1; }
+  .delta { font-size: 13px; font-weight: 600; }
+  .delta.good { color: var(--ok); }
+  .delta.bad { color: var(--danger); }
+  .spark { width: 100%; height: 44px; display: block; margin-top: 10px; }
+  .setrow { display: grid; grid-template-columns: 84px 1fr; align-items: center; gap: 10px; margin: 0 0 10px; }
+  .setrow > span { color: var(--muted); font-size: 14px; }
+  .opts { display: flex; gap: 6px; flex-wrap: wrap; }
+  .opts button { padding: 8px 10px; min-width: 46px; border-radius: 10px; background: var(--surface-2); border: 1px solid var(--line); color: var(--muted); font-size: 14px; font-variant-numeric: tabular-nums; }
+  .opts button.on { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); font-weight: 600; }
+  details.how summary { cursor: pointer; color: var(--muted); font-size: 14px; list-style: none; }
+  details.how summary::-webkit-details-marker { display: none; }
+  details.how ol { margin: 10px 0 0; padding-left: 20px; color: var(--muted); font-size: 14px; }
+  details.how li { margin: 6px 0; }
+  .run.drillrun .stage { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 22px; }
+  .run.drillrun .orb { width: 210px; height: 210px; }
+  .run.drillrun .legend2 { color: var(--muted); font-size: 13px; text-align: center; line-height: 1.7; }
+  .tapzone { width: 100%; height: 132px; border-radius: 22px; background: var(--surface); border: 1px solid var(--line); color: var(--muted); font-size: 17px; font-weight: 600; position: relative; overflow: hidden; touch-action: manipulation; user-select: none; -webkit-user-select: none; }
+  .tapzone .rip { position: absolute; inset: 0; background: var(--text); opacity: 0; pointer-events: none; }
+  .tapzone.hit .rip { animation: rip .35s ease-out; }
+  @keyframes rip { from { opacity: .12; } to { opacity: 0; } }
+  .lat { display: flex; align-items: flex-end; gap: 4px; height: 70px; margin: 14px 0 4px; }
+  .lat i { flex: 1; background: var(--accent); border-radius: 3px 3px 0 0; min-height: 3px; opacity: .85; }
+  .lat i.miss { background: transparent; border: 1px dashed var(--danger); opacity: .6; height: 100%; }
+  .stats4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 14px; text-align: center; }
+  .stats4 b { display: block; font-size: 20px; font-variant-numeric: tabular-nums; }
+  .stats4 span { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
+
+  /* ---------- water ---------- */
+  :root { --water: #2fd3c6; }
+  .vessel-wrap { display: grid; grid-template-columns: 116px 1fr; gap: 18px; align-items: center; }
+  .vessel { position: relative; height: 230px; border: 2px solid var(--line); border-top: 0; border-radius: 0 0 26px 26px; overflow: hidden; background: var(--surface-2); }
+  .vessel .fill { position: absolute; left: 0; right: 0; bottom: 0; transition: height .7s cubic-bezier(.2,.8,.2,1);
+                  background: linear-gradient(180deg, color-mix(in srgb, var(--water) 80%, white), var(--water) 35%, color-mix(in srgb, var(--water) 65%, black)); }
+  .vessel .fill::before { content: ""; position: absolute; left: -20%; right: -20%; top: -6px; height: 12px; background: color-mix(in srgb, var(--water) 65%, white); border-radius: 50%; opacity: .55; }
+  .vessel .pace { position: absolute; left: 0; right: 0; height: 0; border-top: 2px dashed var(--text); opacity: .75; }
+  .vessel .pace span { position: absolute; right: 6px; top: -17px; font-size: 10px; letter-spacing: .12em; color: var(--text); }
+  .wbig { font-size: 34px; font-weight: 300; line-height: 1.1; font-variant-numeric: tabular-nums; }
+  .wbig small { font-size: 15px; color: var(--muted); }
+  .pill { display: inline-block; padding: 5px 10px; border-radius: 999px; font-size: 13px; font-weight: 600; background: var(--surface-2); color: var(--muted); margin-top: 8px; }
+  .pill.ok { background: color-mix(in srgb, var(--ok) 22%, var(--surface)); color: var(--ok); }
+  .pill.behind { background: color-mix(in srgb, var(--accent) 22%, var(--surface)); color: var(--accent); }
+  .pill.ahead { background: color-mix(in srgb, var(--water) 20%, var(--surface)); color: var(--water); }
+  .quick { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+  .quick .btn { padding: 12px 6px; }
+  .btn.water { background: var(--water); border-color: var(--water); color: #04201d; }
+  .custom { display: grid; grid-template-columns: 1fr auto; gap: 8px; margin-top: 8px; }
+  .custom input, .wrow input { background: var(--surface-2); border: 1px solid var(--line); border-radius: 10px; padding: 10px; width: 100%; }
+  .sched { list-style: none; margin: 0; padding: 0; }
+  .sched li { display: grid; grid-template-columns: 22px 1fr auto; gap: 10px; align-items: center; padding: 8px 0; border-top: 1px solid var(--line); font-size: 15px; color: var(--muted); }
+  .sched li:first-child { border-top: 0; }
+  .sched .d { width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--line); }
+  .sched li.done .d { background: var(--water); border-color: var(--water); }
+  .sched li.next { color: var(--text); font-weight: 600; }
+  .sched li.next .d { border-color: var(--water); }
+  .wlog { list-style: none; margin: 0; padding: 0; }
+  .wlog li { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-top: 1px solid var(--line); font-size: 15px; }
+  .wlog li:first-child { border-top: 0; }
+  .wlog button { color: var(--muted); padding: 4px 8px; }
+  .week7 { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; height: 110px; margin-top: 8px; }
+  .week7 .col { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+  .week7 .bw { flex: 1; width: 100%; display: flex; align-items: flex-end; justify-content: center; position: relative; }
+  .week7 .b { width: 100%; max-width: 26px; border-radius: 6px 6px 2px 2px; background: color-mix(in srgb, var(--water) 40%, var(--surface-2)); min-height: 2px; }
+  .week7 .b.hit { background: var(--water); }
+  .week7 .tl2 { position: absolute; left: -3px; right: -3px; border-top: 1px dashed var(--muted); opacity: .6; }
+  .week7 .lbl { font-size: 11px; color: var(--muted); }
+  .week7 .lbl.today { color: var(--water); font-weight: 700; }
+  .wrow { display: grid; grid-template-columns: 1fr 1fr 40px; gap: 8px; align-items: center; margin-bottom: 8px; }
+  .wrow button { height: 40px; border-radius: 10px; background: var(--surface-2); color: var(--muted); }
+  .drop { width: 22px; height: 22px; display: block; margin: 0 auto; flex: none; }
+  .toast .drop { width: 32px; height: 32px; }
+  .toast.watert { border-color: var(--water); }
+
+  /* ---------- feature law ---------- */
+  .lawq { font-size: 15px; line-height: 1.5; margin: 6px 0 0; color: var(--muted); }
+  .lawq b { color: var(--text); font-weight: 600; }
+  .hint { font-size: 13px; margin: 6px 0 0; min-height: 18px; }
+  .hint.warn { color: var(--accent); }
+  .hint.ok { color: var(--ok); }
+  .hint.info { color: var(--muted); }
+  .flist { list-style: none; margin: 0; padding: 0; }
+  .flist li { display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: center; padding: 10px 0; border-top: 1px solid var(--line); }
+  .flist li:first-child { border-top: 0; }
+  .flist .ctx { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; }
+  .flist .txt { font-weight: 600; }
+  .mtag { font-size: 10px; padding: 2px 7px; border-radius: 999px; background: var(--surface-2); color: var(--muted); margin-left: 6px; font-weight: 700; letter-spacing: .06em; }
+  .mtag.ctl { color: var(--release); }
+  .cmp { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+  .cmp > div { background: var(--surface-2); border-radius: 12px; padding: 12px; text-align: center; }
+  .cmp b { display: block; font-size: 26px; font-weight: 300; font-variant-numeric: tabular-nums; }
+  .cmp span { font-size: 12px; color: var(--muted); }
+  .prog { height: 6px; background: var(--surface-2); border-radius: 3px; overflow: hidden; margin-top: 12px; }
+  .prog i { display: block; height: 100%; background: var(--accent); }
+  .holdtext { font-size: 26px; font-weight: 600; max-width: 20ch; line-height: 1.3; }
+  .checkrow { display: flex; gap: 10px; align-items: center; margin: 10px 0 14px; font-size: 14px; color: var(--muted); }
+  .checkrow input { width: 18px; height: 18px; accent-color: var(--accent); }
 
   /* ---------- header + data sheet ---------- */
   header .right { display: flex; align-items: center; gap: 10px; }
@@ -343,8 +447,14 @@
   const KEY = 'metamorph.v1';
 
   // Keep in step with CACHE in sw.js. Add a CHANGELOG entry for each release.
-  const APP_VERSION = 7;
+  const APP_VERSION = 8;
   const CHANGELOG = {
+    8: [
+      'Water: a fill vessel with a pace marker, an editable spaced schedule, reminders when a sip is due, and calendar alerts',
+      'Feature: the Feature Law, with a phrasing check, a 30-second hold, check-ins and control trials',
+      'Switch Drill redesign: the still chaos orb as the focus object, cues by sound and vibration only, and randomized release so the chime can’t be anticipated',
+      'Water shows up in the Week and Month views',
+    ],
     7: [
       'Element orbs for each Gate, and the chaos orb on the timeline and as the app icon',
       'Routines repeat daily, on chosen weekdays, or on dates of the month',
@@ -408,6 +518,13 @@
     for (const g of Object.keys(s.gates)) for (const r of s.gates[g]) if (!r.repeat) r.repeat = { type: 'daily' };
     if (!s.created) s.created = Date.now();
     if (!('run' in s)) s.run = null;
+    if (!('jitter' in s.drill)) s.drill.jitter = 8;
+    if (!s.water) {
+      const d = new Date();
+      s.water = { unit: 'ml', target: 2500, pour: 250, wake: '07:00', bed: '22:00', schedule: [], scheduleInit: false, log: {}, snooze: {},
+                  since: `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}` };
+    }
+    if (!s.features) s.features = { items: [], experiment: true };
     return s;
   }
 
@@ -515,6 +632,7 @@
     return `${h % 12 || 12}:${String(m % 60).padStart(2, '0')} ${h < 12 ? 'AM' : 'PM'}`;
   };
   const clock = hhmm => fromMin(toMin(hhmm));
+  const fromMinHM = m => { m = ((m % 1440) + 1440) % 1440; return `${String(Math.floor(m / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`; };
   const dur = m => m < 60 ? `${m}m` : `${Math.floor(m / 60)}h${m % 60 ? ' ' + String(m % 60).padStart(2, '0') + 'm' : ''}`;
   const avg = a => a.length ? a.reduce((x, y) => x + y, 0) / a.length : null;
   const nowMin = () => { const d = new Date(); return d.getHours() * 60 + d.getMinutes(); };
@@ -577,7 +695,7 @@
       if (ac.state === 'suspended') ac.resume();
     } catch (e) {}
   }
-  function beep(freq = 660, d = 0.2) {
+  function beep(freq = 660, d = 0.2, vib = 150) {
     try {
       unlockAudio();
       const o = ac.createOscillator(), g = ac.createGain(), t = ac.currentTime;
@@ -588,7 +706,7 @@
       o.connect(g).connect(ac.destination);
       o.start(t); o.stop(t + d + 0.05);
     } catch (e) {}
-    try { navigator.vibrate && navigator.vibrate(150); } catch (e) {}
+    try { vib && navigator.vibrate && navigator.vibrate(vib); } catch (e) {}
   }
   const buzz = () => { try { navigator.vibrate && navigator.vibrate(30); } catch (e) {} };
 
@@ -602,10 +720,11 @@
   /* ---------- view state ---------- */
 
   const V = { tab: 'today', gate: 'sleep', edit: null, summary: null, cal: 'day', anchor: null, sel: null, data: false, slide: null,
-              update: null, whatsNew: false };
-  const TABS = ['today', 'gates', 'drill'], CALS = ['day', 'week', 'month'];
+              update: null, whatsNew: false, wedit: null, wFrom: null, fcheck: null, fDraft: { ctx: 'Today', text: '' } };
+  const TABS = ['today', 'gates', 'water', 'feature', 'drill'], CALS = ['day', 'week', 'month'];
   const slideTo = (list, from, to) => list.indexOf(to) > list.indexOf(from) ? 'r' : list.indexOf(to) < list.indexOf(from) ? 'l' : null;
-  let drillRun = null;  // { round, phase, start, end, latencies[], catches, locked }
+  let drillRun = null;  // { phase: settle|focus|release, round, doneRounds, start, end, latencies[], catches, falseTaps, locked }
+  let featRun = null;   // { id, mode: loaded|control, end, held }
   let run = null;       // { gate, rid, idx, phase: step|between|complete, total, end, paused, remaining }
   let ticker = null;
 
@@ -617,24 +736,33 @@
   function render() {
     if (drillRun) return renderDrillRun();
     if (run) return renderRun();
+    if (featRun) return renderFeatRun();
 
     const sheetScroll = document.querySelector('.sheet')?.scrollTop || 0;
     const dateStr = new Date().toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
     let tz = '';
     try { tz = new Intl.DateTimeFormat(undefined, { timeZoneName: 'short' }).formatToParts(new Date()).find(x => x.type === 'timeZoneName').value; } catch (e) {}
-    const body = V.tab === 'today' ? todayView() : V.tab === 'gates' ? gatesView() : drillView();
+    const body = { today: todayView, gates: gatesView, water: waterView, feature: featureView, drill: drillView }[V.tab]();
+    const wd = waterDue();
     $app.innerHTML = `
       <header><h1>MetaMorph</h1><div class="right"><span class="date">${esc(dateStr)}${tz ? ` · ${esc(tz)}` : ''}</span>
         <button class="iconbtn" data-act="data" aria-label="Backup and data">⋯${backupDue() ? '<span class="badge"></span>' : ''}</button></div></header>
       <main><div class="${V.slide ? 'slide-' + V.slide : ''}">${body}</div></main>
       <nav class="tabs"><div class="inner">
-        ${[['today', 'Today'], ['gates', 'Gates'], ['drill', 'Drill']].map(([k, l]) =>
+        ${[['today', 'Today'], ['gates', 'Gates'], ['water', 'Water'], ['feature', 'Feature'], ['drill', 'Drill']].map(([k, l]) =>
           `<button data-act="tab" data-v="${k}" class="${V.tab === k ? 'on' : ''}">${l}</button>`).join('')}
       </div></nav>
       ${V.edit ? editSheet() : ''}
       ${V.data ? dataSheet() : ''}
       ${V.whatsNew ? whatsNewSheet() : ''}
-      ${V.update && !V.edit && !V.data && !V.whatsNew ? `
+      ${V.wedit ? waterSheet() : ''}
+      ${V.fcheck ? checkSheet() : ''}
+      ${wd && V.tab !== 'water' && !anySheet() ? `
+        <div class="toast watert ${V.toastFx || V.lastDue !== wd.next.id ? 'anim' : ''}" role="status">${DROP}
+          <div class="msg"><b>Time for water</b>${fmtW(wd.next.cum - wd.got)} · since ${clock(wd.next.time)}</div>
+          <button class="btn ghost" data-act="w-snooze" data-id="${wd.next.id}">Later</button>
+          <button class="btn water" data-act="w-add" data-ml="${wd.next.cum - wd.got}">Log</button>
+        </div>` : V.update && !anySheet() ? `
         <div class="toast ${V.toastFx ? 'anim' : ''}" role="status">${orb('chaos', 36)}
           <div class="msg"><b>Update ready</b>A new version of MetaMorph</div>
           <button class="btn ghost" data-act="update-later">Later</button>
@@ -644,7 +772,15 @@
     V.gateFx = false;
     V.slide = null;
     V.toastFx = false;
+    if (wd && V.lastDue !== wd.next.id) { V.lastDue = wd.next.id; if (document.visibilityState === 'visible') buzz(); }
     if (V.data) V.data = 'open';
+    if (V.wedit) V.wedit.fresh = false;
+    if (V.fcheck) V.fcheck.fresh = false;
+    // let the water fill rise from where it was
+    if (V.wFrom != null) {
+      V.wFrom = null;
+      requestAnimationFrame(() => requestAnimationFrame(() => document.querySelectorAll('[data-h]').forEach(x => { x.style.height = x.dataset.h + '%'; })));
+    }
     if (V.edit) {
       const sh = document.querySelector('.sheet');
       if (sh) sh.scrollTop = sheetScroll;
@@ -728,6 +864,10 @@
             const m = mark(gateDay(g.id, d), d);
             return `<div class="c" data-act="sel" data-v="${keyOf(d)}">${m === 'none' ? '·' : `<i class="ring ${m}" style="--gcol:${g.color}"></i>`}</div>`;
           }).join('')).join('')}
+          <span class="g" title="Water">${DROP}</span>${days.map(d => {
+            const m = waterMark(d);
+            return `<div class="c" data-act="sel" data-v="${keyOf(d)}">${m === 'none' ? '·' : `<i class="ring ${m}" style="--gcol:var(--water)"></i>`}</div>`;
+          }).join('')}
         </div>
         <div class="legend"><span><i class="ring full" style="--gcol:var(--muted)"></i>held</span><span><i class="ring part" style="--gcol:var(--muted)"></i>partly</span><span><i class="ring miss" style="--gcol:var(--muted)"></i>missed</span></div>
         ${n ? `<p class="muted num" style="text-align:center;margin:10px 0 0;font-size:13px">${held}/${n} held so far · ${Math.round(100 * held / n)}%</p>` : ''}
@@ -749,7 +889,7 @@
         const x = gateDay(g.id, d);
         if (k <= today()) { held += x.held; n += x.n; }
         return `<i class="${mark(x, d)}" style="--gcol:${g.color}"></i>`;
-      }).join('');
+      }).join('') + `<i class="${waterMark(d)}" style="--gcol:var(--water)"></i>`;
       cells.push(`<div class="d ${k === today() ? 'today' : ''} ${k === (V.sel || today()) ? 'sel' : ''}" data-act="sel" data-v="${k}"><span class="n num">${day}</span><span class="bars">${bars}</span></div>`);
     }
     const isThis = a.getFullYear() === new Date().getFullYear() && a.getMonth() === new Date().getMonth();
@@ -761,7 +901,7 @@
           ${['M', 'T', 'W', 'T', 'F', 'S', 'S'].map(x => `<div class="wd">${x}</div>`).join('')}
           ${cells.join('')}
         </div>
-        <div class="legend">${GATES.map(g => `<span><i class="ring full" style="--gcol:${g.color};width:10px;height:10px"></i>${g.name}</span>`).join('')}</div>
+        <div class="legend" style="flex-wrap:wrap">${GATES.map(g => `<span><i class="ring full" style="--gcol:${g.color};width:10px;height:10px"></i>${g.name}</span>`).join('')}<span><i class="ring full" style="--gcol:var(--water);width:10px;height:10px"></i>Water</span></div>
         ${n ? `<p class="muted num" style="text-align:center;margin:10px 0 0;font-size:13px">${held}/${n} held so far · ${Math.round(100 * held / n)}%</p>` : ''}
       </div>
       ${dayDetail()}`;
@@ -820,7 +960,8 @@
   /* ----- what's new ----- */
 
   function whatsNewSheet() {
-    const from = typeof S.seenVersion === 'number' ? S.seenVersion : APP_VERSION - 1;
+    // 6 was the last version before "What's new" existed
+    const from = typeof S.seenVersion === 'number' ? S.seenVersion : 6;
     const notes = Object.keys(CHANGELOG).map(Number).filter(v => v > from && v <= APP_VERSION)
       .sort((a, b) => b - a).flatMap(v => CHANGELOG[v]);
     return `
@@ -1111,125 +1252,484 @@
 
   /* ----- drill ----- */
 
+  const DRILL_OPTS = { focus: [20, 30, 45, 60], release: [20, 30, 45, 60], rounds: [5, 8, 10, 12], jitter: [0, 5, 8, 12] };
+  const sessAvg = x => { const ok = x.latencies.filter(v => v != null); return ok.length ? avg(ok) : null; };
+
+  // Phase changes are announced by sound and vibration only, so the screen gives nothing away.
+  function cueReturn() {   // rising pair: come back to the orb
+    beep(660, 0.12, 0); setTimeout(() => beep(990, 0.2, 0), 130);
+    try { navigator.vibrate && navigator.vibrate([40, 60, 40]); } catch (e) {}
+  }
+  function cueRelease() {  // single low tone: let go
+    beep(330, 0.4, 0);
+    try { navigator.vibrate && navigator.vibrate(220); } catch (e) {}
+  }
+
+  function spark(vals) {
+    if (vals.length < 2) return '';
+    const Wd = 300, H = 44, mx = Math.max(...vals), mn = Math.min(...vals), rng = mx - mn || 1;
+    const pts = vals.map((v, i) => `${(i / (vals.length - 1)) * Wd},${4 + (1 - (v - mn) / rng) * (H - 8)}`).join(' ');
+    return `<svg class="spark" viewBox="0 0 ${Wd} ${H}" preserveAspectRatio="none" aria-hidden="true"><polyline points="${pts}" fill="none" stroke="var(--accent)" stroke-width="2" vector-effect="non-scaling-stroke" stroke-linejoin="round"/></svg>`;
+  }
+
   function drillView() {
     const d = S.drill;
-    if (V.summary) {
-      const s = V.summary, a = avg(s.latencies);
-      return `
-        <div class="card">
-          <p class="label">Session complete</p>
-          <div class="row spread"><span>Rounds</span><b class="num">${s.rounds}</b></div>
-          <div class="row spread"><span>Avg recovery latency</span><b class="num">${a == null ? '—' : a.toFixed(1) + ' s'}</b></div>
-          <div class="row spread"><span>Drifts caught</span><b class="num">${s.catches}</b></div>
-          <p class="muted" style="margin:12px 0 0;font-size:14px">${s.latencies.map((l, i) => `R${i + 1} ${l.toFixed(1)}s`).join(' · ') || 'No returns marked.'}</p>
-        </div>
-        <button class="btn primary block" data-act="summary-ok">Done</button>`;
-    }
-
-    const sessions = d.sessions;
-    const recent = sessions.slice(-7).map(s => avg(s.latencies)).filter(x => x != null);
-    const prior = sessions.slice(-14, -7).map(s => avg(s.latencies)).filter(x => x != null);
-    const trend = recent.length
-      ? `<p class="muted" style="margin:0 0 10px;font-size:14px">Last ${recent.length}: <b class="num" style="color:var(--text)">${avg(recent).toFixed(1)} s</b>${prior.length ? ` · previous ${prior.length}: <span class="num">${avg(prior).toFixed(1)} s</span>` : ''}</p>`
-      : '';
-
+    if (V.summary) return drillSummary(V.summary);
+    const ss = d.sessions, avgs = ss.map(sessAvg).filter(x => x != null);
+    const recent = avgs.slice(-7), prior = avgs.slice(-14, -7);
+    const ra = recent.length ? avg(recent) : null, pa = prior.length ? avg(prior) : null;
+    const delta = ra != null && pa != null ? ra - pa : null;
+    const est = Math.max(1, Math.round((d.rounds * d.focus + (d.rounds - 1) * d.release + 6) / 60));
+    const opt = (k, v, label) => `<button data-act="dset" data-k="${k}" data-v="${v}" class="${d[k] === v ? 'on' : ''}">${label}</button>`;
     return `
+      <div class="card"><div class="drillhero">${orb('chaos', 96, 'still')}<div>
+        <h2>Switch Drill</h2>
+        <p class="muted" style="margin:0;font-size:14px">Hold the orb. Let it go. Come back on the chime. The skill is the return.</p>
+      </div></div></div>
       <div class="card">
-        <p class="label">The rite</p>
-        <p style="margin:0">Hold one object in tight focus. Then release it entirely and let attention drift.
-        <b>When the focus chime sounds, tap the moment you're back on the object.</b> That's your recovery latency.</p>
+        <p class="label">Recovery latency${recent.length ? ` · last ${recent.length}` : ''}</p>
+        <div class="bigstat"><b>${ra == null ? '—' : ra.toFixed(1)}</b><span class="muted">sec</span>
+          ${delta == null ? '' : `<span class="delta ${delta <= 0 ? 'good' : 'bad'}">${delta <= 0 ? '↓' : '↑'} ${Math.abs(delta).toFixed(1)}s vs previous ${prior.length}</span>`}</div>
+        ${spark(avgs.slice(-20))}
+        <p class="muted" style="margin:6px 0 0;font-size:12px">${avgs.length ? 'Lower is better. It should shorten over weeks.' : 'No sessions yet.'}</p>
       </div>
       <div class="card">
-        <div class="stepper">
-          ${stepper('focus', 'Focus (s)', d.focus)}
-          ${stepper('release', 'Release (s)', d.release)}
-          ${stepper('rounds', 'Rounds', d.rounds)}
+        <div class="setrow"><span>Focus</span><div class="opts">${DRILL_OPTS.focus.map(v => opt('focus', v, v + 's')).join('')}</div></div>
+        <div class="setrow"><span>Release</span><div class="opts">${DRILL_OPTS.release.map(v => opt('release', v, v + 's')).join('')}</div></div>
+        <div class="setrow"><span>Randomize</span><div class="opts">${DRILL_OPTS.jitter.map(v => opt('jitter', v, v ? '±' + v + 's' : 'Off')).join('')}</div></div>
+        <div class="setrow" style="margin:0"><span>Rounds</span><div class="opts">${DRILL_OPTS.rounds.map(v => opt('rounds', v, v)).join('')}</div></div>
+        <p class="muted" style="margin:12px 0 0;font-size:13px">About ${est} min. ${d.jitter ? 'Release length varies, so the return chime can’t be anticipated.' : 'Fixed timing: you may start anticipating the chime, which flatters your latency.'}</p>
+      </div>
+      <div class="card">
+        <div class="row spread"><span style="font-size:14px">Hear the cues</span>
+          <span class="row" style="gap:8px"><button class="btn small" data-act="cue-return">▲ Return</button><button class="btn small" data-act="cue-release">▼ Let go</button></span></div>
+        <details class="how" style="margin-top:12px"><summary>How it works ›</summary><ol>
+          <li><b>▲ Rising chime:</b> bring attention back to the orb and tap the pad the instant you're on it. That gap is your recovery latency.</li>
+          <li>Hold the orb. Whenever you catch yourself drifting, come back and tap again.</li>
+          <li><b>▼ Low chime:</b> let go completely. Hold nothing. Taps during release count as false starts.</li>
+          <li>The screen never changes between phases, so only the sound tells you where you are.</li>
+        </ol></details>
+      </div>
+      <button class="btn primary block" data-act="drill-start" style="margin-bottom:16px;padding:16px">Begin</button>
+      ${ss.length ? `<div class="card"><p class="label">History</p><ul class="hist">${ss.slice(-10).reverse().map(x => {
+          const a = sessAvg(x), miss = x.latencies.filter(v => v == null).length;
+          const when = new Date(x.t).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+          return `<li><span>${esc(when)} <span class="muted">· ${x.rounds}r${miss ? ` · ${miss} missed` : ''}${x.jitter === 0 ? ' · fixed' : ''}</span></span><b class="num">${a == null ? '—' : a.toFixed(1) + ' s'}</b></li>`;
+        }).join('')}</ul></div>` : ''}`;
+  }
+
+  function drillSummary(x) {
+    const lats = x.latencies, ok = lats.filter(v => v != null), a = ok.length ? avg(ok) : null;
+    const prev = S.drill.sessions.slice(0, -1).slice(-7).map(sessAvg).filter(v => v != null);
+    const pa = prev.length ? avg(prev) : null, delta = a != null && pa != null ? a - pa : null;
+    const mx = Math.max(...ok, 1);
+    return `
+      <div class="card" style="text-align:center">
+        <div style="display:flex;justify-content:center">${orb('chaos', 72, 'still')}</div>
+        <p class="label" style="margin:10px 0 4px">Session complete</p>
+        <div class="bigstat" style="justify-content:center"><b>${a == null ? '—' : a.toFixed(1)}</b><span class="muted">sec average</span></div>
+        ${delta == null ? '' : `<div class="delta ${delta <= 0 ? 'good' : 'bad'}" style="margin-top:4px">${delta <= 0 ? '↓ faster' : '↑ slower'} than your last ${prev.length} (${pa.toFixed(1)}s)</div>`}
+        <div class="lat">${lats.map(v => v == null ? '<i class="miss" title="missed"></i>' : `<i style="height:${Math.max(4, 100 * v / mx)}%" title="${v.toFixed(1)}s"></i>`).join('')}</div>
+        <p class="muted" style="margin:0;font-size:12px">One bar per return. Shorter is better; dashed means no return was tapped.</p>
+        <div class="stats4">
+          <div><b>${ok.length ? Math.min(...ok).toFixed(1) : '—'}</b><span>Best</span></div>
+          <div><b>${x.catches}</b><span>Drifts caught</span></div>
+          <div><b>${lats.filter(v => v == null).length}</b><span>Missed</span></div>
+          <div><b>${x.falseTaps || 0}</b><span>False starts</span></div>
         </div>
       </div>
-      <button class="btn primary block" data-act="drill-start" style="margin-bottom:20px">Begin</button>
-      <div class="card">
-        <p class="label">Recovery latency</p>
-        ${trend}
-        ${sessions.length ? `<ul class="hist">${sessions.slice(-10).reverse().map(s => {
-          const a = avg(s.latencies);
-          const when = new Date(s.t).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
-          return `<li><span>${esc(when)} <span class="muted">· ${s.rounds}r · ${s.catches} caught</span></span><b class="num">${a == null ? '—' : a.toFixed(1) + ' s'}</b></li>`;
-        }).join('')}</ul>` : '<p class="muted" style="margin:0">No sessions yet. It should shorten over weeks.</p>'}
-      </div>`;
+      <button class="btn primary block" data-act="summary-ok">Done</button>`;
   }
 
-  function stepper(key, label, val) {
-    return `<div class="step"><div class="v num">${val}</div><div class="k">${label}</div>
-      <div class="pm"><button data-act="step" data-k="${key}" data-d="-1">−</button><button data-act="step" data-k="${key}" data-d="1">+</button></div></div>`;
-  }
-
+  // The run screen is identical in every phase: still orb, same text, same tap pad.
   function renderDrillRun() {
-    const r = drillRun, d = S.drill, focus = r.phase === 'focus';
-    const color = focus ? 'var(--focus)' : 'var(--release)';
-    let tap;
-    if (!focus) tap = `<button class="bigtap wait" disabled>Let it drift</button>`;
-    else if (!r.locked) tap = `<button class="bigtap lock" data-act="lock">I'm back</button>`;
-    else tap = `<button class="bigtap catch" data-act="catch">Caught a drift <span class="muted num">(${r.catches})</span></button>`;
-
+    const r = drillRun, d = S.drill;
     $app.innerHTML = `
-      <div class="run"><div class="inner">
-        <div class="top"><span class="num">Round ${r.round} / ${d.rounds}</span><button class="btn small ghost" data-act="drill-stop">End</button></div>
-        <div class="center">
-          <div class="dots">${Array.from({ length: d.rounds }, (_, i) => `<i class="${i + 1 < r.round ? 'on' : i + 1 === r.round ? 'now' : ''}"></i>`).join('')}</div>
-          <div class="phase" style="color:${color}">${focus ? 'FOCUS' : 'RELEASE'}</div>
-          <div class="clock" id="clock">${mmss((r.end - Date.now()) / 1000)}</div>
-          <div class="bar" style="color:${color};max-width:280px"><i id="bar"></i></div>
-          <div class="instr">${focus
-            ? (r.locked ? 'Hold it. If you notice you drifted, tap and return.' : 'Return to the object. Tap the instant you are on it.')
-            : 'Release the object entirely. Do not hold anything.'}</div>
+      <div class="run drillrun"><div class="inner">
+        <div class="top"><span class="num">${r.doneRounds} of ${d.rounds} rounds</span><button class="btn small ghost" data-act="drill-stop">End</button></div>
+        <div class="dots" style="margin-top:12px">${Array.from({ length: d.rounds }, (_, i) => `<i class="${i < r.doneRounds ? 'on' : ''}"></i>`).join('')}</div>
+        <div class="stage">
+          ${orb('chaos', 210, 'still')}
+          <div class="legend2">▲ rising chime: return and tap<br>▼ low chime: let go</div>
         </div>
-        ${tap}
+        <button class="tapzone" id="tapzone" aria-label="Tap when you're back on the orb"><span class="rip"></span>Tap when you're back on the orb</button>
       </div></div>`;
-    tick();
+  }
+
+  function startDrill() {
+    unlockAudio();
+    const t = Date.now();
+    // a short settle-in before the first return cue
+    drillRun = { phase: 'settle', start: t, end: t + 6000, round: 0, doneRounds: 0, latencies: [], catches: 0, falseTaps: 0, locked: false };
+    lockScreen(); startTicker(); renderDrillRun();
   }
 
   function setDrillPhase(phase) {
-    const sec = phase === 'focus' ? S.drill.focus : S.drill.release;
-    drillRun.phase = phase;
-    drillRun.start = Date.now();
-    drillRun.end = drillRun.start + sec * 1000;
-    drillRun.locked = false;
-    beep(phase === 'focus' ? 880 : 440, 0.25);
-    renderDrillRun();
+    const r = drillRun, d = S.drill;
+    let sec = phase === 'focus' ? d.focus : d.release;
+    if (phase === 'release' && d.jitter) sec = Math.max(5, sec + (Math.random() * 2 - 1) * d.jitter);
+    r.phase = phase;
+    r.start = Date.now();
+    r.end = r.start + sec * 1000;
+    if (phase === 'focus') {
+      r.round++;
+      r.locked = false;
+      cueReturn();
+    } else {
+      closeRound();
+      cueRelease();
+      renderDrillRun();
+    }
+  }
+
+  // a focus phase that ends without a tap is a missed return
+  function closeRound() {
+    const r = drillRun;
+    if (!r.locked) r.latencies.push(null);
+    r.doneRounds++;
   }
 
   function advanceDrill() {
     const r = drillRun;
-    if (r.phase === 'focus') return setDrillPhase('release');
-    if (r.round >= S.drill.rounds) return finishDrill(r.round);
-    r.round++;
+    if (r.phase === 'settle') return setDrillPhase('focus');
+    if (r.phase === 'focus') {
+      if (r.round >= S.drill.rounds) { closeRound(); return finishDrill(); }
+      return setDrillPhase('release');
+    }
     setDrillPhase('focus');
   }
 
-  function finishDrill(roundsDone) {
+  function drillTap() {
+    const r = drillRun;
+    if (!r) return;
+    const z = document.getElementById('tapzone');
+    if (z) { z.classList.remove('hit'); void z.offsetWidth; z.classList.add('hit'); }
+    buzz();
+    if (r.phase === 'focus') {
+      if (!r.locked) { r.latencies.push(Math.round((Date.now() - r.start) / 100) / 10); r.locked = true; }
+      else r.catches++;
+    } else if (r.phase === 'release') r.falseTaps++;
+  }
+
+  function finishDrill() {
     const r = drillRun;
     stopTicker(); unlockScreen();
     drillRun = null;
-    if (roundsDone > 0) {
-      const s = { t: Date.now(), rounds: roundsDone, latencies: r.latencies, catches: r.catches };
-      S.drill.sessions.push(s);
+    if (r.latencies.length) {
+      const x = { t: Date.now(), rounds: r.latencies.length, latencies: r.latencies, catches: r.catches, falseTaps: r.falseTaps, jitter: S.drill.jitter, object: 'orb' };
+      S.drill.sessions.push(x);
       if (S.drill.sessions.length > 500) S.drill.sessions.shift();
       save();
-      V.summary = s;
-      beep(660, 0.5);
+      V.summary = x;
+      beep(523, 0.2, 0); setTimeout(() => beep(784, 0.45), 200);
     }
     render();
   }
+
+  /* ----- water ----- */
+
+  const ML_OZ = 29.5735;
+  const DROP = '<svg class="drop" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5c-3.6 4.6-7 8.7-7 12.3a7 7 0 0 0 14 0c0-3.6-3.4-7.7-7-12.3z" fill="var(--water)"/></svg>';
+  const W = () => S.water;
+  const fmtIn = (ml, unit) => unit === 'oz' ? Math.round(ml / ML_OZ * 10) / 10 : Math.round(ml);
+  const fmtW = (ml, unit = W().unit) => `${fmtIn(ml, unit).toLocaleString()} ${unit}`;
+
+  // spread the target across the waking window, ending two hours before bed
+  function autoSchedule(target, pour, wake, bed) {
+    // small tolerance so unit rounding (64 oz / 16 oz) doesn't add a 1 ml sip
+    const n = Math.max(1, Math.ceil(target / pour - 0.02));
+    const a = toMin(wake), b0 = toMin(bed) - 120;
+    const b = b0 > a + 60 ? b0 : a + 8 * 60;
+    const out = [];
+    for (let i = 0; i < n; i++) {
+      const m = Math.round((n === 1 ? a : a + i * (b - a) / (n - 1)) / 5) * 5;
+      out.push({ id: uid(), time: `${String(Math.floor(m / 60) % 24).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`,
+                 amount: i === n - 1 ? target - pour * (n - 1) : pour });
+    }
+    return out;
+  }
+  function ensureWater() {
+    const w = W();
+    if (!w.scheduleInit) { w.schedule = autoSchedule(w.target, w.pour, w.wake, w.bed); w.scheduleInit = true; save(); }
+  }
+
+  const wLog = (k = today()) => W().log[k] || [];
+  const wTotal = (k = today()) => wLog(k).reduce((t, e) => t + e.ml, 0);
+  const wSched = () => [...W().schedule].sort((a, b) => toMin(a.time) - toMin(b.time));
+
+  function wState() {
+    ensureWater();
+    const got = wTotal(), now = nowMin(), rows = [];
+    let cum = 0, next = null, expected = 0;
+    for (const e of wSched()) {
+      cum += e.amount;
+      const row = { ...e, cum, done: got >= cum };
+      rows.push(row);
+      if (toMin(e.time) <= now) expected = cum;
+      if (!row.done && !next) next = row;
+    }
+    return { rows, next, got, target: W().target, expected: Math.min(expected, W().target), due: !!(next && toMin(next.time) <= now) };
+  }
+  function waterDue() {
+    if (drillRun || run || featRun) return null;
+    const st = wState();
+    if (!st.due || st.got >= st.target) return null;
+    if (W().snooze[today()] === st.next.id) return null;
+    return st;
+  }
+  function addWater(ml) {
+    const k = today();
+    (W().log[k] = W().log[k] || []).push({ t: Date.now(), ml: Math.max(1, Math.round(ml)) });
+    save();
+  }
+  function waterMark(d) {
+    const k = keyOf(d);
+    if (k < W().since) return 'none';
+    const t = wTotal(k);
+    if (t >= W().target) return 'full';
+    if (k > today()) return 'future';
+    if (t > 0) return 'part';
+    return k === today() ? 'future' : 'miss';
+  }
+
+  function waterView() {
+    const w = W(), st = wState();
+    const pct = Math.min(100, 100 * st.got / st.target), pacePct = Math.min(100, 100 * st.expected / st.target);
+    const diff = st.got - st.expected;
+    let pill;
+    if (st.got >= st.target) pill = '<span class="pill ok">Target reached ✓</span>';
+    else if (Math.abs(diff) < w.pour / 2) pill = '<span class="pill ok">On pace</span>';
+    else pill = diff < 0 ? `<span class="pill behind">Behind by ${fmtW(-diff)}</span>` : `<span class="pill ahead">Ahead by ${fmtW(diff)}</span>`;
+    const nx = st.next, log = wLog().slice().reverse();
+    const days = Array.from({ length: 7 }, (_, i) => addDays(new Date(), i - 6));
+    const totals = days.map(d => wTotal(keyOf(d))), mx = Math.max(w.target, ...totals) * 1.08;
+    const from = V.wFrom != null ? V.wFrom : pct;
+    return `
+      <div class="card">
+        <div class="vessel-wrap">
+          <div class="vessel" role="img" aria-label="${Math.round(pct)}% of today's water">
+            <div class="fill" style="height:${from}%" data-h="${pct}"></div>
+            ${st.got < st.target && st.expected > 0 ? `<div class="pace" style="bottom:${pacePct}%"><span>PACE</span></div>` : ''}
+          </div>
+          <div>
+            <p class="label" style="margin:0">Water today</p>
+            <div class="wbig">${fmtIn(st.got, w.unit).toLocaleString()}<small> / ${fmtW(st.target)}</small></div>
+            <div class="muted num" style="font-size:14px">${Math.round(pct)}%</div>
+            ${pill}
+          </div>
+        </div>
+        <div class="quick" style="margin-top:16px">
+          <button class="btn water" data-act="w-add" data-ml="${w.pour}">+ ${fmtW(w.pour)}</button>
+          <button class="btn" data-act="w-add" data-ml="${w.pour / 2}">+ ${fmtW(w.pour / 2)}</button>
+          <button class="btn" data-act="w-undo" ${log.length ? '' : 'disabled'}>Undo</button>
+        </div>
+        <form class="custom" id="wcustom" autocomplete="off"><input name="amt" type="number" inputmode="decimal" min="0.1" step="any" placeholder="Custom amount (${w.unit})"><button class="btn" type="submit">Add</button></form>
+      </div>
+      ${nx ? `<div class="card"><div class="row spread"><div>
+          <p class="label" style="margin:0 0 4px">${st.due ? 'Due now' : 'Next sip'}</p>
+          <div style="font-size:18px;font-weight:600" class="num">${fmtW(nx.cum - st.got)} <span class="muted" style="font-weight:400">${st.due ? 'since' : 'at'} ${clock(nx.time)}</span></div></div>
+          <button class="btn water" data-act="w-add" data-ml="${nx.cum - st.got}">Log it</button></div></div>` : ''}
+      <div class="card">
+        <div class="row spread"><p class="label" style="margin:0">Schedule</p><button class="linkbtn" data-act="w-edit">Edit</button></div>
+        <ul class="sched" style="margin-top:6px">${st.rows.map(e => `<li class="${e.done ? 'done' : nx && e.id === nx.id ? 'next' : ''}"><span class="d"></span><span class="num">${clock(e.time)}</span><span class="num">${fmtW(e.amount)}</span></li>`).join('') || '<li><span></span><span>No sips scheduled</span><span></span></li>'}</ul>
+        <button class="btn block" data-act="w-ics" style="margin-top:12px">Add reminders to my calendar</button>
+        <p class="note">Phones only give reliable alerts through their own calendar, so this adds each sip as a daily event with an alert. While MetaMorph is open it also nudges you when a sip is due.</p>
+      </div>
+      <div class="card">
+        <p class="label">Last 7 days</p>
+        <div class="week7">${days.map((d, i) => `<div class="col"><div class="bw"><div class="tl2" style="bottom:${100 * w.target / mx}%"></div><div class="b ${totals[i] >= w.target ? 'hit' : ''}" style="height:${100 * totals[i] / mx}%" title="${fmtW(totals[i])}"></div></div><span class="lbl ${i === 6 ? 'today' : ''}">${WD[d.getDay()][0]}</span></div>`).join('')}</div>
+      </div>
+      ${log.length ? `<div class="card"><p class="label">Today's log</p><ul class="wlog">${log.map(e => `<li><span class="num">${new Date(e.t).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' })}</span><span class="num">${fmtW(e.ml)}<button data-act="w-del" data-t="${e.t}" aria-label="Remove">✕</button></span></li>`).join('')}</ul></div>` : ''}`;
+  }
+
+  function waterSheet() {
+    const e = V.wedit, u = e.unit, tot = e.schedule.reduce((t, x) => t + x.amount, 0);
+    return `
+      <div class="sheet-bg ${e.fresh ? 'enter' : ''}" data-act="w-cancel-bg">
+        <form class="sheet" id="wform" autocomplete="off">
+          <h2>Water schedule</h2>
+          <p class="label">Units</p>
+          <div class="chips">${['ml', 'oz'].map(x => `<label class="chip"><input type="radio" name="w_unit" value="${x}" ${u === x ? 'checked' : ''}><span>${x}</span></label>`).join('')}</div>
+          <div class="grid2">
+            <div class="field"><label>Daily target (${u})</label><input name="w_target" type="number" inputmode="decimal" min="0.1" step="any" value="${fmtIn(e.target, u)}"></div>
+            <div class="field"><label>Pour size (${u})</label><input name="w_pour" type="number" inputmode="decimal" min="0.1" step="any" value="${fmtIn(e.pour, u)}"></div>
+            <div class="field"><label>Wake</label><input name="w_wake" type="time" value="${e.wake}"></div>
+            <div class="field"><label>Bed</label><input name="w_bed" type="time" value="${e.bed}"></div>
+          </div>
+          <button class="btn block" type="button" data-act="w-auto">Auto-space from wake to 2h before bed</button>
+          <p class="label" style="margin-top:16px">Sips</p>
+          ${e.schedule.map((x, i) => `<div class="wrow"><input name="wt${i}" type="time" value="${x.time}" aria-label="Time"><input name="wa${i}" type="number" inputmode="decimal" min="0.1" step="any" value="${fmtIn(x.amount, u)}" aria-label="Amount (${u})"><button type="button" data-act="w-rm" data-i="${i}" aria-label="Remove sip">✕</button></div>`).join('')}
+          <button class="btn block" type="button" data-act="w-addrow" style="margin-bottom:8px">+ Add sip</button>
+          <div class="total num">${e.schedule.length} sips · ${fmtW(tot, u)} scheduled${Math.abs(tot - e.target) > 1 ? ` · target is ${fmtW(e.target, u)}` : ''}</div>
+          <button class="btn primary block" type="submit" style="margin-bottom:8px">Save</button>
+          <button class="btn block" type="button" data-act="w-cancel">Cancel</button>
+        </form>
+      </div>`;
+  }
+
+  // read typed values (in the unit they were typed in) before any re-render of the sheet
+  function syncWEdit() {
+    const f = document.getElementById('wform');
+    if (!f || !V.wedit) return;
+    const e = V.wedit, el = f.elements, k = e.unit === 'oz' ? ML_OZ : 1;
+    const num = (v, d) => { const n = Number(v); return n > 0 ? Math.round(n * k) : d; };
+    e.target = num(el.w_target.value, e.target);
+    e.pour = num(el.w_pour.value, e.pour);
+    e.wake = el.w_wake.value || e.wake;
+    e.bed = el.w_bed.value || e.bed;
+    e.schedule.forEach((x, i) => { x.time = el['wt' + i].value || x.time; x.amount = num(el['wa' + i].value, x.amount); });
+    e.unit = (f.querySelector('input[name=w_unit]:checked') || {}).value || e.unit;
+  }
+
+  function waterICS() {
+    const pad = n => String(n).padStart(2, '0'), d = new Date();
+    const ymd = `${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}`;
+    const stamp = new Date().toISOString().replace(/[-:]/g, '').replace(/\.\d+/, '');
+    const lines = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//MetaMorph//Water//EN', 'CALSCALE:GREGORIAN'];
+    for (const e of wSched()) {
+      const [h, m] = e.time.split(':');
+      // floating local time, so alerts follow the phone's timezone
+      lines.push('BEGIN:VEVENT', `UID:water-${e.id}@metamorph`, `DTSTAMP:${stamp}`, `DTSTART:${ymd}T${h}${m}00`, 'DURATION:PT5M', 'RRULE:FREQ=DAILY',
+        `SUMMARY:Water · ${fmtW(e.amount)}`, 'BEGIN:VALARM', 'ACTION:DISPLAY', `DESCRIPTION:Water · ${fmtW(e.amount)}`, 'TRIGGER:PT0M', 'END:VALARM', 'END:VEVENT');
+    }
+    lines.push('END:VCALENDAR');
+    return new Blob([lines.join('\r\n') + '\r\n'], { type: 'text/calendar' });
+  }
+
+  function deliver(blob, name, title) {
+    const file = new File([blob], name, { type: blob.type });
+    if (navigator.canShare && navigator.canShare({ files: [file] })) return navigator.share({ files: [file], title }).catch(() => {});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = name;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+  }
+
+  /* ----- feature law ----- */
+
+  const F = () => S.features;
+  const TRIALS_NEEDED = 30;
+
+  function lintFeature(t) {
+    const x = t.trim().toLowerCase();
+    if (!x) return null;
+    if (/[,;&+]|\band\b/.test(x)) return { lvl: 'warn', msg: 'One feature only. A Lantern given three bearings lights none of them.' };
+    const notice = /^(notice|spot|watch for|listen for|catch)\b/.test(x);
+    if (!notice && (/^(be|feel|get|have|win|close|achieve|succeed|make|become|improve|stop|try|land|nail|crush|do)\b/.test(x)
+        || /\b(more|less|better|good day|confident|successful|happy|productive|great)\b/.test(x)))
+      return { lvl: 'warn', msg: 'That’s an outcome, and the Lantern can’t aim at outcomes. Name something you could notice: “Notice …”' };
+    if (notice) return { lvl: 'ok', msg: 'Loadable: something you could notice.' };
+    return { lvl: 'info', msg: 'Tip: start with “Notice” and name something you could see or hear.' };
+  }
+
+  function featureView() {
+    const f = F(), open = f.items.filter(x => !x.check), done = f.items.filter(x => x.check);
+    const L = done.filter(x => x.mode === 'loaded'), C = done.filter(x => x.mode === 'control');
+    const ar = a => a.length ? avg(a.map(x => x.check.rating)) : null;
+    const ub = a => a.length ? Math.round(100 * a.filter(x => x.check.unbidden).length / a.length) : null;
+    const la = ar(L), ca = ar(C);
+    const enough = done.length >= TRIALS_NEEDED && L.length >= 8 && C.length >= 8;
+    let verdict = '';
+    if (enough) verdict = la - ca >= 0.5
+      ? `<p class="hint ok">Loaded contexts are noticed more (+${(la - ca).toFixed(1)}). The Feature Law is holding for you.</p>`
+      : `<p class="hint warn">No clear difference after ${done.length} trials. The book says to mark the Feature Law Speculative in your copy.</p>`;
+    const lint = lintFeature(V.fDraft.text);
+    return `
+      <div class="card">
+        <p class="label" style="margin:0">The Feature Law</p>
+        <p class="lawq"><b>The Lantern biases perceptual features. It does not bias outcomes.</b> An intent you couldn’t <i>notice</i> gives it nothing to aim at.</p>
+      </div>
+      <div class="card">
+        <p class="label">Load one feature</p>
+        <div class="field"><label>For</label><input id="fctx" value="${esc(V.fDraft.ctx)}" placeholder="Today, a meeting, the gym…" autocomplete="off"></div>
+        <div class="opts" style="margin:-4px 0 14px">${['Today', 'Meeting', 'Workout', 'Conversation'].map(c => `<button type="button" data-act="f-ctx" data-v="${c}" class="${V.fDraft.ctx === c ? 'on' : ''}">${c}</button>`).join('')}</div>
+        <div class="field" style="margin-bottom:0"><label>The one thing you'll notice</label><input id="ftext" value="${esc(V.fDraft.text)}" placeholder="Notice the pause before they answer" autocomplete="off"></div>
+        <p class="hint ${lint ? lint.lvl : ''}" id="fhint">${lint ? esc(lint.msg) : ''}</p>
+        <label class="checkrow"><input type="checkbox" id="fexp" ${f.experiment ? 'checked' : ''}> Experiment: about 1 in 3 loads becomes a control trial</label>
+        <button class="btn primary block" data-act="f-load">Load feature · 30s hold</button>
+      </div>
+      ${open.length ? `<div class="card"><p class="label">Check in afterwards</p><ul class="flist">${open.slice().reverse().map(x => `<li><span>
+          <div class="ctx">${esc(x.ctx || 'Context')} · ${new Date(x.t).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' })}${x.mode === 'control' ? '<span class="mtag ctl">CONTROL</span>' : ''}</div>
+          <div class="txt">${esc(x.text)}</div></span>
+          <span class="row" style="gap:6px"><button class="btn small ghost" data-act="f-discard" data-id="${x.id}" aria-label="Discard this trial">✕</button><button class="btn small primary" data-act="f-check" data-id="${x.id}">Check in</button></span></li>`).join('')}</ul></div>` : ''}
+      <div class="card">
+        <p class="label">Is it working for you?</p>
+        <div class="cmp">
+          <div><b>${la == null ? '—' : la.toFixed(1)}</b><span>Loaded · noticed 0–4<br>${L.length} trial${L.length === 1 ? '' : 's'}${ub(L) != null ? ` · ${ub(L)}% unbidden` : ''}</span></div>
+          <div><b>${ca == null ? '—' : ca.toFixed(1)}</b><span>Control · noticed 0–4<br>${C.length} trial${C.length === 1 ? '' : 's'}${ub(C) != null ? ` · ${ub(C)}% unbidden` : ''}</span></div>
+        </div>
+        <div class="prog"><i style="width:${Math.min(100, 100 * done.length / TRIALS_NEEDED)}%"></i></div>
+        <p class="muted num" style="font-size:12px;margin:6px 0 0">${done.length}/${TRIALS_NEEDED} checked-in trials${enough ? '' : ' before a verdict (at least 8 of each kind)'}</p>
+        ${verdict}
+      </div>
+      ${done.length ? `<div class="card"><p class="label">Recent</p><ul class="flist">${done.slice(-8).reverse().map(x => `<li><span>
+          <div class="ctx">${esc(x.ctx || 'Context')} · ${new Date(x.t).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}<span class="mtag ${x.mode === 'control' ? 'ctl' : ''}">${x.mode === 'control' ? 'CONTROL' : 'LOADED'}</span></div>
+          <div class="txt">${esc(x.text)}</div></span><span class="num muted">${x.check.rating}/4</span></li>`).join('')}</ul></div>` : ''}`;
+  }
+
+  function renderFeatRun() {
+    const x = F().items.find(i => i.id === featRun.id);
+    if (!x) { featRun = null; return render(); }
+    let center, controls;
+    if (featRun.mode === 'control') {
+      center = `<div class="phase" style="color:var(--release)">CONTROL TRIAL</div>
+        <div class="holdtext">${esc(x.text)}</div>
+        <div class="instr">Don’t rehearse it. Put it out of mind and go in as you normally would. You’ll check in the same way afterwards, so the two can be compared.</div>`;
+      controls = `<div class="controls one"><button class="btn primary" data-act="f-done">Got it</button></div>`;
+    } else if (featRun.held) {
+      center = `${orb('chaos', 110, 'still')}
+        <div class="phase" style="color:var(--ok)">LOADED</div>
+        <div class="holdtext">${esc(x.text)}</div>
+        <div class="instr">Go in. Check in afterwards from the Feature tab.</div>`;
+      controls = `<div class="controls one"><button class="btn primary" data-act="f-done">Done</button></div>`;
+    } else {
+      center = `${orb('chaos', 110, 'still')}
+        <div class="phase" style="color:var(--accent)">HOLD THE FEATURE</div>
+        <div class="holdtext">${esc(x.text)}</div>
+        <div class="clock" id="clock" style="font-size:56px">${mmss((featRun.end - Date.now()) / 1000)}</div>
+        <div class="bar" style="color:var(--accent);max-width:240px"><i id="bar"></i></div>
+        <div class="instr">Keep it in view until the context begins.</div>`;
+      controls = `<div class="controls one"><button class="btn ghost" data-act="f-done">Skip the hold</button></div>`;
+    }
+    $app.innerHTML = `<div class="run"><div class="inner">
+      <div class="top"><span>${esc(x.ctx || 'Feature')}</span><span></span></div>
+      <div class="center">${center}</div>${controls}</div></div>`;
+    tick();
+  }
+
+  function checkSheet() {
+    const c = V.fcheck, x = F().items.find(i => i.id === c.id);
+    const opts = (k, list) => `<div class="opts" style="margin-bottom:16px">${list.map(([v, l]) =>
+      `<button type="button" data-act="fc-set" data-k="${k}" data-v="${v}" class="${c[k] != null && String(c[k]) === String(v) ? 'on' : ''}">${l}</button>`).join('')}</div>`;
+    return `<div class="sheet-bg ${c.fresh ? 'enter' : ''}" data-act="fc-cancel-bg"><div class="sheet">
+      <h2>Check in</h2>
+      <p class="muted" style="margin:-6px 0 16px">${esc(x.ctx || 'Context')}: <b style="color:var(--text)">${esc(x.text)}</b></p>
+      <p class="label">How often did you notice it?</p>
+      ${opts('rating', [[0, 'Never'], [1, 'Once'], [2, 'A few times'], [3, 'Often'], [4, 'Constantly']])}
+      <p class="label">Did it come up without you calling it?</p>
+      ${opts('unbidden', [[1, 'Yes'], [0, 'No']])}
+      <p class="label">When did it stop presenting? <span style="text-transform:none;letter-spacing:0">(optional)</span></p>
+      ${opts('stopped', [['still', 'Still going'], ['lt1', 'Under 1h'], ['1to3', '1–3h'], ['gt3', '3h+'], ['never', 'Didn’t start']])}
+      <button class="btn primary block" data-act="fc-save" ${c.rating == null || c.unbidden == null ? 'disabled' : ''}>Save check-in</button>
+      <button class="btn ghost block" data-act="fc-cancel" style="margin-top:8px">Cancel</button>
+    </div></div>`;
+  }
+
+  const anySheet = () => !!(V.edit || V.data || V.whatsNew || V.wedit || V.fcheck);
 
   /* ---------- timers ---------- */
 
   function tick() {
     const clock = document.getElementById('clock');
     if (drillRun) {
-      const r = drillRun, left = r.end - Date.now(), bar = document.getElementById('bar');
-      if (left <= 0) return advanceDrill();
+      // no countdown on screen: the drill only advances on its own clock
+      if (Date.now() >= drillRun.end) advanceDrill();
+    } else if (featRun && !featRun.held && featRun.end) {
+      const left = featRun.end - Date.now(), bar = document.getElementById('bar');
+      if (left <= 0) { featRun.held = true; stopTicker(); beep(784, 0.35); return renderFeatRun(); }
       if (clock) clock.textContent = mmss(left / 1000);
-      if (bar) bar.style.width = (100 * (1 - left / (r.end - r.start))) + '%';
+      if (bar) bar.style.width = (100 * (1 - left / 30000)) + '%';
     } else if (run && run.phase === 'step') {
       const left = runLeft(), seg = document.getElementById('seg');
       if (!run.paused && left <= 0) return finishStep();
@@ -1353,37 +1853,91 @@
         break;
 
       /* drill */
-      case 'step': {
-        const k = el.dataset.k, d = Number(el.dataset.d);
-        const lim = { focus: [10, 300, 5], release: [10, 300, 5], rounds: [1, 30, 1] }[k];
-        S.drill[k] = Math.min(lim[1], Math.max(lim[0], S.drill[k] + d * lim[2]));
-        save(); render(); break;
-      }
-      case 'drill-start':
-        unlockAudio();
-        drillRun = { round: 1, latencies: [], catches: 0 };
-        lockScreen(); startTicker(); setDrillPhase('focus'); break;
-      case 'lock':
-        if (drillRun && drillRun.phase === 'focus' && !drillRun.locked) {
-          drillRun.latencies.push(Math.round((Date.now() - drillRun.start) / 100) / 10);
-          drillRun.locked = true;
-          buzz(); renderDrillRun();
-        }
-        break;
-      case 'catch':
-        if (drillRun) { drillRun.catches++; buzz(); renderDrillRun(); }
-        break;
-      case 'drill-stop': {
-        const r = drillRun;
-        finishDrill(r.phase === 'release' ? r.round : r.round - 1); break;
-      }
+      case 'dset': S.drill[el.dataset.k] = Number(el.dataset.v); save(); render(); break;
+      case 'cue-return': unlockAudio(); cueReturn(); break;
+      case 'cue-release': unlockAudio(); cueRelease(); break;
+      case 'drill-start': startDrill(); break;
+      case 'drill-stop': finishDrill(); break;
       case 'summary-ok': V.summary = null; render(); break;
+
+      /* water */
+      case 'w-add': {
+        const st = wState();
+        V.wFrom = Math.min(100, 100 * st.got / st.target);
+        addWater(Number(el.dataset.ml)); buzz(); render(); break;
+      }
+      case 'w-undo': {
+        const k = today(), st = wState();
+        V.wFrom = Math.min(100, 100 * st.got / st.target);
+        if (W().log[k] && W().log[k].length) { W().log[k].pop(); save(); }
+        render(); break;
+      }
+      case 'w-del': {
+        const k = today(), t = Number(el.dataset.t), st = wState();
+        V.wFrom = Math.min(100, 100 * st.got / st.target);
+        W().log[k] = wLog(k).filter(e => e.t !== t); save(); render(); break;
+      }
+      case 'w-snooze': W().snooze = { [today()]: el.dataset.id }; save(); render(); break;
+      case 'w-ics': deliver(waterICS(), 'metamorph-water.ics', 'Water reminders'); break;
+      case 'w-edit': {
+        const w = W();
+        V.wedit = { fresh: true, unit: w.unit, target: w.target, pour: w.pour, wake: w.wake, bed: w.bed, schedule: w.schedule.map(x => ({ ...x })) };
+        render(); break;
+      }
+      case 'w-auto': syncWEdit(); V.wedit.schedule = autoSchedule(V.wedit.target, V.wedit.pour, V.wedit.wake, V.wedit.bed); render(); break;
+      case 'w-addrow': {
+        syncWEdit();
+        const sc = V.wedit.schedule, last = sc.length ? sc[sc.length - 1].time : '11:00';
+        sc.push({ id: uid(), time: fromMinHM(toMin(last) + 60), amount: V.wedit.pour });
+        render(); break;
+      }
+      case 'w-rm': syncWEdit(); V.wedit.schedule.splice(Number(el.dataset.i), 1); render(); break;
+      case 'w-cancel-bg': if (e.target !== el) break;
+      // fallthrough
+      case 'w-cancel': V.wedit = null; render(); break;
+
+      /* feature law */
+      case 'f-ctx': V.fDraft.ctx = el.dataset.v; render(); break;
+      case 'f-load': {
+        const text = V.fDraft.text.trim();
+        if (!text) { alert('Write the one feature you’ll notice.'); break; }
+        const mode = F().experiment && Math.random() < 1 / 3 ? 'control' : 'loaded';
+        const item = { id: uid(), ctx: V.fDraft.ctx.trim(), text, t: Date.now(), mode, check: null };
+        F().items.push(item);
+        if (F().items.length > 1000) F().items.shift();
+        save();
+        V.fDraft.text = '';
+        unlockAudio();
+        featRun = { id: item.id, mode, end: mode === 'loaded' ? Date.now() + 30000 : null, held: false };
+        if (mode === 'loaded') { lockScreen(); startTicker(); beep(660, 0.2); }
+        render(); break;
+      }
+      case 'f-discard':
+        if (confirm('Discard this trial? It won’t count toward the results.')) { F().items = F().items.filter(i => i.id !== el.dataset.id); save(); render(); }
+        break;
+      case 'f-done': featRun = null; stopTicker(); unlockScreen(); render(); break;
+      case 'f-check': V.fcheck = { id: el.dataset.id, fresh: true, rating: null, unbidden: null, stopped: null }; render(); break;
+      case 'fc-set': {
+        const k = el.dataset.k, v = el.dataset.v;
+        V.fcheck[k] = k === 'stopped' ? (V.fcheck.stopped === v ? null : v) : Number(v);
+        render(); break;
+      }
+      case 'fc-save': {
+        const c = V.fcheck, x = F().items.find(i => i.id === c.id);
+        x.check = { rating: c.rating, unbidden: !!c.unbidden, stopped: c.stopped, t: Date.now() };
+        save(); V.fcheck = null; render(); break;
+      }
+      case 'fc-cancel-bg': if (e.target !== el) break;
+      // fallthrough
+      case 'fc-cancel': V.fcheck = null; render(); break;
     }
   });
 
   // switching the repeat type shows its day/date pickers; restore reads the chosen backup file
   $app.addEventListener('change', e => {
     if (e.target.name === 'rt') { syncEdit(); render(); }
+    if (e.target.name === 'w_unit') { syncWEdit(); render(); }
+    if (e.target.id === 'fexp') { F().experiment = e.target.checked; save(); }
     if (e.target.id === 'restorefile' && e.target.files[0]) {
       e.target.files[0].text().then(txt => {
         let payload;
@@ -1407,6 +1961,7 @@
   const swipe = { s: null, justSwiped: false };
   const TRIGGER = 80;
   $app.addEventListener('pointerdown', e => {
+    if (drillRun && e.target.closest('#tapzone')) { e.preventDefault(); drillTap(); return; }
     const it = e.target.closest('.tl .it');
     if (!it || e.button > 0) return;
     swipe.s = { it, li: it.parentElement, id: e.pointerId, x: e.clientX, y: e.clientY, dx: 0, on: false };
@@ -1448,7 +2003,35 @@
   $app.addEventListener('pointerup', endSwipe);
   $app.addEventListener('pointercancel', endSwipe);
 
+  // live phrasing check for the Feature Law, without re-rendering while typing
+  $app.addEventListener('input', e => {
+    if (e.target.id === 'fctx') V.fDraft.ctx = e.target.value;
+    if (e.target.id === 'ftext') {
+      V.fDraft.text = e.target.value;
+      const h = document.getElementById('fhint'), l = lintFeature(e.target.value);
+      if (h) { h.className = 'hint ' + (l ? l.lvl : ''); h.textContent = l ? l.msg : ''; }
+    }
+  });
+
   $app.addEventListener('submit', e => {
+    if (e.target.id === 'wcustom') {
+      e.preventDefault();
+      const v = Number(e.target.elements.amt.value);
+      if (v > 0) {
+        const st = wState();
+        V.wFrom = Math.min(100, 100 * st.got / st.target);
+        addWater(W().unit === 'oz' ? v * ML_OZ : v); buzz(); render();
+      }
+      return;
+    }
+    if (e.target.id === 'wform') {
+      e.preventDefault();
+      syncWEdit();
+      const ed = V.wedit;
+      Object.assign(W(), { unit: ed.unit, target: ed.target, pour: ed.pour, wake: ed.wake, bed: ed.bed, schedule: ed.schedule, scheduleInit: true });
+      save(); V.wedit = null; render();
+      return;
+    }
     if (e.target.id !== 'editform') return;
     e.preventDefault();
     syncEdit();
@@ -1464,7 +2047,8 @@
   });
 
   // keep "now" / "in Xm" fresh while idle
-  setInterval(() => { if (!drillRun && !run && !V.edit && !V.data && !V.whatsNew && !swipe.s) render(); }, 30000);
+  const typing = () => $app.contains(document.activeElement) && /^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName);
+  setInterval(() => { if (!drillRun && !run && !featRun && !anySheet() && !swipe.s && !typing()) render(); }, 30000);
 
   // after an update (or the first open of a new version), show what changed
   try {
