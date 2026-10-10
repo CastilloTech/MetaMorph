@@ -29,10 +29,21 @@
     --danger: #c46a6a;
     --radius: 14px;
   }
+  @font-face { font-family: 'Cinzel'; src: url('fonts/cinzel.woff2') format('woff2'); font-weight: 400 900; font-display: swap; }
+  :root { --display: 'Cinzel', 'Trajan Pro', Georgia, serif; }
+  :root[data-evening] {
+    --bg: #120e0b; --surface: #1b1511; --surface-2: #251d17; --line: #362a20;
+    --text: #ecdfca; --muted: #a08f7a; --accent: #dca46a; --accent-ink: #1e1306; --focus: #dca46a;
+  }
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   html, body { margin: 0; height: 100%; }
   body {
-    background: var(--bg);
+    /* a faint glow from above and a soft vignette give the dark some depth */
+    background:
+      radial-gradient(120% 60% at 50% -12%, color-mix(in srgb, #8a6bff 13%, transparent), transparent 62%),
+      radial-gradient(140% 90% at 50% 120%, rgba(0,0,0,.45), transparent 60%),
+      var(--bg);
+    background-attachment: fixed;
     color: var(--text);
     font: 16px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
     font-variant-emoji: text;
@@ -45,7 +56,7 @@
     padding: calc(14px + env(safe-area-inset-top)) 16px 10px;
     display: flex; align-items: baseline; justify-content: space-between;
   }
-  header h1 { font-size: 20px; margin: 0; letter-spacing: .04em; font-weight: 600; }
+  header h1 { font-family: var(--display); font-size: 21px; margin: 0; letter-spacing: .08em; font-weight: 700; }
   header .date { color: var(--muted); font-size: 14px; }
   main { flex: 1; padding: 4px 16px calc(96px + env(safe-area-inset-bottom)); }
 
@@ -540,7 +551,8 @@
   .total { color: var(--muted); font-size: 14px; margin: 4px 0 14px; }
 
   /* ---------- mobile ---------- */
-  html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+  html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; scroll-padding-bottom: calc(96px + env(safe-area-inset-bottom)); }
+  .sheet { scroll-padding-bottom: 24px; }
   /* no pull-to-refresh or rubber-band behind the app */
   body { overscroll-behavior-y: none; }
   /* taps respond immediately (no double-tap-zoom delay) */
@@ -583,10 +595,104 @@
     .stats4 b { font-size: 17px; }
     .clock { font-size: 64px; }
   }
+
+  /* ---------- overlay: undo banner, dialogs ---------- */
+  .snack { position: fixed; left: 16px; right: 16px; bottom: calc(84px + env(safe-area-inset-bottom)); max-width: 528px; margin: 0 auto; z-index: 60;
+           display: flex; align-items: center; gap: 12px; padding: 10px 10px 10px 16px; border-radius: 14px; background: #2a2f3a; color: var(--text);
+           box-shadow: 0 12px 30px rgba(0,0,0,.5); animation: rise .25s ease; font-size: 15px; }
+  .snack span { flex: 1; }
+  .snack .btn { color: var(--accent); background: none; border-color: transparent; font-weight: 700; }
+  .snack.out { opacity: 0; transform: translateY(8px); transition: opacity .2s, transform .2s; }
+  .askbg { position: fixed; inset: 0; z-index: 70; background: rgba(0,0,0,.6); display: flex; align-items: center; justify-content: center; padding: 24px; animation: fade .15s ease; }
+  .askbg.out { opacity: 0; transition: opacity .18s; }
+  .ask { width: 100%; max-width: 360px; background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 20px; animation: rise .22s ease; }
+  .ask h2 { margin: 0 0 6px; font-size: 18px; }
+  .ask p { margin: 0 0 16px; color: var(--muted); font-size: 15px; line-height: 1.45; }
+  .btn.dangerfill { background: var(--danger); border-color: var(--danger); color: #fff; }
+
+  /* ---------- Now stack ---------- */
+  .nowstack { padding: 4px 16px; }
+  .nowrow { display: grid; grid-template-columns: 34px 1fr auto; gap: 12px; align-items: center; padding: 10px 0; border-top: 1px solid var(--line); }
+  .nowrow:first-child { border-top: 0; }
+  .nowrow .ic { width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; background: var(--surface-2); }
+  .nowrow .ic .orb, .nowrow .ic .drop { width: 26px; height: 26px; filter: none; }
+  .nowrow .ic svg { width: 18px; height: 18px; }
+  .nowrow .tt { font-weight: 600; font-size: 15px; }
+  .nowrow .ss { font-size: 13px; color: var(--muted); }
+
+  /* ---------- switches ---------- */
+  .switch { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 0; border-top: 1px solid var(--line); font-size: 15px; cursor: pointer; }
+  .switch:first-of-type { border-top: 0; }
+  .switch small { display: block; color: var(--muted); font-size: 12px; }
+  .switch input { appearance: none; -webkit-appearance: none; width: 48px; height: 28px; border-radius: 999px; background: var(--surface-2); border: 1px solid var(--line); position: relative; flex: none; transition: background .2s; }
+  .switch input::after { content: ""; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%; background: var(--muted); transition: transform .2s, background .2s; }
+  .switch input:checked { background: var(--accent); border-color: var(--accent); }
+  .switch input:checked::after { transform: translateX(20px); background: var(--accent-ink); }
+
+  /* ---------- onboarding ---------- */
+  .onb { position: fixed; inset: 0; z-index: 35; background: var(--bg); overflow-y: auto; padding: calc(28px + env(safe-area-inset-top)) 20px calc(24px + env(safe-area-inset-bottom)); }
+  .onb .inner { max-width: 480px; margin: 0 auto; min-height: 100%; display: flex; flex-direction: column; }
+  .onb .body { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 14px; animation: rise .35s ease; }
+  .onb h1 { margin: 0; font-size: 30px; }
+  .onb p.lead { color: var(--muted); font-size: 16px; line-height: 1.5; margin: 0; }
+  .onb .pips { display: flex; gap: 6px; justify-content: center; margin-bottom: 14px; }
+  .onb .pips i { width: 7px; height: 7px; border-radius: 50%; background: var(--surface-2); }
+  .onb .pips i.on { background: var(--accent); }
+  .onb .hero-orb { width: 160px; height: 160px; margin: 0 auto 8px; }
+  .onb .foot { display: grid; gap: 8px; margin-top: 18px; }
+  .starter { display: grid; grid-template-columns: 36px 1fr auto; gap: 12px; align-items: center; padding: 10px 0; border-top: 1px solid var(--line); cursor: pointer; }
+  .starter:first-of-type { border-top: 0; }
+  .starter .orb { width: 34px; height: 34px; filter: none; }
+  .starter input { width: 22px; height: 22px; accent-color: var(--accent); }
+
+  /* ---------- grimoire type ---------- */
+  .sechead h3, .gatehead .nm, .hero .ti, .sheet h2, .ask h2, .onb h1, .drillhero h2, .stepname, .whatsnew-head h2 { font-family: var(--display); letter-spacing: .03em; font-weight: 700; }
+  .hero .ti { font-size: 23px; }
+  .label, .phase, .upnext, .hero .when, .grouphead h3 { font-family: var(--display); letter-spacing: .14em; }
+
+  /* ---------- tab bar: icons + sliding indicator ---------- */
+  nav.tabs .inner { position: relative; }
+  nav.tabs button { display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 8px 2px 7px; font-size: 12px; background: none !important; position: relative; z-index: 1; }
+  nav.tabs button svg { width: 22px; height: 22px; }
+  nav.tabs button.on { color: var(--accent); }
+  nav.tabs .ind { position: absolute; top: 0; bottom: 0; left: 0; border-radius: 12px; background: var(--surface-2); transition: transform .32s cubic-bezier(.2,.8,.2,1); z-index: 0; }
+  nav.tabs .ind::after { content: ""; position: absolute; left: 30%; right: 30%; top: 0; height: 2px; border-radius: 2px; background: var(--accent); }
+
+  /* ---------- chaos orb brightens as Gates are held ---------- */
+  .nexus .orb { filter: drop-shadow(0 0 calc(8px + 34px * var(--held, 0)) rgba(150, 120, 255, calc(.22 + .55 * var(--held, 0)))) brightness(calc(.86 + .26 * var(--held, 0))); transition: filter .8s; }
+  :root[data-evening] .orb { filter: brightness(.82) saturate(.85); }
+  :root[data-evening] .nexus .orb { filter: drop-shadow(0 0 calc(6px + 20px * var(--held, 0)) rgba(220, 150, 90, calc(.18 + .4 * var(--held, 0)))) brightness(calc(.75 + .2 * var(--held, 0))) saturate(.85); }
+  :root[data-evening] body { background: radial-gradient(120% 60% at 50% -12%, rgba(220,140,70,.10), transparent 62%), radial-gradient(140% 90% at 50% 120%, rgba(0,0,0,.5), transparent 60%), var(--bg); background-attachment: fixed; }
+
+  /* ---------- gestures ---------- */
+  .grab { display: flex; justify-content: center; align-items: center; height: 28px; margin: -16px -16px 4px; touch-action: none; cursor: grab; }
+  .grab::before { content: ""; width: 42px; height: 5px; border-radius: 3px; background: var(--line); }
+  .sheet { transition: transform .22s cubic-bezier(.2,.8,.2,1); }
+  .wk, .mo, .calnav { touch-action: pan-y; -webkit-user-select: none; user-select: none; }
+  .tl .it, .todos .tx { -webkit-touch-callout: none; }
+  .qa .qa-item { margin-bottom: 8px; justify-content: flex-start; text-align: left; }
+
+  /* ---------- celebrations ---------- */
+  .cele { position: fixed; inset: 0; z-index: 65; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; padding: 24px; text-align: center;
+          background: radial-gradient(circle at 50% 45%, color-mix(in srgb, var(--glow) 22%, rgba(0,0,0,.6)), rgba(0,0,0,.86) 62%); animation: fade .25s ease; }
+  .cele.out { opacity: 0; transition: opacity .4s; }
+  .cele .burst { position: relative; display: grid; place-items: center; margin-bottom: 8px; }
+  .cele .orb { width: 150px; height: 150px; animation: pop .75s cubic-bezier(.2,1.4,.3,1); filter: drop-shadow(0 0 30px var(--glow)); }
+  .cele.all .orb { width: 200px; height: 200px; }
+  .cele .burst i { position: absolute; width: 150px; height: 150px; border-radius: 50%; border: 2px solid var(--glow); opacity: 0; animation: ring 1.5s ease-out forwards; }
+  .cele .burst i:nth-child(2) { animation-delay: .18s; }
+  .cele .burst i:nth-child(3) { animation-delay: .36s; }
+  .cele .ct { font-family: var(--display); font-size: 27px; font-weight: 700; letter-spacing: .06em; animation: rise .5s .15s both; }
+  .cele .cs { color: var(--muted); animation: rise .5s .25s both; }
+  @keyframes pop { 0% { transform: scale(.3) rotate(-30deg); opacity: 0; } 60% { transform: scale(1.12) rotate(6deg); opacity: 1; } 100% { transform: none; } }
+  @keyframes ring { 0% { transform: scale(.6); opacity: .9; } 100% { transform: scale(2.4); opacity: 0; } }
+  @media (prefers-reduced-motion: reduce) { .cele .orb, .cele .ct, .cele .cs { animation: none; } .cele .burst i { display: none; } }
 </style>
 </head>
 <body>
 <div id="app"></div>
+<div id="overlay"></div>
+<script src="vendor/morphdom.min.js"></script>
 
 <script>
 (() => {
@@ -609,8 +715,18 @@
   const KEY = 'metamorph.v1';
 
   // Keep in step with CACHE in sw.js. Add a CHANGELOG entry for each release.
-  const APP_VERSION = 12;
+  const APP_VERSION = 13;
   const CHANGELOG = {
+    13: [
+      'Smoother everywhere: screens update in place, so scrolling and typing are never interrupted',
+      'Undo instead of “Are you sure?” for deletes, and proper in-app dialogs',
+      'Today shows everything that needs you in one place: water, to-dos, check-ins, an open workout',
+      'A new look: carved headings, tab icons, and an orb that glows brighter as you hold your Gates',
+      'Evening mode: warmer, dimmer colors from your Sleep wind-down until morning',
+      'Gestures: drag sheets down to close, swipe the calendar, long-press a routine or task for quick actions (including Skip today)',
+      'Holding a Gate, all four Gates, or a new PR now gets its moment',
+      'Settings → Sections: hide the parts of the app you don’t use',
+    ],
     12: [
       'Built for phones: bigger tap targets, no zoom-in when you tap a field, instant taps, and press feedback',
       'Sheets fit above the keyboard and keep the field you’re typing in visible',
@@ -718,6 +834,9 @@
     if (!s.nutri) s.nutri = { goals: { kcal: 2200, p: 150, c: 220, f: 70 }, foods: [], preps: [], log: {} };
     if (!s.workouts) s.workouts = { unit: 'lb', library: [], log: [], draft: null };
     if (!s.supplies) s.supplies = { items: [] };
+    if (!s.sections) s.sections = { water: true, todo: true, supplies: true, practice: true, other: true, workouts: true, macros: true };
+    if (!s.prefs) s.prefs = { evening: true };
+    if (!s.skip) s.skip = {};
     return s;
   }
 
@@ -782,6 +901,7 @@
     const cutoff = addDays(new Date(), -400);
     for (const k of Object.keys(S.done)) if (parseKey(k) < cutoff) delete S.done[k];
     for (const k of Object.keys(S.fin)) if (parseKey(k) < cutoff) delete S.fin[k];
+    for (const k of Object.keys(S.skip)) if (parseKey(k) < cutoff) delete S.skip[k];
     for (const k of Object.keys(S.nutri.log)) if (parseKey(k) < cutoff) delete S.nutri.log[k];
     save();
   })();
@@ -801,6 +921,8 @@
       const s = json && JSON.parse(json);
       if (valid(s)) {
         replaceState(s);
+        S.onboarded = true;
+        V.onboard = null;
         resumeRun();
         render();
       }
@@ -813,6 +935,24 @@
   /* ---------- helpers ---------- */
 
   const $app = document.getElementById('app');
+  const $overlay = document.getElementById('overlay');
+
+  // Update only what changed, so scroll position, focus and running animations survive a re-render.
+  function paint(html) {
+    if (!window.morphdom) { $app.innerHTML = html; return; }
+    morphdom($app, `<div id="app">${html}</div>`, {
+      childrenOnly: true,
+      onBeforeElUpdated(from, to) {
+        // never overwrite what's being typed
+        if (from === document.activeElement && /^(INPUT|TEXTAREA|SELECT)$/.test(from.tagName) && from.type !== 'checkbox' && from.type !== 'radio') {
+          to.value = from.value;
+          if (to.hasAttribute('value')) to.setAttribute('value', from.value);
+        }
+        return true;
+      },
+    });
+  }
+  const view = { set html(h) { paint(h); } };
   const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const mmss = sec => {
     sec = Math.max(0, Math.ceil(sec));
@@ -861,7 +1001,13 @@
     }
     return 'Every day';
   }
-  const allRoutines = (d = new Date()) => GATES.flatMap(g => S.gates[g.id].filter(r => scheduledOn(r, d)).map(r => ({ gate: g.id, r })))
+  // sections the user has switched off are hidden (their data stays)
+  const on = k => S.sections[k] !== false;
+  const activeGates = () => GATES.filter(g => !g.other || on('other'));
+  const visibleTabs = () => ['today', 'gates', ...(on('water') ? ['water'] : []), ...(on('todo') || on('supplies') ? ['todo'] : []), ...(on('practice') ? ['practice'] : [])];
+  // a routine skipped for a day leaves that day's timeline and counts (it isn't a miss)
+  const skipped = (id, k = today()) => !!(S.skip[k] && S.skip[k][id]);
+  const allRoutines = (d = new Date()) => activeGates().flatMap(g => S.gates[g.id].filter(r => scheduledOn(r, d) && !skipped(r.id, keyOf(d))).map(r => ({ gate: g.id, r })))
     .sort((a, b) => toMin(a.r.start) - toMin(b.r.start));
 
   const isDone = (id, k = today()) => !!(S.done[k] && S.done[k][id]);
@@ -916,9 +1062,9 @@
 
   const V = { tab: 'today', gate: 'sleep', edit: null, summary: null, cal: 'day', anchor: null, sel: null, data: false, slide: null,
               update: null, whatsNew: false, wedit: null, wFrom: null, fcheck: null, fDraft: { ctx: 'Today', text: '' },
-              ptab: 'feature', tedit: null, todoWhen: 'today', todoDraft: { text: '', date: '', time: '' }, nadd: null, ngoals: null, nprep: null,
+              ptab: 'feature', qa: null, tedit: null, todoWhen: 'today', todoDraft: { text: '', date: '', time: '' }, nadd: null, ngoals: null, nprep: null,
               woKind: 'strength', woName: '', ttab: 'todo', supCat: 'Grocery', sedit: null, scan: false };
-  const TABS = ['today', 'gates', 'water', 'todo', 'practice'], CALS = ['day', 'week', 'month'];
+  const CALS = ['day', 'week', 'month'];
   const slideTo = (list, from, to) => list.indexOf(to) > list.indexOf(from) ? 'r' : list.indexOf(to) < list.indexOf(from) ? 'l' : null;
   let drillRun = null;  // { phase: settle|focus|release, round, doneRounds, start, end, latencies[], catches, falseTaps, locked }
   let featRun = null;   // { id, mode: loaded|control, end, held }
@@ -931,6 +1077,7 @@
   /* ---------- render ---------- */
 
   function render() {
+    if (V.onboard) return renderOnboard();
     if (drillRun) return renderDrillRun();
     if (run) return renderRun();
     if (featRun) return renderFeatRun();
@@ -939,15 +1086,19 @@
     const dateStr = new Date().toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
     let tz = '';
     try { tz = new Intl.DateTimeFormat(undefined, { timeZoneName: 'short' }).formatToParts(new Date()).find(x => x.type === 'timeZoneName').value; } catch (e) {}
+    const tabs = visibleTabs();
+    if (!tabs.includes(V.tab)) V.tab = 'today';
+    if (V.gate === 'other' && !on('other')) V.gate = 'sleep';
     const body = { today: todayView, gates: gatesView, water: waterView, todo: todoTabView, practice: practiceView }[V.tab]();
     const wd = waterDue();
-    $app.innerHTML = `
+    view.html = `
       <header><h1>MetaMorph</h1><div class="right"><span class="date">${esc(dateStr)}${tz ? ` · ${esc(tz)}` : ''}</span>
         <button class="iconbtn" data-act="data" aria-label="Backup and data">⋯${backupDue() ? '<span class="badge"></span>' : ''}</button></div></header>
-      <main class="${(wd && V.tab !== 'water') || V.update ? 'has-toast' : ''}"><div class="${V.slide ? 'slide-' + V.slide : ''}">${body}</div></main>
-      <nav class="tabs"><div class="inner">
-        ${[['today', 'Today'], ['gates', 'Gates'], ['water', 'Water'], ['todo', 'To-do'], ['practice', 'Practice']].map(([k, l]) =>
-          `<button data-act="tab" data-v="${k}" class="${V.tab === k ? 'on' : ''}">${l}</button>`).join('')}
+      <main class="${(wd && V.tab !== 'water' && V.tab !== 'today') || V.update ? 'has-toast' : ''}"><div class="${V.slide ? 'slide-' + V.slide : ''}">${body}</div></main>
+      <nav class="tabs"><div class="inner" style="grid-template-columns:repeat(${tabs.length}, 1fr)">
+        ${[['today', 'Today'], ['gates', 'Gates'], ['water', 'Water'], ['todo', 'To-do'], ['practice', 'Practice']].filter(([k]) => tabs.includes(k)).map(([k, l]) =>
+          `<button data-act="tab" data-v="${k}" class="${V.tab === k ? 'on' : ''}" aria-label="${l}">${TAB_ICON[k]}<span>${l}</span></button>`).join('')}
+        <span class="ind" aria-hidden="true" style="width:calc(${100 / tabs.length}% - ${4 * (tabs.length - 1) / tabs.length}px);transform:translateX(calc(${Math.max(0, tabs.indexOf(V.tab))} * (100% + 4px)))"></span>
       </div></nav>
       ${V.edit ? editSheet() : ''}
       ${V.data ? dataSheet() : ''}
@@ -955,12 +1106,13 @@
       ${V.wedit ? waterSheet() : ''}
       ${V.fcheck ? checkSheet() : ''}
       ${V.tedit ? todoSheet() : ''}
+      ${V.qa ? qaSheet() : ''}
       ${V.nadd ? addFoodSheet() : ''}
       ${V.ngoals ? goalsSheet() : ''}
       ${V.nprep ? prepSheet() : ''}
       ${V.sedit ? supSheet() : ''}
       ${V.scan ? `<div class="scanner"><div class="frame"><video id="scanvid" playsinline muted></video></div><p id="scanmsg">Point the camera at a barcode</p><button class="btn" data-act="scan-close">Cancel</button></div>` : ''}
-      ${wd && V.tab !== 'water' && !anySheet() ? `
+      ${wd && V.tab !== 'water' && V.tab !== 'today' && !anySheet() ? `
         <div class="toast watert ${V.toastFx || V.lastDue !== wd.next.id ? 'anim' : ''}" role="status">${DROP}
           <div class="msg"><b>Time for water</b>${fmtW(wd.next.cum - wd.got)} · since ${clock(wd.next.time)}</div>
           <button class="btn ghost" data-act="w-snooze" data-id="${wd.next.id}">Later</button>
@@ -975,11 +1127,12 @@
     V.gateFx = false;
     V.slide = null;
     V.toastFx = false;
+    applyEvening();
     if (wd && V.lastDue !== wd.next.id) { V.lastDue = wd.next.id; if (document.visibilityState === 'visible') buzz(); }
     if (V.data) V.data = 'open';
     if (V.wedit) V.wedit.fresh = false;
     if (V.fcheck) V.fcheck.fresh = false;
-    for (const k of ['tedit', 'nadd', 'ngoals', 'nprep', 'sedit']) if (V[k]) V[k].fresh = false;
+    for (const k of ['tedit', 'nadd', 'ngoals', 'nprep', 'sedit', 'qa']) if (V[k]) V[k].fresh = false;
     updateClocks();
     // let the water fill rise from where it was
     if (V.wFrom != null) {
@@ -1017,7 +1170,7 @@
 
   // held / scheduled for one gate on one date
   function gateDay(gid, d) {
-    const k = keyOf(d), rs = S.gates[gid].filter(r => scheduledOn(r, d));
+    const k = keyOf(d), rs = S.gates[gid].filter(r => scheduledOn(r, d) && !skipped(r.id, k));
     return { n: rs.length, held: rs.filter(r => isDone(r.id, k)).length };
   }
   function mark(gd, d) {
@@ -1057,7 +1210,7 @@
     const sun = days[6];
     const fmt = d => d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
     let held = 0, n = 0;
-    for (const g of GATES) for (const d of days) { const x = gateDay(g.id, d); if (keyOf(d) <= today()) { held += x.held; n += x.n; } }
+    for (const g of activeGates()) for (const d of days) { const x = gateDay(g.id, d); if (keyOf(d) <= today()) { held += x.held; n += x.n; } }
     const isThis = days.some(d => keyOf(d) === today());
     return `
       ${calNav(`${fmt(mon)} – ${fmt(sun)}`, isThis ? 'This week' : `<button class="linkbtn" data-act="cal-today">Back to this week</button>`)}
@@ -1065,14 +1218,14 @@
         <div class="wk">
           <span></span>
           ${days.map(d => { const k = keyOf(d); return `<div class="dh ${k === today() ? 'today' : ''} ${k === (V.sel || today()) ? 'sel' : ''}" data-act="sel" data-v="${k}">${WD[d.getDay()][0]}<b class="num">${d.getDate()}</b></div>`; }).join('')}
-          ${GATES.map(g => `<span class="g" title="${g.name}">${orb(g.id, 24)}</span>` + days.map(d => {
+          ${activeGates().map(g => `<span class="g" title="${g.name}">${orb(g.id, 24)}</span>` + days.map(d => {
             const m = mark(gateDay(g.id, d), d);
             return `<div class="c" data-act="sel" data-v="${keyOf(d)}">${m === 'none' ? '·' : `<i class="ring ${m}" style="--gcol:${g.color}"></i>`}</div>`;
           }).join('')).join('')}
-          <span class="g" title="Water">${DROP}</span>${days.map(d => {
+          ${on('water') ? `<span class="g" title="Water">${DROP}</span>${days.map(d => {
             const m = waterMark(d);
             return `<div class="c" data-act="sel" data-v="${keyOf(d)}">${m === 'none' ? '·' : `<i class="ring ${m}" style="--gcol:var(--water)"></i>`}</div>`;
-          }).join('')}
+          }).join('')}` : ''}
         </div>
         <div class="legend"><span><i class="ring full" style="--gcol:var(--muted)"></i>held</span><span><i class="ring part" style="--gcol:var(--muted)"></i>partly</span><span><i class="ring miss" style="--gcol:var(--muted)"></i>missed</span></div>
         ${n ? `<p class="muted num" style="text-align:center;margin:10px 0 0;font-size:13px">${held}/${n} held so far · ${Math.round(100 * held / n)}%</p>` : ''}
@@ -1090,11 +1243,11 @@
     for (let i = 0; i < lead; i++) cells.push('<div class="d blank"></div>');
     for (let day = 1; day <= daysIn; day++) {
       const d = new Date(a.getFullYear(), a.getMonth(), day), k = keyOf(d);
-      const bars = GATES.map(g => {
+      const bars = activeGates().map(g => {
         const x = gateDay(g.id, d);
         if (k <= today()) { held += x.held; n += x.n; }
         return `<i class="${mark(x, d)}" style="--gcol:${g.color}"></i>`;
-      }).join('') + `<i class="${waterMark(d)}" style="--gcol:var(--water)"></i>`;
+      }).join('') + (on('water') ? `<i class="${waterMark(d)}" style="--gcol:var(--water)"></i>` : '');
       cells.push(`<div class="d ${k === today() ? 'today' : ''} ${k === (V.sel || today()) ? 'sel' : ''}" data-act="sel" data-v="${k}"><span class="n num">${day}</span><span class="bars">${bars}</span></div>`);
     }
     const isThis = a.getFullYear() === new Date().getFullYear() && a.getMonth() === new Date().getMonth();
@@ -1106,7 +1259,7 @@
           ${['M', 'T', 'W', 'T', 'F', 'S', 'S'].map(x => `<div class="wd">${x}</div>`).join('')}
           ${cells.join('')}
         </div>
-        <div class="legend" style="flex-wrap:wrap">${GATES.map(g => `<span><i class="ring full" style="--gcol:${g.color};width:10px;height:10px"></i>${g.name}</span>`).join('')}<span><i class="ring full" style="--gcol:var(--water);width:10px;height:10px"></i>Water</span></div>
+        <div class="legend" style="flex-wrap:wrap">${activeGates().map(g => `<span><i class="ring full" style="--gcol:${g.color};width:10px;height:10px"></i>${g.name}</span>`).join('')}${on('water') ? '<span><i class="ring full" style="--gcol:var(--water);width:10px;height:10px"></i>Water</span>' : ''}</div>
         ${n ? `<p class="muted num" style="text-align:center;margin:10px 0 0;font-size:13px">${held}/${n} held so far · ${Math.round(100 * held / n)}%</p>` : ''}
       </div>
       ${dayDetail()}`;
@@ -1150,8 +1303,9 @@
     const entries = [...items.map(x => ({ m: toMin(x.r.start), kind: 'r', ...x })), ...timed.map(t => ({ m: toMin(t.time), kind: 't', t }))]
       .sort((a, b) => a.m - b.m);
     return `
-      <div class="nexus">${orb('chaos', 150, 'spin')}
+      <div class="nexus" style="--held:${items.length ? (doneCount / items.length).toFixed(2) : 0}">${orb('chaos', 150, 'spin')}
         <div class="cap"><b class="num">${doneCount}/${items.length}</b> held today</div></div>
+      ${nowStack()}
       ${hero}
       <div class="row spread" style="margin-top:18px"><p class="label" style="margin:0">Timeline</p><span class="muted num" style="font-size:13px">${doneCount}/${items.length} done</span></div>
       <ul class="tl">
@@ -1178,6 +1332,195 @@
         <ul class="todos">${loose.map(todoRow).join('')}</ul></div>` : ''}`;
   }
 
+  /* ----- undo banner and dialogs ----- */
+
+  let snackTimer = 0;
+  function snack(msg, undo) {
+    clearTimeout(snackTimer);
+    const old = $overlay.querySelector('.snack'); if (old) old.remove();
+    const el = document.createElement('div');
+    el.className = 'snack'; el.setAttribute('role', 'status');
+    el.innerHTML = `<span>${esc(msg)}</span>${undo ? '<button class="btn small" data-o="undo">Undo</button>' : ''}`;
+    $overlay.appendChild(el);
+    if (undo) el.querySelector('[data-o=undo]').addEventListener('click', () => { clearTimeout(snackTimer); el.remove(); undo(); });
+    snackTimer = setTimeout(() => { el.classList.add('out'); setTimeout(() => el.remove(), 220); }, undo ? 5000 : 3000);
+  }
+  // do it now, with a few seconds to take it back
+  function undoable(msg, fn) {
+    const before = JSON.stringify(S);
+    fn(); save(); render();
+    snack(msg, () => { replaceState(JSON.parse(before)); save(); render(); snack('Restored'); });
+  }
+  function ask({ title, text = '', ok = 'OK', cancel = 'Cancel', danger = false }) {
+    return new Promise(res => {
+      const bg = document.createElement('div');
+      bg.className = 'askbg';
+      bg.innerHTML = `<div class="ask" role="alertdialog" aria-modal="true" aria-label="${esc(title)}"><h2>${esc(title)}</h2>${text ? `<p>${esc(text)}</p>` : ''}
+        <div class="grid2"><button class="btn" data-o="no">${esc(cancel)}</button><button class="btn ${danger ? 'dangerfill' : 'primary'}" data-o="yes">${esc(ok)}</button></div></div>`;
+      const done = v => { bg.classList.add('out'); setTimeout(() => bg.remove(), 180); res(v); };
+      bg.addEventListener('click', e => { const o = e.target.closest('[data-o]'); if (o) done(o.dataset.o === 'yes'); else if (e.target === bg) done(false); });
+      $overlay.appendChild(bg);
+      bg.querySelector('[data-o=yes]').focus();
+    });
+  }
+
+  const TAB_ICON = {
+    today: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6"/></svg>',
+    gates: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="5.5" r="3"/><circle cx="5.5" cy="12" r="3"/><circle cx="18.5" cy="12" r="3"/><circle cx="12" cy="18.5" r="3"/></svg>',
+    water: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 2.8c-3.4 4.3-6.6 8.2-6.6 11.6a6.6 6.6 0 0 0 13.2 0c0-3.4-3.2-7.3-6.6-11.6z"/></svg>',
+    todo: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6.5l1.6 1.6L8.8 5M4 12.5l1.6 1.6 3.2-3.1M4 18.5l1.6 1.6 3.2-3.1M12 7h8M12 13h8M12 19h8"/></svg>',
+    practice: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3.2"/></svg>',
+  };
+
+  // Evening: from the earliest Sleep routine today (or an hour before bed) until wake-up.
+  function isEvening() {
+    const n = nowMin(), d = new Date();
+    const sleeps = S.gates.sleep.filter(r => scheduledOn(r, d)).map(r => toMin(r.start));
+    const from = sleeps.length ? Math.min(...sleeps) : toMin(S.water.bed || '22:30') - 60;
+    const until = toMin(S.water.wake || '07:00');
+    return n >= from || n < until;
+  }
+  function applyEvening() {
+    const ev = S.prefs.evening && isEvening(), root = document.documentElement;
+    if (ev) root.dataset.evening = '1'; else delete root.dataset.evening;
+    const m = document.querySelector('meta[name=theme-color]');
+    if (m) m.content = ev ? '#120e0b' : '#0f1115';
+  }
+
+  /* ----- long-press quick actions ----- */
+
+  function qaSheet() {
+    const q = V.qa;
+    let title, items;
+    if (q.kind === 'routine') {
+      const r = findRoutine(q.gate, q.id);
+      if (!r) return '';
+      title = r.title;
+      items = [!isDone(r.id) ? ['run', 'Open timer'] : null, ['qa-edit', 'Edit routine'], !isDone(r.id) ? ['qa-skip', 'Skip today'] : null].filter(Boolean);
+    } else {
+      const x = S.todos.find(t => t.id === q.id);
+      if (!x) return '';
+      title = x.text;
+      items = [['qa-todo-toggle', x.done ? 'Mark not done' : 'Mark done'], ['qa-todo-edit', 'Edit'], ['qa-todo-tomorrow', 'Move to tomorrow'], ['qa-todo-del', 'Delete']];
+    }
+    return `<div class="sheet-bg ${q.fresh ? 'enter' : ''}" data-act="qa-cancel-bg"><div class="sheet qa"><div class="grab" aria-hidden="true"></div>
+      <h2>${esc(title)}</h2>
+      ${items.map(([a, l]) => `<button class="btn block qa-item ${a === 'qa-todo-del' ? 'danger' : ''}" data-act="${a}" ${a === 'run' ? `data-gate="${q.gate}" data-id="${q.id}"` : ''}>${l}</button>`).join('')}
+      <button class="btn ghost block" data-act="qa-cancel">Cancel</button></div></div>`;
+  }
+
+  /* ----- celebrations ----- */
+
+  const celebrated = new Set();
+  function celebrate(kind, id, sub) {
+    if (document.visibilityState !== 'visible') return;
+    const title = kind === 'all' ? 'All Gates held' : kind === 'pr' ? 'New PR' : `${gateOf(id).name} held`;
+    const el = document.createElement('div');
+    el.className = 'cele ' + kind;
+    el.style.setProperty('--glow', id === 'chaos' ? '#a58bff' : gateOf(id).color);
+    el.innerHTML = `<div class="burst"><i></i><i></i><i></i>${orb(id, kind === 'all' ? 200 : 150)}</div><div class="ct">${esc(title)}</div>${sub ? `<div class="cs">${esc(sub)}</div>` : ''}`;
+    el.addEventListener('click', () => el.remove());
+    $overlay.appendChild(el);
+    try { navigator.vibrate && navigator.vibrate(kind === 'all' ? [30, 50, 30, 50, 30, 50, 140] : [25, 40, 25, 40, 70]); } catch (e) {}
+    beep(kind === 'all' ? 523 : 660, 0.18, 0); setTimeout(() => beep(kind === 'all' ? 659 : 880, 0.2, 0), 140);
+    if (kind === 'all') setTimeout(() => beep(784, 0.45, 0), 280);
+    setTimeout(() => { el.classList.add('out'); setTimeout(() => el.remove(), 420); }, kind === 'all' ? 2900 : 2100);
+  }
+  // after a routine is finished today: was that the last one for its Gate, or for every Gate?
+  function checkHeld(r, k = today()) {
+    if (k !== today()) return;
+    const g = GATES.find(x => S.gates[x.id].some(y => y.id === r.id));
+    if (!g || g.other) return;
+    const d = new Date(), gd = gateDay(g.id, d);
+    if (!gd.n || gd.held < gd.n) return;
+    const gates = activeGates().filter(x => !x.other).map(x => gateDay(x.id, d)).filter(x => x.n);
+    const all = gates.length > 1 && gates.every(x => x.held >= x.n);
+    const key = k + (all ? ':all' : ':' + g.id);
+    if (celebrated.has(key)) return;
+    celebrated.add(key);
+    setTimeout(() => celebrate(all ? 'all' : 'gate', all ? 'chaos' : g.id), 260);
+  }
+
+  /* ----- Now: everything waiting on you, in one place ----- */
+
+  const ICON = {
+    check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3 8-8"/><path d="M20 12v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h9"/></svg>',
+    eye: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>',
+  };
+  function nowStack() {
+    const rows = [], k = today();
+    const wd = waterDue();
+    if (wd) rows.push(`<div class="nowrow"><span class="ic">${DROP}</span><span><div class="tt">Water</div><div class="ss num">${fmtW(wd.next.cum - wd.got)} due since ${clock(wd.next.time)}</div></span>
+      <button class="btn small water" data-act="w-add" data-ml="${wd.next.cum - wd.got}">Log</button></div>`);
+    if (on('todo')) {
+      const due = S.todos.filter(x => !x.done && x.date === k).length, over = S.todos.filter(x => !x.done && x.date && x.date < k).length;
+      if (due || over) rows.push(`<div class="nowrow"><span class="ic" style="color:var(--text)">${ICON.check}</span><span><div class="tt">To-do</div><div class="ss">${[due ? `${due} due today` : '', over ? `<span class="late">${over} overdue</span>` : ''].filter(Boolean).join(' · ')}</div></span>
+        <button class="btn small" data-act="now-todo">Open</button></div>`);
+    }
+    if (on('practice')) {
+      const open = F().items.filter(x => !x.check);
+      if (open.length) rows.push(`<div class="nowrow"><span class="ic" style="color:var(--accent)">${ICON.eye}</span><span><div class="tt">Feature Law</div><div class="ss">${open.length} check-in${open.length === 1 ? '' : 's'} waiting</div></span>
+        <button class="btn small" data-act="f-check" data-id="${open[0].id}">Check in</button></div>`);
+    }
+    if (on('workouts') && WK().draft) rows.push(`<div class="nowrow"><span class="ic">${orb('fitness', 26)}</span><span><div class="tt">Workout in progress</div><div class="ss">${WK().draft.items.length} exercise${WK().draft.items.length === 1 ? '' : 's'} · started ${hm(WK().draft.t)}</div></span>
+      <button class="btn small" data-act="now-workout">Resume</button></div>`);
+    return rows.length ? `<div class="card nowstack"><p class="label" style="margin:10px 0 2px">Needs you</p>${rows.join('')}</div>` : '';
+  }
+
+  /* ----- first-run setup ----- */
+
+  function starterPlan(o) {
+    const wake = toMin(o.wake), bed = toMin(o.bed), hhmm = fromMinHM;
+    return [
+      ['hygiene', 'Morning routine', hhmm(wake), [['Cold water', 2], ['Teeth', 3], ['Skincare', 5]]],
+      ['fitness', 'Training', hhmm(wake + 45), [['Warm-up', 10], ['Train', 30], ['Cool-down', 5]]],
+      ['nutrition', 'Breakfast', hhmm(wake + 90), [['Eat', 20]]],
+      ['nutrition', 'Lunch', '12:30', [['Eat', 30]]],
+      ['nutrition', 'Dinner', '18:30', [['Eat', 30]]],
+      ['sleep', 'Night routine', hhmm(bed - 40), [['Tidy the room', 10], ['Wind-down', 30]]],
+    ];
+  }
+  function renderOnboard() {
+    const o = V.onboard, n = 4;
+    const pips = `<div class="pips">${Array.from({ length: n }, (_, i) => `<i class="${i <= o.step ? 'on' : ''}"></i>`).join('')}</div>`;
+    let body, foot;
+    if (o.step === 0) {
+      body = `${orb('chaos', 160, 'enter hero-orb')}<h1 style="text-align:center">MetaMorph</h1>
+        <p class="lead" style="text-align:center">Hold your four Gates: sleep, fitness, nutrition and hygiene. Train your attention. A few minutes a day.</p>`;
+      foot = `<button class="btn primary block" data-act="onb-next">Set it up · 1 minute</button><button class="btn ghost block" data-act="onb-skip">Skip and use the examples</button>`;
+    } else if (o.step === 1) {
+      body = `<h1>Your day</h1><p class="lead">Routines and water reminders are timed around these.</p>
+        <div class="grid2"><div class="field"><label>Wake up</label><input type="time" id="onb-wake" value="${o.wake}"></div><div class="field"><label>Bed</label><input type="time" id="onb-bed" value="${o.bed}"></div></div>`;
+      foot = `<button class="btn primary block" data-act="onb-next">Next</button><button class="btn ghost block" data-act="onb-back">Back</button>`;
+    } else if (o.step === 2) {
+      body = `<h1>What you’ll use</h1><p class="lead">Turn off anything you don’t need. You can change this later in ⋯.</p><div class="card" style="padding:4px 16px">
+        ${[['water', 'Water', 'Sip schedule and reminders'], ['todo', 'To-do', 'Tasks'], ['supplies', 'Supplies', 'Groceries and hygiene products'], ['practice', 'Practice', 'Feature Law and Switch Drill'],
+           ['other', 'Other', 'Activities outside the Gates'], ['workouts', 'Workout log', 'Sets, reps, PRs'], ['macros', 'Calories & macros', 'Food lookup and meal prep']].map(([k, l, d]) =>
+          `<label class="switch"><span>${l}<small>${d}</small></span><input type="checkbox" data-onbsec="${k}" ${o.sections[k] ? 'checked' : ''}></label>`).join('')}</div>`;
+      foot = `<button class="btn primary block" data-act="onb-next">Next</button><button class="btn ghost block" data-act="onb-back">Back</button>`;
+    } else {
+      const plan = starterPlan(o);
+      body = `<h1>Starter routines</h1><p class="lead">A simple routine for each Gate. Edit or replace them anytime.</p><div class="card" style="padding:4px 16px">
+        ${['hygiene', 'fitness', 'nutrition', 'sleep'].map(g => {
+          const items = plan.filter(x => x[0] === g);
+          return `<label class="starter">${orb(g, 34)}<span><div style="font-weight:600">${items.map(x => esc(x[1])).join(', ')}</div><div class="muted num" style="font-size:13px">${items.map(x => clock(x[2])).join(' · ')}</div></span><input type="checkbox" data-onbstart="${g}" ${o.starters[g] ? 'checked' : ''}></label>`;
+        }).join('')}</div>`;
+      foot = `<button class="btn primary block" data-act="onb-finish">Finish</button><button class="btn ghost block" data-act="onb-back">Back</button>`;
+    }
+    view.html = `<div class="onb"><div class="inner">${pips}<div class="body" data-step="${o.step}">${body}</div><div class="foot">${foot}</div></div></div>`;
+  }
+  function finishOnboard() {
+    const o = V.onboard;
+    for (const g of ['sleep', 'fitness', 'nutrition', 'hygiene']) S.gates[g] = [];
+    for (const [g, title, start, steps] of starterPlan(o)) if (o.starters[g]) S.gates[g].push(routine(title, start, steps.map(([t, m]) => step(t, m))));
+    Object.assign(S.water, { wake: o.wake, bed: o.bed, scheduleInit: false });
+    S.sections = { ...o.sections };
+    S.onboarded = true;
+    V.onboard = null;
+    save(); render();
+    snack('You’re set. Edit anything in Gates.');
+  }
+
   /* ----- what's new ----- */
 
   function whatsNewSheet() {
@@ -1187,7 +1530,7 @@
       .sort((a, b) => b - a).flatMap(v => CHANGELOG[v]);
     return `
       <div class="sheet-bg enter" data-act="whatsnew-close-bg">
-        <div class="sheet">
+        <div class="sheet"><div class="grab" aria-hidden="true"></div>
           <div class="whatsnew-head">${orb('chaos', 56, 'enter')}<div><h2>What's new</h2><span class="muted num">Version ${APP_VERSION}</span></div></div>
           <ul class="news">${(notes.length ? notes : ['Small fixes and improvements']).map(n => `<li>${esc(n)}</li>`).join('')}</ul>
           <button class="btn primary block" data-act="whatsnew-close" style="margin-top:12px">Got it</button>
@@ -1216,8 +1559,16 @@
     const nDays = Object.keys(S.done).length;
     return `
       <div class="sheet-bg ${V.data === true ? 'enter' : ''}" data-act="data-close-bg">
-        <div class="sheet">
-          <h2>Backup &amp; data</h2>
+        <div class="sheet"><div class="grab" aria-hidden="true"></div>
+          <h2>Settings &amp; data</h2>
+          <p class="label" style="margin-top:4px">Sections</p>
+          <p class="note" style="margin:0 0 6px">Hide what you don’t use. Hidden sections keep their data.</p>
+          ${[['water', 'Water', 'Fill vessel, sip schedule, reminders'], ['todo', 'To-do', 'Tasks, timed tasks on the timeline'], ['supplies', 'Supplies', 'Groceries, hygiene products, prices'],
+             ['practice', 'Practice', 'Feature Law and Switch Drill'], ['other', 'Other', 'Activities outside the four Gates'],
+             ['workouts', 'Workout log', 'On the Fitness page'], ['macros', 'Calories & macros', 'On the Nutrition page']].map(([k, l, d]) =>
+            `<label class="switch"><span>${l}<small>${d}</small></span><input type="checkbox" data-sec="${k}" ${on(k) ? 'checked' : ''}></label>`).join('')}
+          <label class="switch"><span>Evening mode<small>Warmer, dimmer colors from your Sleep wind-down until morning</small></span><input type="checkbox" data-pref="evening" ${S.prefs.evening ? 'checked' : ''}></label>
+          <p class="label" style="margin-top:18px">Backup</p>
           <div class="kv"><span>Saved on this device</span><span class="v good">Automatically, every change</span></div>
           <div class="kv"><span>Second copy (IndexedDB)</span><span class="v ${typeof indexedDB !== 'undefined' ? 'good' : 'warn'}">${typeof indexedDB !== 'undefined' ? 'On' : 'Unavailable'}</span></div>
           <div class="kv"><span>Protected from auto-clearing</span><span class="v ${p ? 'good' : 'warn'}">${p === null ? 'Unknown' : p ? 'Yes' : 'Not granted'}</span></div>
@@ -1243,10 +1594,10 @@
     const g = gateOf(V.gate);
     const list = sorted(S.gates[V.gate]);
     const now0 = new Date();
-    const todays = list.filter(r => scheduledOn(r, now0));
+    const todays = list.filter(r => scheduledOn(r, now0) && !skipped(r.id));
     return `
-      <div class="gatebar">${GATES.map(x => {
-        const rs = S.gates[x.id].filter(r => scheduledOn(r, now0)), n = rs.filter(r => isDone(r.id)).length;
+      <div class="gatebar" style="grid-template-columns:repeat(${activeGates().length}, 1fr)">${activeGates().map(x => {
+        const rs = S.gates[x.id].filter(r => scheduledOn(r, now0) && !skipped(r.id)), n = rs.filter(r => isDone(r.id)).length;
         return `<button data-act="gate" data-v="${x.id}" class="${x.id === V.gate ? 'on' : ''}" style="--gc:${x.color}">
           ${orb(x.id, 40)}<span class="nm">${x.name}</span><span class="ct num">${n}/${rs.length}</span></button>`;
       }).join('')}</div>
@@ -1255,7 +1606,7 @@
         <div class="sub">${g.other ? 'Everything outside the four Gates<br>' : ''}${list.length} routine${list.length === 1 ? '' : 's'} · ${dur(list.reduce((t, r) => t + total(r), 0))} · ${todays.filter(r => isDone(r.id)).length}/${todays.length} ${g.other ? 'done' : 'held'} today</div>
       </div></div>
       ${list.map(r => {
-        const on = scheduledOn(r, now0), done = isDone(r.id), now = on && isNow(r) && !done, starts = stepStarts(r), sd = stepsDone(r);
+        const skip = skipped(r.id), on = scheduledOn(r, now0) && !skip, done = isDone(r.id), now = on && isNow(r) && !done, starts = stepStarts(r), sd = stepsDone(r);
         const fi = done ? finText(r) : null;
         return `<div class="card ${now ? 'now' : ''}" style="--gc:${g.color}${on ? '' : ';opacity:.6'}">
           <div class="rhead">
@@ -1263,7 +1614,7 @@
             <div>
               <div class="t num">${clock(r.start)} – ${fromMin(toMin(r.start) + total(r))} · ${dur(total(r))}${now ? '<span class="tag">now</span>' : ''}${fi ? `<span class="tag ${fi.late ? 'late' : ''}" style="${fi.late ? '' : 'color:var(--ok)'}">${fi.txt}</span>` : ''}</div>
               <div class="ti">${esc(r.title)}</div>
-              <div class="t rep">${esc(repeatText(r))}${on ? '' : ' · <span class="tag">not today</span>'}</div>
+              <div class="t rep">${esc(repeatText(r))}${skip ? ` · <span class="tag">skipped today</span> <button class="linkbtn" data-act="unskip" data-id="${r.id}">Undo</button>` : on ? '' : ' · <span class="tag">not today</span>'}</div>
             </div>
           </div>
           ${now ? `${clockBar(r, true)}<div class="cleft" data-left="${windowOf(r).end}"></div>` : ''}
@@ -1280,8 +1631,8 @@
         </div>`;
       }).join('') || `<p class="muted">No ${g.other ? 'activities' : 'routines for ' + g.name} yet.</p>`}
       <button class="btn block" data-act="add">+ Add ${g.other ? 'activity' : g.name + ' routine'}</button>
-      ${V.gate === 'nutrition' ? nutritionPanel() : ''}
-      ${V.gate === 'fitness' ? fitnessPanel() : ''}`;
+      ${V.gate === 'nutrition' && on('macros') ? nutritionPanel() : ''}
+      ${V.gate === 'fitness' && on('workouts') ? fitnessPanel() : ''}`;
   }
 
   function editSheet() {
@@ -1289,7 +1640,7 @@
     const t = total(r);
     return `
       <div class="sheet-bg ${e.fresh ? 'enter' : ''}" data-act="edit-cancel-bg">
-        <form class="sheet" id="editform" autocomplete="off">
+        <form class="sheet" id="editform" autocomplete="off"><div class="grab" aria-hidden="true"></div>
           <h2>${e.isNew ? 'New' : 'Edit'} ${gateOf(e.gate).name} routine</h2>
           <div class="grid2">
             <div class="field"><label>Name</label><input name="r_title" required value="${esc(r.title)}" placeholder="Morning routine"></div>
@@ -1412,6 +1763,7 @@
       for (const o of [...(run.open || [])]) closeLate(o);
       setDone(r.id, true, run.key);
       setFin(r.id, Date.now(), run.key); save();
+      checkHeld(r, run.key);
       run.phase = 'complete';
       run.next = nextRoutine();
       run.autoAt = run.next && run.next.auto ? Date.now() + AUTO_MS : null;
@@ -1539,7 +1891,7 @@
       else controls = `<div class="controls one"><button class="btn primary" data-act="r-close">Close</button></div>`;
     }
 
-    $app.innerHTML = `
+    view.html = `
       <div class="run" style="--gc:${g.color}"><div class="inner">
         <div class="top"><span style="color:${g.color}">${g.name}</span>
           ${run.phase === 'complete' ? '<span></span>' : '<button class="btn small ghost" data-act="r-exit">Exit</button>'}</div>
@@ -1645,7 +1997,7 @@
   // The run screen is identical in every phase: still orb, same text, same tap pad.
   function renderDrillRun() {
     const r = drillRun, d = S.drill;
-    $app.innerHTML = `
+    view.html = `
       <div class="run drillrun"><div class="inner">
         <div class="top"><span class="num">${r.doneRounds} of ${d.rounds} rounds</span><button class="btn small ghost" data-act="drill-stop">End</button></div>
         <div class="dots" style="margin-top:12px">${Array.from({ length: d.rounds }, (_, i) => `<i class="${i < r.doneRounds ? 'on' : ''}"></i>`).join('')}</div>
@@ -1772,7 +2124,7 @@
     return { rows, next, got, target: W().target, expected: Math.min(expected, W().target), due: !!(next && toMin(next.time) <= now) };
   }
   function waterDue() {
-    if (drillRun || run || featRun) return null;
+    if (drillRun || run || featRun || !on('water')) return null;
     const st = wState();
     if (!st.due || st.got >= st.target) return null;
     if (W().snooze[today()] === st.next.id) return null;
@@ -1847,7 +2199,7 @@
     const e = V.wedit, u = e.unit, tot = e.schedule.reduce((t, x) => t + x.amount, 0);
     return `
       <div class="sheet-bg ${e.fresh ? 'enter' : ''}" data-act="w-cancel-bg">
-        <form class="sheet" id="wform" autocomplete="off">
+        <form class="sheet" id="wform" autocomplete="off"><div class="grab" aria-hidden="true"></div>
           <h2>Water schedule</h2>
           <p class="label">Units</p>
           <div class="chips">${['ml', 'oz'].map(x => `<label class="chip"><input type="radio" name="w_unit" value="${x}" ${u === x ? 'checked' : ''}><span>${x}</span></label>`).join('')}</div>
@@ -1953,6 +2305,7 @@
     r.steps.forEach(x => setDone(x.id, v, k));
     setFin(r.id, v && stamp ? Date.now() : null, k);
     save();
+    if (v && stamp) checkHeld(r, k);
   }
   const hm = ts => new Date(ts).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
   function finText(r, k = today()) {
@@ -2043,7 +2396,7 @@
   function todoSheet() {
     const e = V.tedit;
     return `<div class="sheet-bg ${e.fresh ? 'enter' : ''}" data-act="todo-cancel-bg">
-      <form class="sheet" id="todoform" autocomplete="off">
+      <form class="sheet" id="todoform" autocomplete="off"><div class="grab" aria-hidden="true"></div>
         <h2>Edit task</h2>
         <div class="field"><label>Task</label><input name="text" required value="${esc(e.text)}"></div>
         <div class="grid2">
@@ -2110,7 +2463,7 @@
     ];
     const pf = a.prefill || {};
     const fld = (name, label, extra = '') => `<div class="field"><label>${label}</label><input name="${name}" type="number" inputmode="decimal" min="0" step="any" value="${pf[name] ?? ''}" ${extra}></div>`;
-    return `<div class="sheet-bg ${a.fresh ? 'enter' : ''}" data-act="n-cancel-bg"><div class="sheet">
+    return `<div class="sheet-bg ${a.fresh ? 'enter' : ''}" data-act="n-cancel-bg"><div class="sheet"><div class="grab" aria-hidden="true"></div>
       <h2>Add to ${a.meal}</h2>
       <div class="seg">${[['saved', 'Saved'], ['search', 'Look up'], ['new', 'New food']].map(([k, l]) => `<button data-act="n-mode" data-v="${k}" class="${a.mode === k ? 'on' : ''}">${l}</button>`).join('')}</div>
       ${a.mode === 'search' ? lookupPane(a) : a.mode === 'saved' ? `
@@ -2137,7 +2490,7 @@
   function goalsSheet() {
     const e = V.ngoals;
     return `<div class="sheet-bg ${e.fresh ? 'enter' : ''}" data-act="n-goals-cancel-bg">
-      <form class="sheet" id="ngoalf" autocomplete="off">
+      <form class="sheet" id="ngoalf" autocomplete="off"><div class="grab" aria-hidden="true"></div>
         <h2>Daily goals</h2>
         <div class="grid2">${MAC.map(([m, label, u]) => `<div class="field"><label>${label} (${u.trim()})</label><input name="${m}" type="number" inputmode="numeric" min="0" step="1" value="${e[m]}"></div>`).join('')}</div>
         <button class="btn block" type="button" data-act="n-goals-calc" style="margin-bottom:8px">Set calories from macros</button>
@@ -2160,7 +2513,7 @@
     const e = V.nprep, n = N();
     const v = x => x === '' || x == null ? '' : x;
     return `<div class="sheet-bg ${e.fresh ? 'enter' : ''}" data-act="n-prep-cancel-bg">
-      <form class="sheet" id="nprepf" autocomplete="off">
+      <form class="sheet" id="nprepf" autocomplete="off"><div class="grab" aria-hidden="true"></div>
         <h2>New meal prep</h2>
         <div class="grid2">
           <div class="field"><label>Name</label><input name="name" required value="${esc(e.name)}" placeholder="Chicken &amp; rice"></div>
@@ -2374,6 +2727,9 @@
   }
 
   function todoTabView() {
+    if (!on('todo')) V.ttab = 'supplies';
+    if (!on('supplies')) V.ttab = 'todo';
+    if (!on('todo') || !on('supplies')) return V.ttab === 'supplies' ? suppliesView() : todoView();
     const seg = `<div class="seg" style="grid-template-columns:1fr 1fr">${[['todo', 'To-do'], ['supplies', 'Supplies']].map(([k, l]) =>
       `<button data-act="ttab" data-v="${k}" class="${V.ttab === k ? 'on' : ''}">${l}</button>`).join('')}</div>`;
     return seg + (V.ttab === 'supplies' ? suppliesView() : todoView());
@@ -2416,7 +2772,7 @@
   function supSheet() {
     const e = V.sedit;
     return `<div class="sheet-bg ${e.fresh ? 'enter' : ''}" data-act="sup-cancel-bg">
-      <form class="sheet" id="supform" autocomplete="off">
+      <form class="sheet" id="supform" autocomplete="off"><div class="grab" aria-hidden="true"></div>
         <h2>Edit item</h2>
         <div class="field"><label>Name</label><input name="name" required value="${esc(e.name)}"></div>
         <div class="opts" style="margin-bottom:12px">${SUP_CATS.map(c => `<label class="chip"><input type="radio" name="cat" value="${c}" ${e.cat === c ? 'checked' : ''}><span>${c}</span></label>`).join('')}</div>
@@ -2525,7 +2881,7 @@
         <div class="instr">Keep it in view until the context begins.</div>`;
       controls = `<div class="controls one"><button class="btn ghost" data-act="f-done">Skip the hold</button></div>`;
     }
-    $app.innerHTML = `<div class="run"><div class="inner">
+    view.html = `<div class="run"><div class="inner">
       <div class="top"><span>${esc(x.ctx || 'Feature')}</span><span></span></div>
       <div class="center">${center}</div>${controls}</div></div>`;
     tick();
@@ -2535,7 +2891,7 @@
     const c = V.fcheck, x = F().items.find(i => i.id === c.id);
     const opts = (k, list) => `<div class="opts" style="margin-bottom:16px">${list.map(([v, l]) =>
       `<button type="button" data-act="fc-set" data-k="${k}" data-v="${v}" class="${c[k] != null && String(c[k]) === String(v) ? 'on' : ''}">${l}</button>`).join('')}</div>`;
-    return `<div class="sheet-bg ${c.fresh ? 'enter' : ''}" data-act="fc-cancel-bg"><div class="sheet">
+    return `<div class="sheet-bg ${c.fresh ? 'enter' : ''}" data-act="fc-cancel-bg"><div class="sheet"><div class="grab" aria-hidden="true"></div>
       <h2>Check in</h2>
       <p class="muted" style="margin:-6px 0 16px">${esc(x.ctx || 'Context')}: <b style="color:var(--text)">${esc(x.text)}</b></p>
       <p class="label">How often did you notice it?</p>
@@ -2549,7 +2905,7 @@
     </div></div>`;
   }
 
-  const anySheet = () => !!(V.edit || V.data || V.whatsNew || V.wedit || V.fcheck || V.tedit || V.nadd || V.ngoals || V.nprep || V.sedit || V.scan);
+  const anySheet = () => !!(V.qa || V.edit || V.data || V.whatsNew || V.wedit || V.fcheck || V.tedit || V.nadd || V.ngoals || V.nprep || V.sedit || V.scan);
 
   /* ---------- timers ---------- */
 
@@ -2586,7 +2942,7 @@
     const act = el.dataset.act;
 
     switch (act) {
-      case 'tab': V.slide = slideTo(TABS, V.tab, el.dataset.v); V.tab = el.dataset.v; V.summary = null; V.gateFx = V.tab === 'gates'; render(); break;
+      case 'tab': V.slide = slideTo(visibleTabs(), V.tab, el.dataset.v); V.tab = el.dataset.v; V.summary = null; V.gateFx = V.tab === 'gates'; render(); break;
       case 'gate': V.gate = el.dataset.v; V.gateFx = true; render(); break;
 
       /* calendar */
@@ -2601,7 +2957,7 @@
         render(); break;
       }
       case 'cal-today': V.slide = parseKey(V.anchor || today()) > new Date() ? 'l' : 'r'; V.anchor = null; V.sel = null; render(); break;
-      case 'sel': V.sel = el.dataset.v; render(); break;
+      case 'sel': if (swipe.justSwiped) break; V.sel = el.dataset.v; render(); break;
       case 'toggle-day': {
         // a finish time only means something when it's logged on the day itself
         const k = el.dataset.date, r = findRoutine(el.dataset.gate, el.dataset.id);
@@ -2609,6 +2965,16 @@
         completeRoutine(r, true, k, k === today());
         render(); break;
       }
+
+      /* now stack */
+      case 'now-todo': V.tab = 'todo'; V.ttab = 'todo'; render(); scrollTo(0, 0); break;
+      case 'now-workout': V.tab = 'gates'; V.gate = 'fitness'; V.gateFx = true; render(); setTimeout(() => { const w = document.querySelector('.wo'); if (w) w.scrollIntoView({ block: 'start', behavior: 'smooth' }); }, 60); break;
+
+      /* first-run setup */
+      case 'onb-next': V.onboard.step++; render(); scrollTo(0, 0); break;
+      case 'onb-back': V.onboard.step = Math.max(0, V.onboard.step - 1); render(); break;
+      case 'onb-skip': V.onboard = null; S.onboarded = true; save(); render(); break;
+      case 'onb-finish': finishOnboard(); break;
 
       /* updates */
       case 'update-later': V.update = null; render(); break;
@@ -2639,16 +3005,32 @@
       case 'persist':
         (async () => {
           try { storageInfo.persisted = await navigator.storage.persist(); } catch (e) {}
-          if (!storageInfo.persisted) alert('The browser declined. Installing the app to your home screen usually lets it protect storage.');
+          if (!storageInfo.persisted) snack('The browser declined. Installing the app to your home screen usually lets it protect storage.');
           render();
         })();
         break;
 
       /* routines */
-      case 'run': if (swipe.justSwiped || isDone(el.dataset.id)) break; startRoutine(el.dataset.gate, el.dataset.id); break;
+      case 'run': if (swipe.justSwiped || isDone(el.dataset.id)) break; V.qa = null; startRoutine(el.dataset.gate, el.dataset.id); break;
+      case 'qa-cancel-bg': if (e.target !== el) break;
+      // fallthrough
+      case 'qa-cancel': V.qa = null; render(); break;
+      case 'qa-edit': {
+        const q = V.qa, r = findRoutine(q.gate, q.id);
+        V.qa = null; V.gate = q.gate;
+        V.edit = { gate: q.gate, isNew: false, fresh: true, r: JSON.parse(JSON.stringify(r)) };
+        render(); break;
+      }
+      case 'qa-skip': { const id = V.qa.id; undoable('Skipped for today', () => { (S.skip[today()] = S.skip[today()] || {})[id] = true; V.qa = null; }); break; }
+      case 'unskip': if (S.skip[today()]) delete S.skip[today()][el.dataset.id]; save(); render(); break;
+      case 'qa-todo-toggle': { const x = S.todos.find(t => t.id === V.qa.id); V.qa = null; if (x) setTodo(x, !x.done); render(); break; }
+      case 'qa-todo-edit': { const x = S.todos.find(t => t.id === V.qa.id); V.qa = null; if (x) V.tedit = { ...x, fresh: true }; render(); break; }
+      case 'qa-todo-tomorrow': { const x = S.todos.find(t => t.id === V.qa.id); V.qa = null; if (x) { x.date = keyOf(addDays(new Date(), 1)); save(); snack('Moved to tomorrow'); } render(); break; }
+      case 'qa-todo-del': { const id = V.qa.id; undoable('Task deleted', () => { S.todos = S.todos.filter(t => t.id !== id); V.qa = null; }); break; }
       case 'reset-done': {
         const r = findRoutine(V.edit.gate, V.edit.r.id);
-        if (r && confirm('Reset today’s completion? Its finish time and overtime will be cleared.')) { completeRoutine(r, false); render(); }
+        if (r) ask({ title: 'Reset today’s completion?', text: 'Its finish time and overtime will be cleared.', ok: 'Reset', danger: true })
+          .then(y => { if (y) { completeRoutine(r, false); render(); snack('Completion reset'); } });
         break;
       }
       case 'toggle': {
@@ -2686,14 +3068,16 @@
       case 'wo-addset': { const it = WK().draft.items[Number(el.dataset.i)], l = it.sets[it.sets.length - 1]; it.sets.push(l ? { ...l } : {}); save(); render(); break; }
       case 'wo-rmset': WK().draft.items[Number(el.dataset.i)].sets.splice(Number(el.dataset.j), 1); save(); render(); break;
       case 'wo-rmex': WK().draft.items.splice(Number(el.dataset.i), 1); save(); render(); break;
-      case 'wo-discard': if (confirm('Discard this workout?')) { WK().draft = null; save(); render(); } break;
+      case 'wo-discard': undoable('Workout discarded', () => { WK().draft = null; }); break;
       case 'wo-finish': {
         const d = WK().draft;
         const items = d.items.map(it => ({ ...it, sets: it.sets.filter(x => it.kind === 'strength' ? +x.r > 0 : (+x.min > 0 || +x.dist > 0)) })).filter(it => it.sets.length);
-        if (!items.length) { if (confirm('Nothing logged yet. Discard this workout?')) { WK().draft = null; save(); render(); } break; }
+        if (!items.length) { undoable('Nothing was logged, so the workout was discarded', () => { WK().draft = null; }); break; }
         const prs = items.filter(it => it.kind === 'strength' && Math.max(...it.sets.map(x => e1rm(+x.w, +x.r))) > bestFor(it.name) && bestFor(it.name) > 0).map(it => it.name);
         WK().log.push({ id: uid(), t: d.t, date: keyOf(new Date(d.t)), items, note: (d.note || '').trim(), prs });
-        WK().draft = null; save(); buzz(); render(); break;
+        WK().draft = null; save(); buzz(); render();
+        if (prs.length) setTimeout(() => celebrate('pr', 'fitness', prs.join(', ')), 260);
+        break;
       }
 
       /* supplies */
@@ -2703,7 +3087,7 @@
       case 'sup-qty': { const x = SUP().items.find(y => y.id === el.dataset.id); x.qty = Math.max(1, (x.qty || 1) + Number(el.dataset.d)); save(); render(); break; }
       case 'sup-bought': { const x = SUP().items.find(y => y.id === el.dataset.id); x.need = false; x.lastBought = Date.now(); x.qty = 1; save(); buzz(); render(); break; }
       case 'sup-edit': { const x = SUP().items.find(y => y.id === el.dataset.id); V.sedit = { ...x, history: [...(x.history || [])], fresh: true }; render(); break; }
-      case 'sup-del': if (confirm('Delete this item?')) { SUP().items = SUP().items.filter(y => y.id !== el.dataset.id); V.sedit = null; save(); render(); } break;
+      case 'sup-del': { const id = el.dataset.id; undoable('Item deleted', () => { SUP().items = SUP().items.filter(y => y.id !== id); V.sedit = null; }); break; }
       case 'sup-cancel-bg': if (e.target !== el) break;
       // fallthrough
       case 'sup-cancel': V.sedit = null; render(); break;
@@ -2719,11 +3103,11 @@
         if (x) { setTodo(x, !x.done); if (x.done) buzz(); }
         render(); break;
       }
-      case 'todo-edit': { const x = S.todos.find(t => t.id === el.dataset.id); V.tedit = { ...x, fresh: true }; render(); break; }
+      case 'todo-edit': { if (swipe.justSwiped) break; const x = S.todos.find(t => t.id === el.dataset.id); V.tedit = { ...x, fresh: true }; render(); break; }
       case 'todo-del':
-        if (confirm('Delete this task?')) { S.todos = S.todos.filter(t => t.id !== el.dataset.id); V.tedit = null; save(); render(); }
+        { const id = el.dataset.id; undoable('Task deleted', () => { S.todos = S.todos.filter(t => t.id !== id); V.tedit = null; }); }
         break;
-      case 'todo-clear': S.todos = S.todos.filter(t => !t.done); save(); render(); break;
+      case 'todo-clear': undoable('Done tasks cleared', () => { S.todos = S.todos.filter(t => !t.done); }); break;
       case 'todo-cancel-bg': if (e.target !== el) break;
       // fallthrough
       case 'todo-cancel': V.tedit = null; render(); break;
@@ -2742,12 +3126,15 @@
         V.nadd = null; buzz(); render(); break;
       }
       case 'n-food-del':
-        if (confirm('Forget this saved food? Past entries stay.')) { N().foods = N().foods.filter(x => x.id !== el.dataset.id); save(); render(); }
+        { const id = el.dataset.id; undoable('Food forgotten (past entries stay)', () => { N().foods = N().foods.filter(x => x.id !== id); }); }
         break;
       case 'n-del': {
-        const k = today(), x = nLog(k).find(y => y.id === el.dataset.id);
+        // snapshot first, so Undo also takes back the portion returned to a meal prep
+        const before = JSON.stringify(S), k = today(), x = nLog(k).find(y => y.id === el.dataset.id);
         if (x && x.src === 'prep') { const pr = N().preps.find(y => y.id === x.ref); if (pr) pr.left = Math.min(pr.portions, r1(pr.left + x.qty)); }
-        N().log[k] = nLog(k).filter(y => y.id !== el.dataset.id); save(); render(); break;
+        N().log[k] = nLog(k).filter(y => y.id !== el.dataset.id); save(); render();
+        snack('Entry removed', () => { replaceState(JSON.parse(before)); save(); render(); });
+        break;
       }
       case 'n-cancel-bg': if (e.target !== el) break;
       // fallthrough
@@ -2774,7 +3161,7 @@
       case 'n-prep-cancel': V.nprep = null; render(); break;
       case 'n-prep-log': { const x = N().preps.find(y => y.id === el.dataset.id); logFood(mealNow(), { name: x.name, ...x.per }, 1, 'prep', x.id); buzz(); render(); break; }
       case 'n-prep-del':
-        if (confirm('Delete this meal prep? Logged portions stay in your history.')) { N().preps = N().preps.filter(x => x.id !== el.dataset.id); save(); render(); }
+        { const id = el.dataset.id; undoable('Meal prep deleted', () => { N().preps = N().preps.filter(x => x.id !== id); }); }
         break;
       case 'r-pause':
         if (run.over) break;
@@ -2793,7 +3180,8 @@
       case 'r-end':
       case 'r-close': endRun(); break;
       case 'r-exit':
-        if (run.phase !== 'step' || confirm('End the routine here? Finished steps stay done.')) endRun();
+        if (run.phase !== 'step') endRun();
+        else ask({ title: 'End the routine here?', text: 'Finished steps stay done.', ok: 'End it', danger: true }).then(y => { if (y && run) endRun(); });
         break;
 
       /* editing */
@@ -2819,10 +3207,7 @@
       // fallthrough
       case 'edit-cancel': V.edit = null; render(); break;
       case 'delete':
-        if (confirm('Delete this routine?')) {
-          S.gates[V.edit.gate] = S.gates[V.edit.gate].filter(r => r.id !== V.edit.r.id);
-          save(); V.edit = null; render();
-        }
+        { const g = V.edit.gate, id = V.edit.r.id; undoable('Routine deleted', () => { S.gates[g] = S.gates[g].filter(r => r.id !== id); V.edit = null; }); }
         break;
 
       /* drill */
@@ -2848,7 +3233,7 @@
       case 'w-del': {
         const k = today(), t = Number(el.dataset.t), st = wState();
         V.wFrom = Math.min(100, 100 * st.got / st.target);
-        W().log[k] = wLog(k).filter(e => e.t !== t); save(); render(); break;
+        undoable('Water entry removed', () => { W().log[k] = wLog(k).filter(e => e.t !== t); }); break;
       }
       case 'w-snooze': W().snooze = { [today()]: el.dataset.id }; save(); render(); break;
       case 'w-ics': deliver(waterICS(), 'metamorph-water.ics', 'Water reminders'); break;
@@ -2873,7 +3258,7 @@
       case 'f-ctx': V.fDraft.ctx = el.dataset.v; render(); break;
       case 'f-load': {
         const text = V.fDraft.text.trim();
-        if (!text) { alert('Write the one feature you’ll notice.'); break; }
+        if (!text) { snack('Write the one feature you’ll notice.'); break; }
         const mode = F().experiment && Math.random() < 1 / 3 ? 'control' : 'loaded';
         const item = { id: uid(), ctx: V.fDraft.ctx.trim(), text, t: Date.now(), mode, check: null };
         F().items.push(item);
@@ -2886,7 +3271,7 @@
         render(); break;
       }
       case 'f-discard':
-        if (confirm('Discard this trial? It won’t count toward the results.')) { F().items = F().items.filter(i => i.id !== el.dataset.id); save(); render(); }
+        { const id = el.dataset.id; undoable('Trial discarded', () => { F().items = F().items.filter(i => i.id !== id); }); }
         break;
       case 'f-done': featRun = null; stopTicker(); unlockScreen(); render(); break;
       case 'f-check': V.fcheck = { id: el.dataset.id, fresh: true, rating: null, unbidden: null, stopped: null }; render(); break;
@@ -2908,24 +3293,33 @@
 
   // switching the repeat type shows its day/date pickers; restore reads the chosen backup file
   $app.addEventListener('change', e => {
+    const t = e.target;
+    if (t.dataset && t.dataset.sec) { S.sections[t.dataset.sec] = t.checked; save(); render(); }
+    if (t.dataset && t.dataset.pref) { S.prefs[t.dataset.pref] = t.checked; save(); render(); }
+    if (t.dataset && t.dataset.onbsec) V.onboard.sections[t.dataset.onbsec] = t.checked;
+    if (t.dataset && t.dataset.onbstart) V.onboard.starters[t.dataset.onbstart] = t.checked;
+    if (t.id === 'onb-wake' && t.value) V.onboard.wake = t.value;
+    if (t.id === 'onb-bed' && t.value) V.onboard.bed = t.value;
     if (e.target.name === 'rt') { syncEdit(); render(); }
     if (e.target.name === 'w_unit') { syncWEdit(); render(); }
     if (e.target.id === 'fexp') { F().experiment = e.target.checked; save(); }
     if (e.target.id === 'restorefile' && e.target.files[0]) {
       e.target.files[0].text().then(txt => {
         let payload;
-        try { payload = JSON.parse(txt); } catch (err) { return alert('That file is not a MetaMorph backup.'); }
+        try { payload = JSON.parse(txt); } catch (err) { return snack('That file is not a MetaMorph backup.'); }
         const data = payload && payload.app === 'metamorph' ? payload.data : payload;
-        if (!valid(data)) return alert('That file is not a MetaMorph backup.');
+        if (!valid(data)) return snack('That file is not a MetaMorph backup.');
         const when = payload.exported ? new Date(payload.exported).toLocaleString() : 'an unknown date';
-        if (!confirm(`Replace everything on this device with the backup from ${when}?`)) return;
-        stopTicker(); run = null; drillRun = null;
-        replaceState(data);
-        S.run = null;
-        save();
-        V.data = false;
-        render();
-        alert('Backup restored.');
+        ask({ title: 'Restore this backup?', text: `From ${when}. Everything on this device will be replaced.`, ok: 'Restore', danger: true }).then(y => {
+          if (!y) return;
+          stopTicker(); run = null; drillRun = null;
+          replaceState(data);
+          S.run = null;
+          save();
+          V.data = false;
+          render();
+          snack('Backup restored');
+        });
       });
     }
   });
@@ -2975,6 +3369,75 @@
     setTimeout(render, 220);
   }
   $app.addEventListener('pointerup', endSwipe);
+
+  /* ---------- drag a sheet down by its handle to close it ---------- */
+  const drag = { s: null };
+  $app.addEventListener('pointerdown', e => {
+    const g = e.target.closest('.sheet .grab');
+    if (!g) return;
+    const sh = g.closest('.sheet');
+    drag.s = { sh, y: e.clientY, id: e.pointerId, dy: 0, t: Date.now() };
+    try { g.setPointerCapture(e.pointerId); } catch (err) {}
+    sh.style.transition = 'none';
+  });
+  $app.addEventListener('pointermove', e => {
+    const d = drag.s;
+    if (!d || e.pointerId !== d.id) return;
+    d.dy = Math.max(0, e.clientY - d.y);
+    d.sh.style.transform = `translateY(${d.dy}px)`;
+  });
+  function endDrag(e) {
+    const d = drag.s;
+    if (!d || e.pointerId !== d.id) return;
+    drag.s = null;
+    d.sh.style.transition = '';
+    const fast = d.dy > 40 && d.dy / Math.max(1, Date.now() - d.t) > 0.6;
+    if (d.dy > 110 || fast) {
+      d.sh.style.transform = 'translateY(110%)';
+      setTimeout(() => { const bg = d.sh.closest('.sheet-bg'); if (bg) bg.dispatchEvent(new MouseEvent('click', { bubbles: true })); }, 170);
+    } else d.sh.style.transform = '';
+  }
+  $app.addEventListener('pointerup', endDrag);
+  $app.addEventListener('pointercancel', endDrag);
+
+  /* ---------- swipe the week/month calendar ---------- */
+  const calSw = { s: null };
+  $app.addEventListener('pointerdown', e => {
+    const c = e.target.closest('.wk, .mo');
+    calSw.s = c ? { x: e.clientX, y: e.clientY, id: e.pointerId } : null;
+  });
+  $app.addEventListener('pointerup', e => {
+    const c = calSw.s;
+    calSw.s = null;
+    if (!c || e.pointerId !== c.id) return;
+    const dx = e.clientX - c.x, dy = e.clientY - c.y;
+    if (Math.abs(dx) < 60 || Math.abs(dx) < Math.abs(dy) * 2) return;
+    swipe.justSwiped = true;
+    setTimeout(() => { swipe.justSwiped = false; }, 350);
+    const btn = document.querySelector(dx < 0 ? '[data-act=cal-next]' : '[data-act=cal-prev]');
+    if (btn) btn.click();
+  });
+
+  /* ---------- long-press a timeline item or task for quick actions ---------- */
+  const press = { t: 0, x: 0, y: 0 };
+  $app.addEventListener('pointerdown', e => {
+    clearTimeout(press.t);
+    const el = e.target.closest('.tl .it[data-id], .todos .tx[data-id]');
+    if (!el || e.button > 0) return;
+    press.x = e.clientX; press.y = e.clientY;
+    press.t = setTimeout(() => {
+      swipe.s = null;
+      swipe.justSwiped = true;
+      setTimeout(() => { swipe.justSwiped = false; }, 600);
+      buzz();
+      if (el.matches('.tl .it') && !el.dataset.todo) V.qa = { kind: 'routine', gate: el.dataset.gate, id: el.dataset.id, fresh: true };
+      else V.qa = { kind: 'todo', id: el.dataset.id, fresh: true };
+      render();
+    }, 520);
+  });
+  $app.addEventListener('pointermove', e => { if (Math.hypot(e.clientX - press.x, e.clientY - press.y) > 8) clearTimeout(press.t); });
+  ['pointerup', 'pointercancel'].forEach(t => $app.addEventListener(t, () => clearTimeout(press.t)));
+  $app.addEventListener('contextmenu', e => { if (e.target.closest('.tl .it, .todos .tx')) e.preventDefault(); });
   $app.addEventListener('pointercancel', endSwipe);
 
   // live phrasing check for the Feature Law, without re-rendering while typing
@@ -3070,7 +3533,7 @@
       syncPrep();
       const ed = V.nprep, items = ed.items.filter(x => x.name.trim() || x.kcal !== '' || +x.p || +x.c || +x.f)
         .map(x => { const p = +x.p || 0, c = +x.c || 0, fat = +x.f || 0; return { name: x.name.trim() || 'Ingredient', kcal: x.kcal === '' ? kcalOf(p, c, fat) : x.kcal, p, c, f: fat }; });
-      if (!items.length) return alert('Add at least one ingredient.');
+      if (!items.length) return snack('Add at least one ingredient.');
       const t = prepTotals(items), n = ed.portions;
       N().preps.unshift({ id: uid(), name: ed.name.trim() || 'Meal prep', portions: n, left: n, made: today(), created: Date.now(), items,
         per: { kcal: t.kcal / n, p: t.p / n, c: t.c / n, f: t.f / n } });
@@ -3099,8 +3562,8 @@
     e.preventDefault();
     syncEdit();
     const r = V.edit.r;
-    if (r.repeat.type === 'weekly' && !r.repeat.days.length) return alert('Pick at least one day of the week.');
-    if (r.repeat.type === 'monthly' && !r.repeat.dates.length) return alert('Pick at least one date of the month.');
+    if (r.repeat.type === 'weekly' && !r.repeat.days.length) return snack('Pick at least one day of the week.');
+    if (r.repeat.type === 'monthly' && !r.repeat.dates.length) return snack('Pick at least one date of the month.');
     r.title = r.title.trim() || 'Untitled';
     r.steps.forEach(s => { s.title = s.title.trim() || 'Step'; s.work = s.work.trim(); });
     const list = S.gates[V.edit.gate];
@@ -3129,6 +3592,11 @@
     if (fromLocal) V.whatsNew = true;      // existing user on a new version
     else S.seenVersion = APP_VERSION;      // fresh install: nothing to announce
   }
+  // first run gets a short setup; people who already use the app never see it
+  if (!S.onboarded) {
+    if (fromLocal) S.onboarded = true;
+    else V.onboard = { step: 0, wake: '07:00', bed: '22:30', sections: { ...S.sections }, starters: { hygiene: true, fitness: true, nutrition: true, sleep: true } };
+  }
 
   resumeRun();
   render();
@@ -3141,10 +3609,10 @@
     V.toastFx = true;
     if (!run && !drillRun) render();
   }
-  function applyUpdate() {
+  async function applyUpdate() {
     const w = V.update;
     if (!w) return;
-    if (drillRun && !confirm('Updating ends the current drill session. Update now?')) return;
+    if (drillRun && !(await ask({ title: 'Update now?', text: 'Updating ends the current drill session.', ok: 'Update' }))) return;
     updating = true;
     try { localStorage.setItem('metamorph.updated', '1'); } catch (e) {}
     save();

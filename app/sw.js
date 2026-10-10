@@ -1,8 +1,9 @@
 // Bump the version whenever app files change so installed copies update.
 // Keep APP_VERSION in index.html in step with this number.
-const CACHE = 'metamorph-v12';
+const CACHE = 'metamorph-v13';
 const ASSETS = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './apple-touch-icon.png', './favicon-32.png',
-  './img/orb-chaos.webp', './img/orb-sleep.webp', './img/orb-fitness.webp', './img/orb-nutrition.webp', './img/orb-hygiene.webp', './img/orb-other.webp'];
+  './img/orb-chaos.webp', './img/orb-sleep.webp', './img/orb-fitness.webp', './img/orb-nutrition.webp', './img/orb-hygiene.webp', './img/orb-other.webp',
+  './vendor/morphdom.min.js', './fonts/cinzel.woff2'];
 
 // A new version installs in the background and waits; the page shows an update prompt
 // and sends SKIP_WAITING when the user taps Update.
