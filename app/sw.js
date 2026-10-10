@@ -1,6 +1,6 @@
 // Bump the version whenever app files change so installed copies update.
 // Keep APP_VERSION in index.html in step with this number.
-const CACHE = 'metamorph-v10';
+const CACHE = 'metamorph-v11';
 const ASSETS = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './apple-touch-icon.png', './favicon-32.png',
   './img/orb-chaos.webp', './img/orb-sleep.webp', './img/orb-fitness.webp', './img/orb-nutrition.webp', './img/orb-hygiene.webp', './img/orb-other.webp'];
 
@@ -20,6 +20,7 @@ self.addEventListener('activate', e => {
 });
 
 self.addEventListener('fetch', e => {
-  if (e.request.method !== 'GET') return;
+  // only the app's own files are cached; other sites (e.g. Open Food Facts) go straight to the network
+  if (e.request.method !== 'GET' || new URL(e.request.url).origin !== self.location.origin) return;
   e.respondWith(caches.match(e.request).then(r => r || fetch(e.request)));
 });

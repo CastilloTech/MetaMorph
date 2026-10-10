@@ -371,6 +371,41 @@
   .ing .lbls { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; font-size: 11px; color: var(--muted); text-align: center; margin-bottom: -4px; }
   .preptot { background: var(--surface-2); border-radius: 12px; padding: 12px; font-size: 14px; margin: 6px 0 12px; }
 
+  /* ---------- workouts ---------- */
+  .woex { border-top: 1px solid var(--line); padding-top: 12px; margin-top: 12px; }
+  .woex .t { font-size: 12px; color: var(--muted); margin: 2px 0 8px; }
+  .woex .x, .sets .x { color: var(--muted); padding: 4px 8px; }
+  .sets { display: grid; grid-template-columns: 30px 1fr 1fr 34px; gap: 6px 8px; align-items: center; margin-bottom: 8px; }
+  .sets > span { font-size: 11px; color: var(--muted); text-align: center; text-transform: uppercase; letter-spacing: .06em; }
+  .sets > span.n { font-size: 14px; letter-spacing: 0; }
+  .sets input { width: 100%; background: var(--surface-2); border: 1px solid var(--line); border-radius: 10px; padding: 9px; text-align: center; font-variant-numeric: tabular-nums; }
+  .wo textarea { width: 100%; margin-top: 10px; min-height: 52px; background: var(--surface-2); border: 1px solid var(--line); border-radius: 10px; padding: 10px; resize: vertical; }
+  .wohist .line { font-size: 14px; color: var(--muted); margin-top: 4px; }
+  .wohist .line b { color: var(--text); font-weight: 600; }
+  .pr { font-size: 10px; font-weight: 700; letter-spacing: .08em; color: #1a1408; background: var(--accent); border-radius: 999px; padding: 2px 7px; margin-left: 6px; }
+
+  /* ---------- food lookup / scanner ---------- */
+  .offres li { cursor: default; }
+  .scanner { position: fixed; inset: 0; z-index: 40; background: #000; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; padding: 20px; }
+  .scanner video { width: 100%; max-width: 480px; border-radius: 16px; background: #111; }
+  .scanner .frame { position: relative; width: 100%; max-width: 480px; }
+  .scanner .frame::after { content: ""; position: absolute; left: 12%; right: 12%; top: 50%; height: 2px; background: var(--accent); box-shadow: 0 0 12px var(--accent); }
+  .scanner p { color: #ddd; margin: 0; text-align: center; }
+
+  /* ---------- supplies ---------- */
+  .sup li { display: grid; grid-template-columns: auto 1fr auto; gap: 10px; align-items: center; }
+  .sup .nm { cursor: pointer; min-width: 0; }
+  .sup .nm > div:first-child { overflow-wrap: anywhere; }
+  .sup .t { font-size: 12px; color: var(--muted); }
+  .sup .up { color: var(--danger); } .sup .down { color: var(--ok); }
+  .sup .acts2 { display: flex; gap: 6px; }
+  .sup .acts2 .btn { padding: 7px 10px; font-size: 13px; }
+  .sup .btn.on { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+  .sumrow { display: flex; justify-content: space-between; align-items: baseline; border-top: 1px solid var(--line); margin-top: 8px; padding-top: 10px; }
+  .sumrow b { font-size: 22px; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .wm { color: #ffc220; }
+  a.btn { color: var(--text); text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: 5px; }
+
   /* ---------- header + data sheet ---------- */
   header .right { display: flex; align-items: center; gap: 10px; }
   .iconbtn { position: relative; width: 34px; height: 34px; border-radius: 10px; background: var(--surface); border: 1px solid var(--line); color: var(--muted); font-size: 16px; display: grid; place-items: center; }
@@ -526,8 +561,14 @@
   const KEY = 'metamorph.v1';
 
   // Keep in step with CACHE in sw.js. Add a CHANGELOG entry for each release.
-  const APP_VERSION = 10;
+  const APP_VERSION = 11;
   const CHANGELOG = {
+    11: [
+      'Fitness: log workouts with sets, reps and weight (or minutes and distance), see last time’s numbers, and get PRs flagged',
+      'Food calories and macros fill in automatically: search Open Food Facts or scan a barcode',
+      'Finished routines are locked: their finish time and overtime can’t be swiped or unticked (Edit → Reset today’s completion fixes mistakes)',
+      'Supplies (in the To-do tab): groceries and hygiene items with prices, price history, a shopping list total and a Walmart link',
+    ],
     10: [
       'When a step’s time is up, the next step starts and the unfinished one stays open in orange, counting overtime until you tap its Done',
       'If the last step runs over, its timer keeps going in orange (LATE) until you tap Done',
@@ -622,6 +663,8 @@
     if (!s.fin) s.fin = {};
     if (!s.todos) s.todos = [];
     if (!s.nutri) s.nutri = { goals: { kcal: 2200, p: 150, c: 220, f: 70 }, foods: [], preps: [], log: {} };
+    if (!s.workouts) s.workouts = { unit: 'lb', library: [], log: [], draft: null };
+    if (!s.supplies) s.supplies = { items: [] };
     return s;
   }
 
@@ -820,7 +863,8 @@
 
   const V = { tab: 'today', gate: 'sleep', edit: null, summary: null, cal: 'day', anchor: null, sel: null, data: false, slide: null,
               update: null, whatsNew: false, wedit: null, wFrom: null, fcheck: null, fDraft: { ctx: 'Today', text: '' },
-              ptab: 'feature', tedit: null, todoWhen: 'today', todoDraft: { text: '', date: '', time: '' }, nadd: null, ngoals: null, nprep: null };
+              ptab: 'feature', tedit: null, todoWhen: 'today', todoDraft: { text: '', date: '', time: '' }, nadd: null, ngoals: null, nprep: null,
+              woKind: 'strength', woName: '', ttab: 'todo', supCat: 'Grocery', sedit: null, scan: false };
   const TABS = ['today', 'gates', 'water', 'todo', 'practice'], CALS = ['day', 'week', 'month'];
   const slideTo = (list, from, to) => list.indexOf(to) > list.indexOf(from) ? 'r' : list.indexOf(to) < list.indexOf(from) ? 'l' : null;
   let drillRun = null;  // { phase: settle|focus|release, round, doneRounds, start, end, latencies[], catches, falseTaps, locked }
@@ -842,7 +886,7 @@
     const dateStr = new Date().toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
     let tz = '';
     try { tz = new Intl.DateTimeFormat(undefined, { timeZoneName: 'short' }).formatToParts(new Date()).find(x => x.type === 'timeZoneName').value; } catch (e) {}
-    const body = { today: todayView, gates: gatesView, water: waterView, todo: todoView, practice: practiceView }[V.tab]();
+    const body = { today: todayView, gates: gatesView, water: waterView, todo: todoTabView, practice: practiceView }[V.tab]();
     const wd = waterDue();
     $app.innerHTML = `
       <header><h1>MetaMorph</h1><div class="right"><span class="date">${esc(dateStr)}${tz ? ` · ${esc(tz)}` : ''}</span>
@@ -861,6 +905,8 @@
       ${V.nadd ? addFoodSheet() : ''}
       ${V.ngoals ? goalsSheet() : ''}
       ${V.nprep ? prepSheet() : ''}
+      ${V.sedit ? supSheet() : ''}
+      ${V.scan ? `<div class="scanner"><div class="frame"><video id="scanvid" playsinline muted></video></div><p id="scanmsg">Point the camera at a barcode</p><button class="btn" data-act="scan-close">Cancel</button></div>` : ''}
       ${wd && V.tab !== 'water' && !anySheet() ? `
         <div class="toast watert ${V.toastFx || V.lastDue !== wd.next.id ? 'anim' : ''}" role="status">${DROP}
           <div class="msg"><b>Time for water</b>${fmtW(wd.next.cum - wd.got)} · since ${clock(wd.next.time)}</div>
@@ -880,7 +926,7 @@
     if (V.data) V.data = 'open';
     if (V.wedit) V.wedit.fresh = false;
     if (V.fcheck) V.fcheck.fresh = false;
-    for (const k of ['tedit', 'nadd', 'ngoals', 'nprep']) if (V[k]) V[k].fresh = false;
+    for (const k of ['tedit', 'nadd', 'ngoals', 'nprep', 'sedit']) if (V[k]) V[k].fresh = false;
     updateClocks();
     // let the water fill rise from where it was
     if (V.wFrom != null) {
@@ -946,7 +992,7 @@
       ${items.length ? `<ul class="daylist" style="margin-top:6px">${items.map(({ gate, r }) => `
         <li>${orb(gate, 28)}
           <span><div style="font-weight:600">${esc(r.title)}</div><div class="t num">${clock(r.start)} · ${dur(total(r))}</div></span>
-          <button class="chk ${isDone(r.id, k) ? 'done' : ''}" data-act="toggle-day" data-date="${k}" data-gate="${gate}" data-id="${r.id}" ${future ? 'disabled' : ''} aria-label="Mark held">✓</button>
+          <button class="chk ${isDone(r.id, k) ? 'done' : ''}" data-act="toggle-day" data-date="${k}" data-gate="${gate}" data-id="${r.id}" ${future || isDone(r.id, k) ? 'disabled' : ''} aria-label="Mark held">✓</button>
         </li>`).join('')}</ul>` : '<p class="muted" style="margin:8px 0 0">Nothing scheduled.</p>'}
     </div>`;
   }
@@ -1064,7 +1110,7 @@
           else if (st === 'upcoming') right = `<span class="st">${untilText(r)}</span>`;
           else right = `<span class="st late">${sd ? `${sd}/${r.steps.length} · ` : ''}overdue</span>`;
           return `<li style="--gc:${gateOf(gate).color}"><div class="swbg"><span class="l">✓ Held</span><span class="r">Undo</span></div>
-            <div class="it ${st}" data-act="run" data-gate="${gate}" data-id="${r.id}">
+            <div class="it ${st}${st === 'done' ? ' locked' : ''}" ${st === 'done' ? '' : `data-act="run" data-gate="${gate}" data-id="${r.id}"`}>
             <span class="t num">${clock(r.start)}</span>
             <span class="dot"></span>
             <span><div class="nm">${orb(gate, 22)}${esc(r.title)}</div>
@@ -1160,7 +1206,7 @@
         const fi = done ? finText(r) : null;
         return `<div class="card ${now ? 'now' : ''}" style="--gc:${g.color}${on ? '' : ';opacity:.6'}">
           <div class="rhead">
-            <button class="chk ${done ? 'done' : ''}" data-act="toggle" data-id="${r.id}" aria-label="Mark routine done">✓</button>
+            <button class="chk ${done ? 'done' : ''}" data-act="toggle" data-id="${r.id}" ${done ? 'disabled' : ''} aria-label="${done ? 'Done (reset from Edit)' : 'Mark routine done'}">✓</button>
             <div>
               <div class="t num">${clock(r.start)} – ${fromMin(toMin(r.start) + total(r))} · ${dur(total(r))}${now ? '<span class="tag">now</span>' : ''}${fi ? `<span class="tag ${fi.late ? 'late' : ''}" style="${fi.late ? '' : 'color:var(--ok)'}">${fi.txt}</span>` : ''}</div>
               <div class="ti">${esc(r.title)}</div>
@@ -1176,12 +1222,13 @@
           </ul>
           <div class="acts">
             <button class="btn small" data-act="edit" data-id="${r.id}">Edit</button>
-            <button class="btn small primary" data-act="run" data-gate="${V.gate}" data-id="${r.id}">${sd && !done ? 'Continue' : 'Start'}</button>
+            ${done ? '<button class="btn small" disabled>Done today</button>' : `<button class="btn small primary" data-act="run" data-gate="${V.gate}" data-id="${r.id}">${sd ? 'Continue' : 'Start'}</button>`}
           </div>
         </div>`;
       }).join('') || `<p class="muted">No ${g.other ? 'activities' : 'routines for ' + g.name} yet.</p>`}
       <button class="btn block" data-act="add">+ Add ${g.other ? 'activity' : g.name + ' routine'}</button>
-      ${V.gate === 'nutrition' ? nutritionPanel() : ''}`;
+      ${V.gate === 'nutrition' ? nutritionPanel() : ''}
+      ${V.gate === 'fitness' ? fitnessPanel() : ''}`;
   }
 
   function editSheet() {
@@ -1229,6 +1276,7 @@
             <button class="btn" type="button" data-act="edit-cancel">Cancel</button>
             ${e.isNew ? '<span></span>' : '<button class="btn danger" type="button" data-act="delete">Delete</button>'}
           </div>
+          ${!e.isNew && isDone(r.id) ? `<button class="btn ghost block" type="button" data-act="reset-done" style="margin-top:8px">Reset today’s completion${finOf(r.id) ? ` (${finText(r).txt})` : ''}</button>` : ''}
         </form>
       </div>`;
   }
@@ -2007,11 +2055,12 @@
       ...n.preps.filter(x => x.left > 0).map(x => ({ kind: 'prep', id: x.id, name: x.name, sub: `Meal prep · ${r1(x.left)} left`, ...x.per })),
       ...n.foods.map(x => ({ kind: 'food', id: x.id, name: x.name, sub: x.serving || '1 serving', kcal: x.kcal, p: x.p, c: x.c, f: x.f })),
     ];
-    const fld = (name, label, extra = '') => `<div class="field"><label>${label}</label><input name="${name}" type="number" inputmode="decimal" min="0" step="any" ${extra}></div>`;
+    const pf = a.prefill || {};
+    const fld = (name, label, extra = '') => `<div class="field"><label>${label}</label><input name="${name}" type="number" inputmode="decimal" min="0" step="any" value="${pf[name] ?? ''}" ${extra}></div>`;
     return `<div class="sheet-bg ${a.fresh ? 'enter' : ''}" data-act="n-cancel-bg"><div class="sheet">
       <h2>Add to ${a.meal}</h2>
-      <div class="seg" style="grid-template-columns:1fr 1fr">${[['saved', 'Saved'], ['new', 'New food']].map(([k, l]) => `<button data-act="n-mode" data-v="${k}" class="${a.mode === k ? 'on' : ''}">${l}</button>`).join('')}</div>
-      ${a.mode === 'saved' ? `
+      <div class="seg">${[['saved', 'Saved'], ['search', 'Look up'], ['new', 'New food']].map(([k, l]) => `<button data-act="n-mode" data-v="${k}" class="${a.mode === k ? 'on' : ''}">${l}</button>`).join('')}</div>
+      ${a.mode === 'search' ? lookupPane(a) : a.mode === 'saved' ? `
         <div class="row spread" style="margin-bottom:10px"><span class="muted" style="font-size:14px">Servings</span>
           <span class="qty"><button data-act="n-qty" data-d="-0.5" aria-label="Fewer">−</button><b class="num">${r1(a.qty)}</b><button data-act="n-qty" data-d="0.5" aria-label="More">+</button></span></div>
         <input id="nsearch" class="search" placeholder="Search saved foods and preps" value="${esc(a.q)}" autocomplete="off">
@@ -2020,7 +2069,8 @@
             <span class="row" style="gap:6px">${x.kind === 'food' ? `<button class="btn small ghost" data-act="n-food-del" data-id="${x.id}" aria-label="Forget this food">✕</button>` : ''}<button class="btn small primary" data-act="n-pick" data-kind="${x.kind}" data-id="${x.id}">Add</button></span></li>`).join('')
           || '<li><span class="muted">Nothing saved yet. Use “New food”.</span></li>'}</ul>` : `
         <form id="nnew" autocomplete="off">
-          <div class="grid2"><div class="field"><label>Name</label><input name="name" required></div><div class="field"><label>Serving</label><input name="serving" placeholder="1 cup, 100 g…"></div></div>
+          ${pf.name ? '<p class="note" style="margin:0 0 10px">Filled in from Open Food Facts. Check it against the label and adjust if needed.</p>' : ''}
+          <div class="grid2"><div class="field"><label>Name</label><input name="name" required value="${esc(pf.name || '')}"></div><div class="field"><label>Serving</label><input name="serving" placeholder="1 cup, 100 g…" value="${esc(pf.serving || '')}"></div></div>
           <div class="grid4">${fld('kcal', 'kcal', 'placeholder="auto"')}${fld('p', 'Protein g')}${fld('c', 'Carbs g')}${fld('f', 'Fat g')}</div>
           <p class="note" style="margin:0 0 12px">Leave calories blank to work them out from the macros (4 / 4 / 9 per gram).</p>
           <div class="field"><label>Servings eaten</label><input name="qty" type="number" inputmode="decimal" min="0.25" step="any" value="1"></div>
@@ -2088,6 +2138,252 @@
       x.kcal = el['ik' + i].value === '' ? '' : +el['ik' + i].value;
       for (const [m, n] of [['p', 'ip'], ['c', 'ic'], ['f', 'if']]) x[m] = el[n + i].value === '' ? '' : +el[n + i].value;
     });
+  }
+
+  /* ----- food lookup: Open Food Facts ----- */
+
+  const OFF = 'https://world.openfoodfacts.org';
+  const OFF_FIELDS = 'code,product_name,brands,serving_size,nutriments';
+  // per serving when the product lists it, otherwise per 100 g
+  function offItem(pr) {
+    const n = pr.nutriments || {};
+    const per = n['energy-kcal_serving'] != null || n.proteins_serving != null ? 'serving' : '100g';
+    const g = k => +(n[`${k}_${per}`] ?? 0) || 0;
+    let kcal = g('energy-kcal');
+    if (!kcal && n[`energy_${per}`]) kcal = n[`energy_${per}`] / 4.184;   // kJ -> kcal
+    const brand = pr.brands ? pr.brands.split(',')[0].trim() : '';
+    return { name: [pr.product_name, brand].filter(Boolean).join(' · ') || 'Unnamed product',
+             serving: per === 'serving' ? (pr.serving_size || '1 serving') : '100 g',
+             kcal: Math.round(kcal), p: r1(g('proteins')), c: r1(g('carbohydrates')), f: r1(g('fat')), code: pr.code || '' };
+  }
+  // Open Food Facts' search sometimes answers "busy" (and browsers can't read that reply), so retry a few times;
+  // if it's still down, fall back to USDA FoodData Central (free demo key: a handful of searches an hour).
+  async function offSearch(q) {
+    const keep = list => (list || []).filter(x => x.product_name && x.nutriments).map(offItem);
+    for (let attempt = 0; attempt < 3; attempt++) {
+      try {
+        const r = await fetch(`${OFF}/cgi/search.pl?search_terms=${encodeURIComponent(q)}&search_simple=1&action=process&json=1&page_size=24&fields=${OFF_FIELDS}`);
+        if (r.ok) { const res = keep((await r.json()).products); if (res.length) return res; break; }
+      } catch (e) {}
+      await new Promise(res => setTimeout(res, 900 * (attempt + 1)));
+    }
+    return fdcSearch(q);
+  }
+  async function fdcSearch(q) {
+    const r = await fetch(`https://api.nal.usda.gov/fdc/v1/foods/search?api_key=DEMO_KEY&query=${encodeURIComponent(q)}&pageSize=20&dataType=Foundation,SR%20Legacy,Branded`);
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    const j = await r.json();
+    return (j.foods || []).map(x => {
+      const n = {};
+      for (const m of x.foodNutrients || []) {
+        if (m.nutrientName === 'Energy' && m.unitName !== 'KCAL') continue;
+        n[m.nutrientName] = +m.value || 0;
+      }
+      // USDA values are per 100 g; scale to the labelled serving when there is one
+      const g = /^(g|ml|grm)$/i.test(x.servingSizeUnit || '') && x.servingSize ? x.servingSize : null;
+      const k = g ? g / 100 : 1;
+      const title = (x.description || 'Food').toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
+      return { name: [title, x.brandName || x.brandOwner].filter(Boolean).join(' · '), serving: g ? `${r1(g)} ${String(x.servingSizeUnit).toLowerCase() === 'ml' ? 'ml' : 'g'}` : '100 g',
+               kcal: Math.round((n.Energy || n['Energy (Atwater General Factors)'] || 0) * k), p: r1((n.Protein || 0) * k),
+               c: r1((n['Carbohydrate, by difference'] || 0) * k), f: r1((n['Total lipid (fat)'] || 0) * k), code: x.gtinUpc || '' };
+    }).filter(x => x.kcal || x.p || x.c || x.f);
+  }
+  async function offBarcode(code) {
+    const r = await fetch(`${OFF}/api/v2/product/${encodeURIComponent(code)}.json?fields=${OFF_FIELDS}`);
+    if (!r.ok && r.status !== 404) throw new Error('HTTP ' + r.status);
+    const j = await r.json();
+    return j.status === 1 && j.product ? offItem(j.product) : null;
+  }
+  const canScan = () => 'BarcodeDetector' in window && !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
+
+  function lookupPane(a) {
+    const res = a.results;
+    return `
+      <form id="offform" class="custom" style="margin:0 0 8px" autocomplete="off"><input name="q" class="search" placeholder="Search foods or type a barcode" value="${esc(a.oq)}"><button class="btn primary" type="submit">Search</button></form>
+      ${canScan() ? '<button class="btn block" data-act="scan-open" style="margin-bottom:8px">Scan a barcode</button>' : ''}
+      ${a.busy ? '<p class="muted">Searching…</p>' : a.err ? `<p class="hint warn">${esc(a.err)}</p>` : ''}
+      ${res ? (res.length ? `<ul class="foodlist offres">${res.map((x, i) => `<li><span><div>${esc(x.name)}</div><div class="t num">${esc(x.serving)} · ${macLine(x)}</div></span>
+          <button class="btn small primary" data-act="off-pick" data-i="${i}">Use</button></li>`).join('')}</ul>` : '<p class="muted">No matches. Try fewer words, or use New food.</p>') : ''}
+      <p class="note">Results come from Open Food Facts (and USDA FoodData Central if it’s busy), free public databases. Only your search words are sent.</p>`;
+  }
+  async function runLookup(q) {
+    const a = V.nadd;
+    a.oq = q; a.busy = true; a.err = ''; a.results = null; render();
+    try {
+      if (/^\d{8,14}$/.test(q)) { const x = await offBarcode(q); a.results = x ? [x] : []; if (!x) a.err = 'That barcode isn’t in Open Food Facts yet.'; }
+      else a.results = await offSearch(q);
+    } catch (e) { a.err = navigator.onLine === false ? 'You’re offline. Food lookup needs internet.' : 'Couldn’t reach the food databases. Try again in a moment, or use New food.'; }
+    a.busy = false;
+    if (V.nadd === a) render();
+  }
+
+  let scanStream = null, scanRaf = 0;
+  async function startScan() {
+    V.scan = true; render();
+    const msg = t => { const m = document.getElementById('scanmsg'); if (m) m.textContent = t; };
+    try {
+      scanStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+      const v = document.getElementById('scanvid');
+      v.srcObject = scanStream; await v.play();
+      const det = new BarcodeDetector({ formats: ['ean_13', 'ean_8', 'upc_a', 'upc_e'] });
+      const loop = async () => {
+        if (!V.scan) return;
+        try {
+          const codes = await det.detect(v);
+          if (codes.length) { const code = codes[0].rawValue; stopScan(); V.scan = false; buzz(); runLookup(code); return; }
+        } catch (e) {}
+        scanRaf = requestAnimationFrame(loop);
+      };
+      loop();
+    } catch (e) { msg('Camera unavailable. Type the barcode number into the search box instead.'); }
+  }
+  function stopScan() {
+    cancelAnimationFrame(scanRaf);
+    if (scanStream) scanStream.getTracks().forEach(t => t.stop());
+    scanStream = null;
+  }
+
+  /* ----- fitness: workout log ----- */
+
+  const WK = () => S.workouts;
+  const same = (a, b) => a.trim().toLowerCase() === b.trim().toLowerCase();
+  const e1rm = (w, r) => (w > 0 && r > 0 ? w * (1 + r / 30) : 0);   // Epley estimate
+  function lastFor(name) {
+    for (let i = WK().log.length - 1; i >= 0; i--) {
+      const it = WK().log[i].items.find(x => same(x.name, name));
+      if (it) return { w: WK().log[i], it };
+    }
+    return null;
+  }
+  function bestFor(name) {
+    let best = 0;
+    for (const w of WK().log) for (const it of w.items) if (it.kind === 'strength' && same(it.name, name))
+      for (const x of it.sets) best = Math.max(best, e1rm(+x.w, +x.r));
+    return best;
+  }
+  const distUnit = () => (WK().unit === 'lb' ? 'mi' : 'km');
+  const setsText = it => it.kind === 'cardio'
+    ? it.sets.filter(x => x.min || x.dist).map(x => `${x.min || 0} min${x.dist ? ` · ${x.dist} ${distUnit()}` : ''}`).join(', ')
+    : it.sets.filter(x => x.r).map(x => `${x.r}×${x.w || 0}`).join(', ');
+  const volume = w => w.items.reduce((t, it) => t + (it.kind === 'strength' ? it.sets.reduce((a, x) => a + (+x.r || 0) * (+x.w || 0), 0) : 0), 0);
+
+  function woItem(it, i) {
+    const last = lastFor(it.name), str = it.kind === 'strength';
+    const [f1, f2] = str ? ['r', 'w'] : ['min', 'dist'];
+    return `<div class="woex">
+      <div class="row spread"><b>${esc(it.name)}</b><button class="x" data-act="wo-rmex" data-i="${i}" aria-label="Remove exercise">✕</button></div>
+      ${last ? `<div class="t">Last time (${dayLabel(last.w.date)}): ${esc(setsText(last.it)) || '—'}</div>` : '<div class="t">First time logging this</div>'}
+      <div class="sets"><span>Set</span><span>${str ? 'Reps' : 'Min'}</span><span>${str ? WK().unit : distUnit()}</span><span></span>
+        ${it.sets.map((x, j) => `<span class="n num">${j + 1}</span>
+          <input class="wo-in" data-i="${i}" data-j="${j}" data-f="${f1}" type="number" inputmode="decimal" min="0" step="any" value="${x[f1] ?? ''}" aria-label="${str ? 'Reps' : 'Minutes'}">
+          <input class="wo-in" data-i="${i}" data-j="${j}" data-f="${f2}" type="number" inputmode="decimal" min="0" step="any" value="${x[f2] ?? ''}" aria-label="${str ? 'Weight' : 'Distance'}">
+          <button class="x" data-act="wo-rmset" data-i="${i}" data-j="${j}" aria-label="Remove set">✕</button>`).join('')}
+      </div>
+      <button class="btn small" data-act="wo-addset" data-i="${i}">+ Set</button>
+    </div>`;
+  }
+
+  function fitnessPanel() {
+    const w = WK(), d = w.draft;
+    const hist = w.log.slice(-8).reverse();
+    return `
+      <div class="sechead"><h3>Workouts</h3><div class="opts">${['lb', 'kg'].map(u => `<button data-act="wo-unit" data-v="${u}" class="${w.unit === u ? 'on' : ''}">${u}</button>`).join('')}</div></div>
+      ${d ? `<div class="card wo" style="--gc:${gateOf('fitness').color}">
+          <div class="row spread"><b>Today’s workout</b><span class="muted num" style="font-size:13px">started ${hm(d.t)}</span></div>
+          ${d.items.map(woItem).join('') || '<p class="muted" style="margin:10px 0 0">Add your first exercise below.</p>'}
+          <div class="custom" style="margin-top:14px"><input id="wo-new" list="wo-lib" placeholder="Add exercise…" autocomplete="off" aria-label="Exercise name" value="${esc(V.woName)}"><button class="btn" data-act="wo-add">Add</button></div>
+          <datalist id="wo-lib">${w.library.map(x => `<option value="${esc(x.name)}">`).join('')}</datalist>
+          <div class="opts" style="margin-top:8px">${[['strength', 'Strength'], ['cardio', 'Cardio']].map(([k, l]) => `<button data-act="wo-kind" data-v="${k}" class="${V.woKind === k ? 'on' : ''}">${l}</button>`).join('')}</div>
+          <textarea id="wo-note" placeholder="Notes (optional)">${esc(d.note || '')}</textarea>
+          <div class="acts"><button class="btn danger" data-act="wo-discard">Discard</button><button class="btn primary" data-act="wo-finish">Finish workout</button></div>
+        </div>`
+        : '<button class="btn primary block" data-act="wo-start" style="margin-bottom:12px">Start a workout</button>'}
+      ${hist.length ? hist.map(x => `<div class="card wohist">
+          <div class="row spread"><b>${dayLabel(x.date)}</b><span class="muted num" style="font-size:13px">${x.items.length} exercise${x.items.length === 1 ? '' : 's'}${volume(x) ? ` · ${Math.round(volume(x)).toLocaleString()} ${w.unit} volume` : ''}</span></div>
+          ${x.items.map(it => `<div class="line"><b>${esc(it.name)}</b>${(x.prs || []).includes(it.name) ? '<span class="pr">PR</span>' : ''} · ${esc(setsText(it))}</div>`).join('')}
+          ${x.note ? `<div class="line">${esc(x.note)}</div>` : ''}
+        </div>`).join('') : '<p class="muted" style="margin:0">Your logged workouts and PRs will show here.</p>'}`;
+  }
+
+  /* ----- supplies ----- */
+
+  const SUP = () => S.supplies;
+  const SUP_CATS = ['Grocery', 'Hygiene', 'Household', 'Other'];
+  const money = n => (n == null || n === '' ? '—' : Number(n).toLocaleString(undefined, { style: 'currency', currency: 'USD' }));
+  const walmartUrl = x => x.url || `https://www.walmart.com/search?q=${encodeURIComponent(x.name)}`;
+  function priceTrend(x) {
+    const h = x.history || [];
+    if (h.length < 2) return '';
+    const a = h[h.length - 2].price, b = h[h.length - 1].price;
+    if (b > a) return ` · <span class="up">↑ was ${money(a)}</span>`;
+    if (b < a) return ` · <span class="down">↓ was ${money(a)}</span>`;
+    return '';
+  }
+
+  function todoTabView() {
+    const seg = `<div class="seg" style="grid-template-columns:1fr 1fr">${[['todo', 'To-do'], ['supplies', 'Supplies']].map(([k, l]) =>
+      `<button data-act="ttab" data-v="${k}" class="${V.ttab === k ? 'on' : ''}">${l}</button>`).join('')}</div>`;
+    return seg + (V.ttab === 'supplies' ? suppliesView() : todoView());
+  }
+
+  function supRow(x, onList) {
+    return `<li>
+      ${onList ? `<button class="chk" data-act="sup-bought" data-id="${x.id}" aria-label="Bought">✓</button>` : '<span></span>'}
+      <span class="nm" data-act="sup-edit" data-id="${x.id}"><div>${esc(x.name)}${onList && (x.qty || 1) > 1 ? ` <span class="muted">× ${x.qty}</span>` : ''}</div>
+        <div class="t num">${money(x.price)}${x.priceAt ? ` · checked ${ago(x.priceAt)}` : ''}${priceTrend(x)}</div></span>
+      <span class="acts2">
+        ${onList ? `<button class="btn" data-act="sup-qty" data-id="${x.id}" data-d="-1" aria-label="Fewer">−</button><button class="btn" data-act="sup-qty" data-id="${x.id}" data-d="1" aria-label="More">+</button>`
+                 : `<button class="btn ${x.need ? 'on' : ''}" data-act="sup-list" data-id="${x.id}">${x.need ? 'On list' : '+ List'}</button>`}
+        <a class="btn" href="${walmartUrl(x)}" target="_blank" rel="noopener" aria-label="Check ${esc(x.name)} on Walmart"><span class="wm">✱</span> Walmart</a>
+      </span></li>`;
+  }
+
+  function suppliesView() {
+    const items = SUP().items, list = items.filter(x => x.need);
+    const total = list.reduce((t, x) => t + (x.price || 0) * (x.qty || 1), 0), unpriced = list.filter(x => x.price == null).length;
+    return `
+      <form class="card" id="supadd" autocomplete="off">
+        <div class="custom" style="margin:0"><input name="name" placeholder="Add an item (e.g. toothpaste)" aria-label="Item name"><button class="btn primary" type="submit">Add</button></div>
+        <div class="opts" style="margin-top:10px">${SUP_CATS.map(c => `<button type="button" data-act="sup-cat" data-v="${c}" class="${V.supCat === c ? 'on' : ''}">${c}</button>`).join('')}</div>
+        <div class="grid2" style="margin-top:10px">
+          <div class="field" style="margin:0"><label>Walmart price (optional)</label><input name="price" type="number" inputmode="decimal" min="0" step="0.01" placeholder="$"></div>
+          <label class="checkrow" style="margin:22px 0 0"><input type="checkbox" name="need" checked> Add to shopping list</label>
+        </div>
+      </form>
+      <div class="sechead"><h3>Shopping list</h3><span class="muted num" style="font-size:13px">${list.length} item${list.length === 1 ? '' : 's'}</span></div>
+      <div class="card">${list.length ? `<ul class="todos sup">${list.map(x => supRow(x, true)).join('')}</ul>
+        <div class="sumrow"><span class="muted">Estimated total${unpriced ? ` · ${unpriced} without a price` : ''}</span><b>${money(total)}</b></div>`
+        : '<p class="muted" style="margin:0">Nothing on the list. Tap “+ List” on an item below.</p>'}</div>
+      ${SUP_CATS.map(c => { const xs = items.filter(x => x.cat === c); return xs.length ? `
+        <div class="grouphead"><h3>${c}</h3><span class="muted num" style="font-size:13px">${xs.length}</span></div>
+        <div class="card" style="padding-top:6px;padding-bottom:6px"><ul class="todos sup">${xs.map(x => supRow(x, false)).join('')}</ul></div>` : ''; }).join('')}
+      <p class="note">Prices are what you enter. “Walmart” opens Walmart’s search for the item so you can check the current price, then tap the item to update it. Walmart doesn’t offer a public price feed.</p>`;
+  }
+
+  function supSheet() {
+    const e = V.sedit;
+    return `<div class="sheet-bg ${e.fresh ? 'enter' : ''}" data-act="sup-cancel-bg">
+      <form class="sheet" id="supform" autocomplete="off">
+        <h2>Edit item</h2>
+        <div class="field"><label>Name</label><input name="name" required value="${esc(e.name)}"></div>
+        <div class="opts" style="margin-bottom:12px">${SUP_CATS.map(c => `<label class="chip"><input type="radio" name="cat" value="${c}" ${e.cat === c ? 'checked' : ''}><span>${c}</span></label>`).join('')}</div>
+        <div class="grid2">
+          <div class="field"><label>Walmart price</label><input name="price" type="number" inputmode="decimal" min="0" step="0.01" value="${e.price ?? ''}"></div>
+          <div class="field"><label>Quantity on list</label><input name="qty" type="number" inputmode="numeric" min="1" step="1" value="${e.qty || 1}"></div>
+        </div>
+        <div class="field"><label>Walmart product link (optional)</label><input name="url" type="url" placeholder="https://www.walmart.com/ip/…" value="${esc(e.url || '')}"></div>
+        <a class="btn block" href="${walmartUrl(e)}" target="_blank" rel="noopener" style="margin-bottom:8px;text-align:center;text-decoration:none"><span class="wm">✱</span> Check price on Walmart</a>
+        ${(e.history || []).length ? `<p class="label" style="margin-top:6px">Price history</p><ul class="flog">${e.history.slice(-6).reverse().map(h => `<li><span class="num">${new Date(h.t).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}</span><span class="num">${money(h.price)}</span></li>`).join('')}</ul>` : ''}
+        <button class="btn primary block" type="submit" style="margin:12px 0 8px">Save</button>
+        <div class="grid2"><button class="btn" type="button" data-act="sup-cancel">Cancel</button><button class="btn danger" type="button" data-act="sup-del" data-id="${e.id}">Delete</button></div>
+      </form></div>`;
+  }
+  function setPrice(x, price) {
+    if (price == null || isNaN(price)) return;
+    price = Math.round(price * 100) / 100;
+    x.history = x.history || [];
+    if (!x.history.length || x.history[x.history.length - 1].price !== price) x.history.push({ t: Date.now(), price });
+    x.price = price; x.priceAt = Date.now();
   }
 
   /* ----- feature law ----- */
@@ -2200,7 +2496,7 @@
     </div></div>`;
   }
 
-  const anySheet = () => !!(V.edit || V.data || V.whatsNew || V.wedit || V.fcheck || V.tedit || V.nadd || V.ngoals || V.nprep);
+  const anySheet = () => !!(V.edit || V.data || V.whatsNew || V.wedit || V.fcheck || V.tedit || V.nadd || V.ngoals || V.nprep || V.sedit || V.scan);
 
   /* ---------- timers ---------- */
 
@@ -2255,8 +2551,9 @@
       case 'sel': V.sel = el.dataset.v; render(); break;
       case 'toggle-day': {
         // a finish time only means something when it's logged on the day itself
-        const k = el.dataset.date, r = findRoutine(el.dataset.gate, el.dataset.id), v = !isDone(r.id, k);
-        completeRoutine(r, v, k, k === today());
+        const k = el.dataset.date, r = findRoutine(el.dataset.gate, el.dataset.id);
+        if (isDone(r.id, k)) break;
+        completeRoutine(r, true, k, k === today());
         render(); break;
       }
 
@@ -2295,20 +2592,68 @@
         break;
 
       /* routines */
-      case 'run': if (swipe.justSwiped) break; startRoutine(el.dataset.gate, el.dataset.id); break;
+      case 'run': if (swipe.justSwiped || isDone(el.dataset.id)) break; startRoutine(el.dataset.gate, el.dataset.id); break;
+      case 'reset-done': {
+        const r = findRoutine(V.edit.gate, V.edit.r.id);
+        if (r && confirm('Reset today’s completion? Its finish time and overtime will be cleared.')) { completeRoutine(r, false); render(); }
+        break;
+      }
       case 'toggle': {
         const r = findRoutine(V.gate, el.dataset.id);
-        completeRoutine(r, !isDone(r.id));
+        if (isDone(r.id)) break;
+        completeRoutine(r, true);
         render(); break;
       }
       case 'complete': completeRoutine(findRoutine(el.dataset.gate, el.dataset.id), true); buzz(); render(); break;
       case 'step-toggle': {
         const r = findRoutine(el.dataset.gate, el.dataset.id), x = r.steps[Number(el.dataset.i)], v = !isDone(x.id);
+        if (isDone(r.id)) break;
         setDone(x.id, v);
         if (v && r.steps.every(y => isDone(y.id))) completeRoutine(r, true);
-        else if (!v && isDone(r.id)) { setDone(r.id, false); setFin(r.id, null); save(); }
         buzz(); render(); break;
       }
+
+      /* workouts */
+      case 'wo-unit': WK().unit = el.dataset.v; save(); render(); break;
+      case 'wo-start': WK().draft = { t: Date.now(), items: [], note: '' }; save(); render(); break;
+      case 'wo-kind': V.woKind = el.dataset.v; render(); break;
+      case 'wo-add': {
+        const inp = document.getElementById('wo-new'), name = inp ? inp.value.trim() : '';
+        if (!name) break;
+        const lib = WK().library.find(x => same(x.name, name));
+        const kind = lib ? lib.kind : V.woKind;
+        if (!lib) WK().library.push({ name, kind });
+        // start from last time's sets so progress is one tap away
+        const last = lastFor(name);
+        const sets = last ? last.it.sets.map(x => ({ ...x })) : [kind === 'strength' ? { r: '', w: '' } : { min: '', dist: '' }];
+        WK().draft.items.push({ name: lib ? lib.name : name, kind, sets });
+        V.woName = '';
+        save(); render(); break;
+      }
+      case 'wo-addset': { const it = WK().draft.items[Number(el.dataset.i)], l = it.sets[it.sets.length - 1]; it.sets.push(l ? { ...l } : {}); save(); render(); break; }
+      case 'wo-rmset': WK().draft.items[Number(el.dataset.i)].sets.splice(Number(el.dataset.j), 1); save(); render(); break;
+      case 'wo-rmex': WK().draft.items.splice(Number(el.dataset.i), 1); save(); render(); break;
+      case 'wo-discard': if (confirm('Discard this workout?')) { WK().draft = null; save(); render(); } break;
+      case 'wo-finish': {
+        const d = WK().draft;
+        const items = d.items.map(it => ({ ...it, sets: it.sets.filter(x => it.kind === 'strength' ? +x.r > 0 : (+x.min > 0 || +x.dist > 0)) })).filter(it => it.sets.length);
+        if (!items.length) { if (confirm('Nothing logged yet. Discard this workout?')) { WK().draft = null; save(); render(); } break; }
+        const prs = items.filter(it => it.kind === 'strength' && Math.max(...it.sets.map(x => e1rm(+x.w, +x.r))) > bestFor(it.name) && bestFor(it.name) > 0).map(it => it.name);
+        WK().log.push({ id: uid(), t: d.t, date: keyOf(new Date(d.t)), items, note: (d.note || '').trim(), prs });
+        WK().draft = null; save(); buzz(); render(); break;
+      }
+
+      /* supplies */
+      case 'ttab': V.slide = slideTo(['todo', 'supplies'], V.ttab, el.dataset.v); V.ttab = el.dataset.v; render(); break;
+      case 'sup-cat': V.supCat = el.dataset.v; render(); break;
+      case 'sup-list': { const x = SUP().items.find(y => y.id === el.dataset.id); x.need = !x.need; if (x.need) x.qty = x.qty || 1; save(); render(); break; }
+      case 'sup-qty': { const x = SUP().items.find(y => y.id === el.dataset.id); x.qty = Math.max(1, (x.qty || 1) + Number(el.dataset.d)); save(); render(); break; }
+      case 'sup-bought': { const x = SUP().items.find(y => y.id === el.dataset.id); x.need = false; x.lastBought = Date.now(); x.qty = 1; save(); buzz(); render(); break; }
+      case 'sup-edit': { const x = SUP().items.find(y => y.id === el.dataset.id); V.sedit = { ...x, history: [...(x.history || [])], fresh: true }; render(); break; }
+      case 'sup-del': if (confirm('Delete this item?')) { SUP().items = SUP().items.filter(y => y.id !== el.dataset.id); V.sedit = null; save(); render(); } break;
+      case 'sup-cancel-bg': if (e.target !== el) break;
+      // fallthrough
+      case 'sup-cancel': V.sedit = null; render(); break;
 
       /* practice */
       case 'ptab': V.slide = slideTo(['feature', 'drill'], V.ptab, el.dataset.v); V.ptab = el.dataset.v; render(); break;
@@ -2331,8 +2676,11 @@
       case 'todo-cancel': V.tedit = null; render(); break;
 
       /* nutrition */
-      case 'n-add': V.nadd = { meal: el.dataset.meal, mode: N().foods.length || N().preps.some(x => x.left > 0) ? 'saved' : 'new', q: '', qty: 1, fresh: true }; render(); break;
-      case 'n-mode': V.nadd.mode = el.dataset.v; render(); break;
+      case 'n-add': V.nadd = { meal: el.dataset.meal, mode: N().foods.length || N().preps.some(x => x.left > 0) ? 'saved' : 'search', q: '', qty: 1, fresh: true, oq: '', results: null, busy: false, err: '' }; render(); break;
+      case 'n-mode': V.nadd.mode = el.dataset.v; if (el.dataset.v === 'new') V.nadd.prefill = null; render(); break;
+      case 'off-pick': V.nadd.prefill = V.nadd.results[Number(el.dataset.i)]; V.nadd.mode = 'new'; render(); break;
+      case 'scan-open': startScan(); break;
+      case 'scan-close': stopScan(); V.scan = false; render(); break;
       case 'n-qty': V.nadd.qty = Math.max(0.5, r1(V.nadd.qty + Number(el.dataset.d))); render(); break;
       case 'n-pick': {
         const a = V.nadd;
@@ -2535,7 +2883,8 @@
   $app.addEventListener('pointerdown', e => {
     if (drillRun && e.target.closest('#tapzone')) { e.preventDefault(); drillTap(); return; }
     const it = e.target.closest('.tl .it');
-    if (!it || e.button > 0) return;
+    // finished routines are locked: their finish time and overtime can't be swiped away
+    if (!it || e.button > 0 || it.classList.contains('locked')) return;
     swipe.s = { it, li: it.parentElement, id: e.pointerId, x: e.clientX, y: e.clientY, dx: 0, on: false };
   });
   $app.addEventListener('pointermove', e => {
@@ -2577,6 +2926,12 @@
 
   // live phrasing check for the Feature Law, without re-rendering while typing
   $app.addEventListener('input', e => {
+    if (e.target.classList && e.target.classList.contains('wo-in') && WK().draft) {
+      const t = e.target, it = WK().draft.items[Number(t.dataset.i)];
+      if (it && it.sets[Number(t.dataset.j)]) { it.sets[Number(t.dataset.j)][t.dataset.f] = t.value === '' ? '' : +t.value; save(); }
+    }
+    if (e.target.id === 'wo-new') V.woName = e.target.value;
+    if (e.target.id === 'wo-note' && WK().draft) { WK().draft.note = e.target.value; save(); }
     const ta = e.target.closest && e.target.closest('#todoadd');
     if (ta) V.todoDraft = { text: ta.elements.text.value, date: ta.elements.date.value, time: ta.elements.time.value };
     if (e.target.id === 'nsearch') {
@@ -2599,6 +2954,30 @@
 
   $app.addEventListener('submit', e => {
     const f = e.target;
+    if (f.id === 'offform') { e.preventDefault(); const q = f.elements.q.value.trim(); if (q) runLookup(q); return; }
+    if (f.id === 'supadd') {
+      e.preventDefault();
+      const name = f.elements.name.value.trim();
+      if (!name) return;
+      const x = { id: uid(), name, cat: V.supCat, price: null, priceAt: null, history: [], need: f.elements.need.checked, qty: 1, url: '' };
+      if (f.elements.price.value !== '') setPrice(x, +f.elements.price.value);
+      SUP().items.push(x); save(); render();
+      const inp = document.querySelector('#supadd input[name=name]'); if (inp) inp.focus();
+      return;
+    }
+    if (f.id === 'supform') {
+      e.preventDefault();
+      const x = SUP().items.find(y => y.id === V.sedit.id), el = f.elements;
+      if (x) {
+        x.name = el.name.value.trim() || x.name;
+        x.cat = (f.querySelector('input[name=cat]:checked') || {}).value || x.cat;
+        x.qty = Math.max(1, Math.round(+el.qty.value || 1));
+        x.url = el.url.value.trim();
+        if (el.price.value !== '') setPrice(x, +el.price.value);
+      }
+      save(); V.sedit = null; render();
+      return;
+    }
     if (f.id === 'todoadd') {
       e.preventDefault();
       const text = f.elements.text.value.trim();
