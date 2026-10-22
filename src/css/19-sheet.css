@@ -1,0 +1,31 @@
+  /* ---------- sheet ---------- */
+  .sheet-bg { position: fixed; inset: 0; background: rgba(0,0,0,.55); z-index: 30; display: flex; align-items: flex-end; justify-content: center; }
+  .sheet-bg.enter { animation: fade .2s ease; }
+  .sheet-bg.enter .sheet { animation: slideup .28s cubic-bezier(.2,.8,.2,1); }
+  .sheet { background: var(--surface); border-top-left-radius: 20px; border-top-right-radius: 20px; width: 100%; max-width: 560px;
+           max-height: 92vh; max-height: 92dvh; overflow-y: auto; overscroll-behavior: contain; padding: 20px 16px calc(20px + env(safe-area-inset-bottom)); }
+  .sheet h2 { margin: 0 0 14px; font-size: 18px; }
+  .field { margin-bottom: 12px; }
+  .field label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 4px; }
+  .field input, .srow input {
+    width: 100%; background: var(--surface-2); border: 1px solid var(--line); border-radius: 10px; padding: 12px;
+  }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .srow { border: 1px solid var(--line); border-radius: 12px; padding: 10px; margin-bottom: 8px; display: grid; gap: 8px; }
+  .srow .top { display: grid; grid-template-columns: 26px 1fr; gap: 8px; align-items: center; }
+  .srow .hm { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .srow .hm label { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: 14px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+  .chip { position: relative; }
+  .chip input { position: absolute; opacity: 0; pointer-events: none; }
+  .chip span { display: block; min-width: 40px; text-align: center; padding: 8px 10px; border-radius: 10px; background: var(--surface-2); border: 1px solid var(--line); color: var(--muted); font-size: 14px; cursor: pointer; }
+  .chip input:checked + span { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); font-weight: 600; }
+  .chips.days .chip span { min-width: 0; width: 38px; padding: 8px 0; }
+  .rep .tag { margin-left: 0; }
+  .srow .n { width: 26px; height: 26px; border-radius: 50%; background: var(--surface-2); display: grid; place-items: center; font-size: 13px; color: var(--muted); }
+  .srow input { padding: 10px; }
+  .srow .tools { display: flex; gap: 6px; justify-content: flex-end; }
+  .srow .tools button { padding: 6px 10px; border-radius: 8px; background: var(--surface-2); font-size: 14px; color: var(--muted); }
+  .srow .tools button:disabled { opacity: .35; }
+  .total { color: var(--muted); font-size: 14px; margin: 4px 0 14px; }
+

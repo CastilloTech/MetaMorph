@@ -1,0 +1,46 @@
+  /* ---------- mobile ---------- */
+  html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; scroll-padding-bottom: calc(96px + env(safe-area-inset-bottom)); }
+  .sheet { scroll-padding-bottom: 24px; }
+  /* no pull-to-refresh or rubber-band behind the app */
+  body { overscroll-behavior-y: none; }
+  /* taps respond immediately (no double-tap-zoom delay) */
+  button, a, label, input, select, textarea, [data-act] { touch-action: manipulation; }
+  button, .btn, nav.tabs, .seg, .opts, .chip, .stepchip { -webkit-user-select: none; user-select: none; }
+  /* 16px+ text in fields stops iPhone zooming in when you tap them */
+  input, select, textarea { font-size: 16px; }
+  .orb { -webkit-touch-callout: none; pointer-events: none; }
+  header, main { padding-left: max(16px, env(safe-area-inset-left)); padding-right: max(16px, env(safe-area-inset-right)); }
+
+  /* press feedback, since the default tap highlight is off */
+  .opts button:active, .seg button:active, nav.tabs button:active, .chip span:active, .stepchip:active,
+  .gatebar button:active, .iconbtn:active, .chk:active, .x:active, .qty button:active { transform: scale(.96); }
+  .tl .it:not(.locked):active, .daylist li:active, .todos .tx:active, .sup .nm:active { opacity: .7; }
+  .opts button, .seg button, nav.tabs button, .chip span, .stepchip, .gatebar button, .iconbtn, .chk, .qty button { transition: transform .08s, background .2s, color .2s; }
+
+  /* touch screens: every control at least ~44px tall */
+  @media (pointer: coarse) {
+    .btn { min-height: 44px; }
+    .btn.small { min-height: 44px; padding: 10px 14px; }
+    .opts button, .seg button { min-height: 44px; }
+    .chip span { min-height: 44px; display: flex; align-items: center; justify-content: center; }
+    .chips.days .chip span { width: 42px; }
+    .stepchip { min-height: 40px; padding: 8px 13px; }
+    .iconbtn { width: 44px; height: 44px; }
+    .chk { width: 34px; height: 34px; position: relative; }
+    .chk::after { content: ""; position: absolute; inset: -6px; }
+    .x, .todos .x, .flog button, .wlog button, .woex .x, .sets .x { min-width: 44px; min-height: 44px; }
+    .srow .tools button { min-width: 44px; min-height: 40px; }
+    .qty button { width: 44px; height: 44px; }
+    .checkrow { min-height: 44px; }
+    .acts2 .btn, .latebar .btn { min-height: 42px; min-width: 42px; }
+    .linkbtn { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; min-width: 44px; padding: 0 6px; margin: -12px -6px; }
+    .tapzone { height: 150px; }
+  }
+  /* very narrow phones */
+  @media (max-width: 340px) {
+    nav.tabs button { font-size: 12.5px; }
+    .gatebar .nm { font-size: 11px; }
+    .stats4 b { font-size: 17px; }
+    .clock { font-size: 64px; }
+  }
+

@@ -1,0 +1,20 @@
+  /* ---------- routine clock ---------- */
+  :root { --late: #f0a05a; }
+  .late, .tag.late, .tl .st.late { color: var(--late) !important; }
+  .clockbar { display: flex; gap: 3px; margin: 14px 0 6px; }
+  .clockbar > span { height: 8px; border-radius: 4px; background: var(--surface-2); overflow: hidden; min-width: 6px; }
+  .clockbar > span > i { display: block; height: 100%; width: 0; background: var(--gc, var(--accent)); transition: width 1s linear; }
+  .clockbar > span.done > i { width: 100% !important; background: var(--ok); }
+  .clockbar.over > span:not(.done) > i { background: var(--late); }
+  .clockbar.thin { margin: 6px 0 2px; }
+  .clockbar.thin > span { height: 4px; }
+  .cleft { font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .cleft.over { color: var(--late); font-weight: 600; }
+  .hero .chain { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 0; }
+  .stepchip { padding: 6px 11px; border-radius: 999px; background: var(--surface-2); border: 1px solid var(--line); font-size: 13px; color: var(--text); }
+  .stepchip.done { color: var(--ok); border-color: color-mix(in srgb, var(--ok) 45%, var(--line)); }
+  .chain .arrow { color: var(--muted); margin: 0 5px; }
+  .tl .dot.sq { border-radius: 4px; }
+  .tl .it.todo .nm { font-weight: 500; }
+  .tl .it.todo.done .nm { text-decoration: line-through; }
+

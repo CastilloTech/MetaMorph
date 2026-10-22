@@ -1,0 +1,27 @@
+  /* ---------- gates ---------- */
+  .gatebar { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; margin-bottom: 14px; }
+  .gatebar button { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 10px 4px; text-align: center; transition: border-color .2s, background .2s; }
+  .gatebar button.on { border-color: var(--gc); background: var(--surface-2); }
+  .gatebar .orb { width: 40px; height: 40px; margin: 0 auto 2px; filter: none; transition: transform .25s, filter .25s; }
+  .gatebar button.on .orb { transform: scale(1.12); filter: drop-shadow(0 0 8px var(--glow)); }
+  .gatebar .nm { font-size: 12px; font-weight: 600; display: block; overflow: hidden; text-overflow: ellipsis; }
+  .gatebar .ct { font-size: 12px; color: var(--muted); display: block; }
+
+  .rhead { display: grid; grid-template-columns: auto 1fr; gap: 12px; align-items: center; }
+  .chk { width: 30px; height: 30px; border-radius: 50%; border: 2px solid var(--line); display: grid; place-items: center; color: transparent; font-size: 16px; transition: background .2s, border-color .2s; }
+  .chk.done { background: var(--ok); border-color: var(--ok); color: #0d1a12; }
+  .rhead .t { color: var(--muted); font-size: 14px; }
+  .rhead .ti { font-weight: 600; font-size: 17px; }
+  .card.now { border-color: var(--gc, var(--accent)); }
+  .tag { font-size: 11px; color: var(--accent); letter-spacing: .1em; text-transform: uppercase; margin-left: 6px; }
+
+  .chainlist { list-style: none; margin: 12px 0 0; padding: 12px 0 0 0; border-top: 1px solid var(--line); }
+  .chainlist li { display: grid; grid-template-columns: 66px 12px 1fr auto; gap: 10px; align-items: center; font-size: 14px; padding: 3px 0; position: relative; }
+  .chainlist li + li::before { content: ""; position: absolute; left: 81px; top: -8px; height: 14px; width: 2px; background: var(--line); }
+  .chainlist .t { color: var(--muted); text-align: right; font-size: 13px; }
+  .chainlist .d { width: 8px; height: 8px; border-radius: 50%; background: var(--line); margin-left: 2px; }
+  .chainlist li.done .d { background: var(--ok); }
+  .chainlist .m { color: var(--muted); font-size: 13px; }
+  .acts { display: flex; gap: 8px; margin-top: 12px; }
+  .acts .btn { flex: 1; }
+

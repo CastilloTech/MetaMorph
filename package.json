@@ -2,8 +2,13 @@
   "name": "metamorph",
   "version": "1.0.0",
   "private": true,
-  "description": "Switch drilling and the four Gates, as an offline PWA.",
+  "description": "The four Gates, routines, nutrition, workouts, body and practice, as an offline PWA.",
   "scripts": {
-    "dev": "python -m http.server 5173 --bind 127.0.0.1 -d app"
+    "build": "node build.mjs",
+    "dev": "node build.mjs && python -m http.server 5173 --bind 127.0.0.1 -d app",
+    "test": "node build.mjs && node tests/run.js"
+  },
+  "devDependencies": {
+    "puppeteer-core": "^23.11.1"
   }
 }

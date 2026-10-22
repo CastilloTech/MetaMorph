@@ -1,0 +1,14 @@
+  /* ---------- to-do ---------- */
+  .todos { list-style: none; margin: 0; padding: 0; }
+  .todos li { display: grid; grid-template-columns: auto 1fr auto; gap: 12px; align-items: center; padding: 10px 0; border-top: 1px solid var(--line); }
+  .todos li:first-child { border-top: 0; }
+  .todos .tx { cursor: pointer; min-width: 0; }
+  .todos .tx > div:first-child { overflow-wrap: anywhere; }
+  .todos li.done .tx > div:first-child { color: var(--muted); text-decoration: line-through; }
+  .todos .t { font-size: 13px; color: var(--muted); }
+  .todos .t.overdue { color: var(--late); }
+  .todos .x { color: var(--muted); padding: 6px 8px; }
+  .grouphead { display: flex; justify-content: space-between; align-items: baseline; margin: 18px 0 8px; }
+  .grouphead h3 { margin: 0; font-size: 13px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+  .grouphead.overdue h3 { color: var(--late); }
+

@@ -1,0 +1,10 @@
+  /* ---------- Now stack ---------- */
+  .nowstack { padding: 4px 16px; }
+  .nowrow { display: grid; grid-template-columns: 34px 1fr auto; gap: 12px; align-items: center; padding: 10px 0; border-top: 1px solid var(--line); }
+  .nowrow:first-child { border-top: 0; }
+  .nowrow .ic { width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; background: var(--surface-2); }
+  .nowrow .ic .orb, .nowrow .ic .drop { width: 26px; height: 26px; filter: none; }
+  .nowrow .ic svg { width: 18px; height: 18px; }
+  .nowrow .tt { font-weight: 600; font-size: 15px; }
+  .nowrow .ss { font-size: 13px; color: var(--muted); }
+

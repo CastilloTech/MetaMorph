@@ -1,0 +1,6 @@
+  /* ---------- chaos orb brightens as Gates are held ---------- */
+  .nexus .orb { filter: drop-shadow(0 0 calc(8px + 34px * var(--held, 0)) rgba(150, 120, 255, calc(.22 + .55 * var(--held, 0)))) brightness(calc(.86 + .26 * var(--held, 0))); transition: filter .8s; }
+  :root[data-evening] .orb { filter: brightness(.82) saturate(.85); }
+  :root[data-evening] .nexus .orb { filter: drop-shadow(0 0 calc(6px + 20px * var(--held, 0)) rgba(220, 150, 90, calc(.18 + .4 * var(--held, 0)))) brightness(calc(.75 + .2 * var(--held, 0))) saturate(.85); }
+  :root[data-evening] body { background: radial-gradient(120% 60% at 50% -12%, rgba(220,140,70,.10), transparent 62%), radial-gradient(140% 90% at 50% 120%, rgba(0,0,0,.5), transparent 60%), var(--bg); background-attachment: fixed; }
+

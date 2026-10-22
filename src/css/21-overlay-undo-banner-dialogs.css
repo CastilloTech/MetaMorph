@@ -1,0 +1,14 @@
+  /* ---------- overlay: undo banner, dialogs ---------- */
+  .snack { position: fixed; left: 16px; right: 16px; bottom: calc(84px + env(safe-area-inset-bottom)); max-width: 528px; margin: 0 auto; z-index: 60;
+           display: flex; align-items: center; gap: 12px; padding: 10px 10px 10px 16px; border-radius: 14px; background: #2a2f3a; color: var(--text);
+           box-shadow: 0 12px 30px rgba(0,0,0,.5); animation: rise .25s ease; font-size: 15px; }
+  .snack span { flex: 1; }
+  .snack .btn { color: var(--accent); background: none; border-color: transparent; font-weight: 700; }
+  .snack.out { opacity: 0; transform: translateY(8px); transition: opacity .2s, transform .2s; }
+  .askbg { position: fixed; inset: 0; z-index: 70; background: rgba(0,0,0,.6); display: flex; align-items: center; justify-content: center; padding: 24px; animation: fade .15s ease; }
+  .askbg.out { opacity: 0; transition: opacity .18s; }
+  .ask { width: 100%; max-width: 360px; background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 20px; animation: rise .22s ease; }
+  .ask h2 { margin: 0 0 6px; font-size: 18px; }
+  .ask p { margin: 0 0 16px; color: var(--muted); font-size: 15px; line-height: 1.45; }
+  .btn.dangerfill { background: var(--danger); border-color: var(--danger); color: #fff; }
+

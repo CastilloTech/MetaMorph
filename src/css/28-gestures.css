@@ -1,0 +1,8 @@
+  /* ---------- gestures ---------- */
+  .grab { display: flex; justify-content: center; align-items: center; height: 28px; margin: -16px -16px 4px; touch-action: none; cursor: grab; }
+  .grab::before { content: ""; width: 42px; height: 5px; border-radius: 3px; background: var(--line); }
+  .sheet { transition: transform .22s cubic-bezier(.2,.8,.2,1); }
+  .wk, .mo, .calnav { touch-action: pan-y; -webkit-user-select: none; user-select: none; }
+  .tl .it, .todos .tx { -webkit-touch-callout: none; }
+  .qa .qa-item { margin-bottom: 8px; justify-content: flex-start; text-align: left; }
+

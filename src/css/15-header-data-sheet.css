@@ -1,0 +1,12 @@
+  /* ---------- header + data sheet ---------- */
+  header .right { display: flex; align-items: center; gap: 10px; }
+  .iconbtn { position: relative; width: 34px; height: 34px; border-radius: 10px; background: var(--surface); border: 1px solid var(--line); color: var(--muted); font-size: 16px; display: grid; place-items: center; }
+  .iconbtn .badge { position: absolute; top: -3px; right: -3px; width: 10px; height: 10px; border-radius: 50%; background: var(--accent); border: 2px solid var(--bg); }
+  .kv { display: flex; justify-content: space-between; gap: 12px; padding: 10px 0; border-top: 1px solid var(--line); font-size: 15px; }
+  .kv:first-of-type { border-top: 0; }
+  .kv .v { color: var(--muted); text-align: right; }
+  .kv .v.good { color: var(--ok); }
+  .kv .v.warn { color: var(--accent); }
+  .stack { display: grid; gap: 8px; margin-top: 14px; }
+  .note { color: var(--muted); font-size: 13px; margin: 12px 0 0; line-height: 1.5; }
+

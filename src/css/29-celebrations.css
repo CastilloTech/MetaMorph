@@ -1,0 +1,95 @@
+  /* ---------- celebrations ---------- */
+  .cele { position: fixed; inset: 0; z-index: 65; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; padding: 24px; text-align: center;
+          background: radial-gradient(circle at 50% 45%, color-mix(in srgb, var(--glow) 22%, rgba(0,0,0,.6)), rgba(0,0,0,.86) 62%); animation: fade .25s ease; }
+  .cele.out { opacity: 0; transition: opacity .4s; }
+  .cele .burst { position: relative; display: grid; place-items: center; margin-bottom: 8px; }
+  .cele .orb { width: 150px; height: 150px; animation: pop .75s cubic-bezier(.2,1.4,.3,1); filter: drop-shadow(0 0 30px var(--glow)); }
+  .cele.all .orb { width: 200px; height: 200px; }
+  .cele .burst i { position: absolute; width: 150px; height: 150px; border-radius: 50%; border: 2px solid var(--glow); opacity: 0; animation: ring 1.5s ease-out forwards; }
+  .cele .burst i:nth-child(2) { animation-delay: .18s; }
+  .cele .burst i:nth-child(3) { animation-delay: .36s; }
+  .cele .ct { font-family: var(--display); font-size: 27px; font-weight: 700; letter-spacing: .06em; animation: rise .5s .15s both; }
+  .cele .cs { color: var(--muted); animation: rise .5s .25s both; }
+  @keyframes pop { 0% { transform: scale(.3) rotate(-30deg); opacity: 0; } 60% { transform: scale(1.12) rotate(6deg); opacity: 1; } 100% { transform: none; } }
+  @keyframes ring { 0% { transform: scale(.6); opacity: .9; } 100% { transform: scale(2.4); opacity: 0; } }
+  @media (prefers-reduced-motion: reduce) { .cele .orb, .cele .ct, .cele .cs { animation: none; } .cele .burst i { display: none; } }
+
+  .daytimes { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 4px 0 12px; }
+  .daytimes label { display: grid; grid-template-columns: 38px 1fr; align-items: center; gap: 6px; font-size: 14px; color: var(--muted); }
+  .daytimes input { width: 100%; background: var(--surface-2); border: 1px solid var(--line); border-radius: 10px; padding: 9px; }
+  .sched li.missed { color: var(--muted); text-decoration: line-through; opacity: .6; }
+  .sched li.missed .d { border-style: dashed; }
+
+  .nhist { display: grid; grid-template-columns: repeat(var(--n), 1fr); gap: 3px; height: 120px; align-items: stretch; }
+  .nhist .col { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 0; background: none; min-width: 0; min-height: 0 !important; }
+  .nhist .bw { flex: 1; width: 100%; position: relative; display: flex; align-items: flex-end; justify-content: center; }
+  .nhist .b { width: 100%; max-width: 26px; border-radius: 5px 5px 2px 2px; background: var(--gc); opacity: .85; min-height: 2px; }
+  .nhist .b.over { background: var(--late); }
+  .nhist .gl { position: absolute; left: 8%; right: 8%; border-top: 2px dashed var(--muted); opacity: .7; }
+  .nhist .col.sel .b { outline: 2px solid var(--text); outline-offset: 1px; }
+  .nhist .lbl { font-size: 11px; color: var(--muted); }
+
+  .sets.bb { grid-template-columns: 28px 1fr 1fr 66px 34px; }
+  .sets .tot { font-weight: 700; text-align: center; font-size: 15px; line-height: 1.15; }
+  .sets .tot small { display: block; font-weight: 400; font-size: 10px; color: var(--muted); }
+  .chipbtn { padding: 6px 10px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface-2); color: var(--muted); font-size: 12px; font-weight: 600; }
+  .chipbtn.on { color: var(--accent); border-color: color-mix(in srgb, var(--accent) 50%, var(--line)); }
+  .wohead { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; width: 100%; text-align: left; padding: 0; background: none; color: inherit; }
+  .sets input::placeholder { color: color-mix(in srgb, var(--muted) 70%, transparent); }
+
+  .bodyhead { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; text-align: center; }
+  .bodyhead .label { display: block; margin: 0 0 4px; }
+  .bodyhead b { display: block; font-size: 26px; font-weight: 300; line-height: 1.1; }
+  .bodyhead b small { font-size: 13px; color: var(--muted); }
+  .bodyhead span.muted { font-size: 12px; }
+  .bandbar { display: grid; grid-template-columns: auto 1fr auto; gap: 10px; align-items: center; font-size: 13px; color: var(--muted); }
+  .bandbar .track { position: relative; height: 10px; border-radius: 5px; background: linear-gradient(90deg, var(--ok), var(--accent), var(--late)); opacity: .85; }
+  .bandbar .track i { position: absolute; top: 50%; width: 18px; height: 18px; margin: -9px 0 0 -9px; border-radius: 50%; background: var(--text); border: 3px solid var(--bg); box-shadow: 0 0 0 1px var(--line); }
+  .lchart { width: 100%; height: 130px; display: block; }
+  .lchart-ax { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); margin-top: 4px; }
+  .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .grid3 .field input { padding: 10px 8px; }
+  .bfprev { background: var(--surface-2); border-radius: 12px; padding: 10px 12px; font-size: 15px; margin: 4px 0 10px; }
+  .mlist li { grid-template-columns: 1fr auto; }
+  .up2 { color: var(--accent); } .down2 { color: var(--release); }
+
+  .mgrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 8px; }
+  .mtile { position: relative; aspect-ratio: 3 / 4; border-radius: 12px; overflow: hidden; background: var(--surface-2); border: 1px solid var(--line); padding: 0; min-height: 0 !important; }
+  .mtile img { width: 100%; height: 100%; object-fit: cover; display: block; pointer-events: none; }
+  .mtile .mph { display: grid; place-items: center; height: 100%; font-size: 28px; color: var(--muted); }
+  .mtile .mbadge { position: absolute; top: 6px; right: 6px; width: 24px; height: 24px; border-radius: 50%; background: rgba(0,0,0,.6); color: #fff; font-size: 11px; display: grid; place-items: center; }
+  .mtile .mcap { position: absolute; left: 0; right: 0; bottom: 0; padding: 14px 6px 5px; font-size: 11px; color: #fff; background: linear-gradient(transparent, rgba(0,0,0,.7)); text-align: left; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+  .mviewer .mstage { border-radius: 14px; overflow: hidden; background: #000; display: grid; place-items: center; min-height: 200px; }
+  .mviewer .mstage img, .mviewer .mstage video { width: 100%; max-height: 62vh; max-height: 62dvh; object-fit: contain; display: block; }
+  .cmpgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .cmpgrid img { width: 100%; aspect-ratio: 3 / 4; object-fit: cover; border-radius: 12px; display: block; margin-bottom: 6px; background: #000; }
+  .cmpgrid select { width: 100%; }
+
+  /* phone fit for the newer controls */
+  header .iconbtn { flex: none; }
+  .daytimes label { grid-template-columns: 38px minmax(0, 1fr); }
+  .daytimes input { min-width: 0; }
+  @media (pointer: coarse) {
+    .chipbtn { min-height: 40px; padding: 8px 12px; }
+    .wohead { min-height: 44px; align-items: center; }
+  }
+  @media (max-width: 340px) { header .date { font-size: 12px; } header .right { gap: 6px; } }
+
+  .review textarea { width: 100%; min-height: 64px; background: var(--surface-2); border: 1px solid var(--line); border-radius: 10px; padding: 10px; resize: vertical; }
+  .rvgates { display: grid; gap: 12px; }
+  .rvg { display: flex; gap: 12px; align-items: center; }
+  .rvg .orb { width: 30px; height: 30px; filter: none; flex: none; }
+  .rvg .t { font-size: 12px; color: var(--muted); margin-top: 4px; }
+  .rvlist li b { font-size: 16px; }
+
+  .camera { position: fixed; inset: 0; z-index: 45; background: #000; display: flex; flex-direction: column; }
+  .camstage { position: relative; flex: 1; overflow: hidden; }
+  .camstage video, .camstage .ghost { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .camstage.mirror video { transform: scaleX(-1); }
+  .camstage .ghost { opacity: .32; pointer-events: none; mix-blend-mode: screen; }
+  .camcount { position: absolute; inset: 0; display: grid; place-items: center; font-size: 120px; font-weight: 200; color: #fff; text-shadow: 0 0 30px rgba(0,0,0,.6); }
+  .camctl { padding: 12px 16px calc(16px + env(safe-area-inset-bottom)); background: rgba(0,0,0,.85); }
+  .camhint { text-align: center; color: #bbb; font-size: 13px; margin: 8px 0; }
+  .camrow { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 16px; }
+  .shutter { width: 74px; height: 74px; border-radius: 50%; background: #fff; border: 5px solid rgba(255,255,255,.35); background-clip: padding-box; }
+  .shutter:active { transform: scale(.94); }

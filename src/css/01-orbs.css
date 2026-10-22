@@ -1,0 +1,18 @@
+  /* ---------- orbs ---------- */
+  .orb { display: block; filter: drop-shadow(0 0 10px color-mix(in srgb, var(--glow) 45%, transparent)); user-select: none; -webkit-user-drag: none; }
+  .orb.spin { animation: spin 90s linear infinite; }
+  .orb.enter { animation: enter .7s cubic-bezier(.2,.8,.2,1), spin 90s linear .7s infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @keyframes enter { from { opacity: 0; transform: scale(.55) rotate(-40deg); filter: drop-shadow(0 0 40px var(--glow)) brightness(1.6); } to { opacity: 1; transform: none; } }
+  @media (prefers-reduced-motion: reduce) { .orb.spin, .orb.enter { animation: none; } }
+
+  .nexus { display: flex; flex-direction: column; align-items: center; margin: 4px 0 16px; text-align: center; }
+  .nexus .orb { width: 150px; height: 150px; }
+  .nexus .cap { margin-top: 8px; color: var(--muted); font-size: 13px; letter-spacing: .12em; text-transform: uppercase; }
+  .nexus .cap b { color: var(--text); font-weight: 600; }
+
+  .gatehead { display: flex; align-items: center; gap: 16px; margin: 0 0 14px; }
+  .gatehead .orb { width: 92px; height: 92px; flex: none; }
+  .gatehead .nm { font-size: 22px; font-weight: 600; }
+  .gatehead .sub { color: var(--muted); font-size: 14px; }
+

@@ -748,6 +748,25 @@
     .wohead { min-height: 44px; align-items: center; }
   }
   @media (max-width: 340px) { header .date { font-size: 12px; } header .right { gap: 6px; } }
+
+  .review textarea { width: 100%; min-height: 64px; background: var(--surface-2); border: 1px solid var(--line); border-radius: 10px; padding: 10px; resize: vertical; }
+  .rvgates { display: grid; gap: 12px; }
+  .rvg { display: flex; gap: 12px; align-items: center; }
+  .rvg .orb { width: 30px; height: 30px; filter: none; flex: none; }
+  .rvg .t { font-size: 12px; color: var(--muted); margin-top: 4px; }
+  .rvlist li b { font-size: 16px; }
+
+  .camera { position: fixed; inset: 0; z-index: 45; background: #000; display: flex; flex-direction: column; }
+  .camstage { position: relative; flex: 1; overflow: hidden; }
+  .camstage video, .camstage .ghost { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .camstage.mirror video { transform: scaleX(-1); }
+  .camstage .ghost { opacity: .32; pointer-events: none; mix-blend-mode: screen; }
+  .camcount { position: absolute; inset: 0; display: grid; place-items: center; font-size: 120px; font-weight: 200; color: #fff; text-shadow: 0 0 30px rgba(0,0,0,.6); }
+  .camctl { padding: 12px 16px calc(16px + env(safe-area-inset-bottom)); background: rgba(0,0,0,.85); }
+  .camhint { text-align: center; color: #bbb; font-size: 13px; margin: 8px 0; }
+  .camrow { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 16px; }
+  .shutter { width: 74px; height: 74px; border-radius: 50%; background: #fff; border: 5px solid rgba(255,255,255,.35); background-clip: padding-box; }
+  .shutter:active { transform: scale(.94); }
 </style>
 </head>
 <body>
@@ -776,8 +795,15 @@
   const KEY = 'metamorph.v1';
 
   // Keep in step with CACHE in sw.js. Add a CHANGELOG entry for each release.
-  const APP_VERSION = 14;
+  const APP_VERSION = 15;
   const CHANGELOG = {
+    15: [
+      'Safer storage: your data lives in IndexedDB with no practical size limit, and the newest copy always wins at launch',
+      'Real reminders (Settings → Reminders): routine starts, water sips, timed to-dos and a Sunday review prompt, even with the app closed',
+      'Weekly review: Gates held, workouts, food, water, body and drill for the week, plus “keep doing / change” notes',
+      'Export your workouts, body log, nutrition, routines and water as spreadsheets (Settings → Export)',
+      'Pose-guide camera for progress photos: a faint outline of your last photo helps you line up',
+    ],
     14: [
       'Your day now rolls over at a time you set (default: 2 hours before you wake), so late snacks and late workouts count for the day before you sleep',
       'Routines can start at different times on different days of the week',
@@ -915,6 +941,8 @@
     if (!s.body) s.body = { profile: { sex: 'male', heightIn: null, activity: 1.55 }, entries: [], phase: { mode: 'maintain', since: null, low: 12, high: 16 } };
     if (!s.prefs) s.prefs = { evening: true };
     if (!s.skip) s.skip = {};
+    if (!s.reviews) s.reviews = {};
+    if (!s.reminders) s.reminders = { on: false, routines: true, water: true, todos: true, review: true, deviceId: null, lastHash: '' };
     if (s.water && !s.water.hit) s.water.hit = {};
     return s;
   }
@@ -944,8 +972,12 @@
     };
   })();
 
-  let fromLocal = false;
+  // IndexedDB is the main store (no practical size limit). localStorage keeps a quick copy for an
+  // instant start while the data fits; every save carries a revision, so the newer copy wins at launch.
+  const LS_IDB = 'metamorph.idb';   // set once the data no longer fits in localStorage
+  let fromLocal = false, lsOff = false;
   function load() {
+    try { lsOff = localStorage.getItem(LS_IDB) === '1'; } catch (e) {}
     try {
       const s = JSON.parse(localStorage.getItem(KEY));
       if (valid(s)) { fromLocal = true; return normalize(s); }
@@ -953,15 +985,31 @@
     return normalize(seed());
   }
   let mirrorTimer = null;
-  // the IndexedDB copy is only written once we know it isn't needed for recovery
+  // IndexedDB is only written once the launch check has decided which copy is newest
   let mirrorReady = false;
   function save() {
-    const json = JSON.stringify(S);
-    try { localStorage.setItem(KEY, json); } catch (e) {}
+    S.rev = (S.rev || 0) + 1;
+    if (!lsOff) {
+      try { localStorage.setItem(KEY, JSON.stringify(S)); }
+      catch (e) {
+        // out of room: stop keeping the quick copy (it would go stale) and remember that for next launch
+        lsOff = true;
+        try { localStorage.removeItem(KEY); localStorage.setItem(LS_IDB, '1'); } catch (e2) {}
+      }
+    }
+    // keep push reminders in step with the schedule (the reminder code isn't ready during the very first save)
+    try { scheduleReminderSync(); } catch (e) {}
     if (!mirrorReady) return;
     clearTimeout(mirrorTimer);
-    mirrorTimer = setTimeout(() => { idb.set('state', JSON.stringify(S)).catch(() => {}); }, 400);
+    mirrorTimer = setTimeout(flushIdb, 300);
   }
+  function flushIdb() {
+    clearTimeout(mirrorTimer);
+    if (mirrorReady) return idb.set('state', JSON.stringify(S)).catch(() => {});
+  }
+  // never leave a pending write behind when the app is backgrounded or closed
+  addEventListener('pagehide', () => flushIdb());
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') flushIdb(); });
 
   const S = load();
   function replaceState(next) {
@@ -1004,22 +1052,19 @@
     } catch (e) {}
   })();
 
-  // localStorage came back empty: recover from the IndexedDB copy if there is one
-  if (!fromLocal) {
-    idb.get('state').then(json => {
-      const s = json && JSON.parse(json);
-      if (valid(s)) {
-        replaceState(s);
-        S.onboarded = true;
-        V.onboard = null;
-        resumeRun();
-        render();
-      }
-    }).catch(() => {}).finally(() => { mirrorReady = true; save(); });
-  } else {
-    mirrorReady = true;
-    idb.set('state', JSON.stringify(S)).catch(() => {});
-  }
+  // Launch check: if the IndexedDB copy is newer than the quick copy (or there is no quick copy), use it.
+  let idbHadState = false;
+  const booted = idb.get('state').then(json => {
+    const s = json && JSON.parse(json);
+    idbHadState = valid(s);
+    if (valid(s) && (!fromLocal || (s.rev || 0) > (S.rev || 0))) {
+      replaceState(s);
+      S.onboarded = true;
+      V.onboard = null;
+      save();   // refresh the quick copy too
+      if (V.tab) { resumeRun(); render(); }
+    }
+  }).catch(() => {}).finally(() => { mirrorReady = true; flushIdb(); });
 
   /* ---------- helpers ---------- */
 
@@ -1207,6 +1252,8 @@
       ${V.mup ? mediaUpSheet() : ''}
       ${V.mview ? mediaViewSheet() : ''}
       ${V.mcmp ? compareSheet() : ''}
+      ${V.review ? reviewSheet() : ''}
+      ${V.cam ? camSheet() : ''}
       ${V.sedit ? supSheet() : ''}
       ${V.scan ? `<div class="scanner"><div class="frame"><video id="scanvid" playsinline muted></video></div><p id="scanmsg">Point the camera at a barcode</p><button class="btn" data-act="scan-close">Cancel</button></div>` : ''}
       ${V.update && !anySheet() ? `
@@ -1319,6 +1366,7 @@
         </div>
         <div class="legend"><span><i class="ring full" style="--gcol:var(--muted)"></i>held</span><span><i class="ring part" style="--gcol:var(--muted)"></i>partly</span><span><i class="ring miss" style="--gcol:var(--muted)"></i>missed</span></div>
         ${n ? `<p class="muted num" style="text-align:center;margin:10px 0 0;font-size:13px">${held}/${n} held so far · ${Math.round(100 * held / n)}%</p>` : ''}
+        <button class="btn block" data-act="rv-open" data-v="${keyOf(mon)}" style="margin-top:12px">${S.reviews[keyOf(mon)] ? 'Open weekly review ✓' : 'Weekly review'}</button>
       </div>
       ${dayDetail()}`;
   }
@@ -1553,6 +1601,12 @@
       if (open.length) rows.push(`<div class="nowrow"><span class="ic" style="color:var(--accent)">${ICON.eye}</span><span><div class="tt">Feature Law</div><div class="ss">${open.length} check-in${open.length === 1 ? '' : 's'} waiting</div></span>
         <button class="btn small" data-act="f-check" data-id="${open[0].id}">Check in</button></div>`);
     }
+    {
+      const d = pdayDate(), dow = d.getDay(), mon = keyOf(addDays(d, -((dow + 6) % 7)));
+      const target = dow === 0 ? mon : dow === 1 ? keyOf(addDays(parseKey(mon), -7)) : null;
+      if (target && !S.reviews[target]) rows.push(`<div class="nowrow"><span class="ic">${orb('chaos', 26)}</span><span><div class="tt">Weekly review</div><div class="ss">${dow === 0 ? 'This week' : 'Last week'} is ready to look back on</div></span>
+        <button class="btn small" data-act="rv-open" data-v="${target}">Open</button></div>`);
+    }
     if (on('workouts') && WK().draft) rows.push(`<div class="nowrow"><span class="ic">${orb('fitness', 26)}</span><span><div class="tt">Workout in progress</div><div class="ss">${WK().draft.items.length} exercise${WK().draft.items.length === 1 ? '' : 's'} · started ${hm(WK().draft.t)}</div></span>
       <button class="btn small" data-act="now-workout">Resume</button></div>`);
     return rows.length ? `<div class="card nowstack"><p class="label" style="margin:10px 0 2px">Needs you</p>${rows.join('')}</div>` : '';
@@ -1662,10 +1716,14 @@
           <p class="label" style="margin-top:18px">Your day</p>
           <div class="field"><label>New day starts at</label><input type="time" data-pref-time="dayStart" value="${fromMinHM(dayStart())}"></div>
           <p class="note" style="margin:-4px 0 6px">Anything before this (a late snack, a 1 AM workout) counts for the day before. Default is two hours before your wake time.</p>
+          <p class="label" style="margin-top:18px">Reminders</p>
+          ${remindersSettings()}
           <p class="label" style="margin-top:18px">Backup</p>
+          <button class="btn block" data-act="csv-export" style="margin:8px 0">Export spreadsheets (CSV)</button>
           <div class="kv"><span>Photos &amp; videos</span><span class="v">${S.media.length} items · back up from Body → Media</span></div>
           <div class="kv"><span>Saved on this device</span><span class="v good">Automatically, every change</span></div>
-          <div class="kv"><span>Second copy (IndexedDB)</span><span class="v ${typeof indexedDB !== 'undefined' ? 'good' : 'warn'}">${typeof indexedDB !== 'undefined' ? 'On' : 'Unavailable'}</span></div>
+          <div class="kv"><span>Main store (IndexedDB)</span><span class="v ${typeof indexedDB !== 'undefined' ? 'good' : 'warn'}">${typeof indexedDB !== 'undefined' ? 'On' : 'Unavailable'}</span></div>
+          <div class="kv"><span>Quick-start copy</span><span class="v">${lsOff ? 'Off (data outgrew it)' : 'On'}</span></div>
           <div class="kv"><span>Protected from auto-clearing</span><span class="v ${p ? 'good' : 'warn'}">${p === null ? 'Unknown' : p ? 'Yes' : 'Not granted'}</span></div>
           <div class="kv"><span>Last backup file</span><span class="v ${backupDue() ? 'warn' : 'good'}">${S.lastBackup ? ago(S.lastBackup) : 'Never'}</span></div>
           <div class="kv"><span>History</span><span class="v num">${nDays} day${nDays === 1 ? '' : 's'} · ${S.drill.sessions.length} drills</span></div>
@@ -3159,6 +3217,212 @@
           <button data-act="b-del" data-id="${e.id}" aria-label="Delete entry">✕</button></li>`; }).join('')}</ul></div>` : ''}`;
   }
 
+  /* ----- CSV export ----- */
+
+  const csvCell = v => { const x = v == null ? '' : String(v); return /[",\n]/.test(x) ? `"${x.replace(/"/g, '""')}"` : x; };
+  const csv = (head, rows) => [head, ...rows].map(r => r.map(csvCell).join(',')).join('\r\n') + '\r\n';
+  async function exportCSV() {
+    const files = {};
+    files['workouts.csv'] = csv(['date', 'workout', 'exercise', 'kind', 'set', 'reps', 'weight', 'bar', 'per_side', 'minutes', 'distance', 'unit', 'pr'],
+      WK().log.flatMap(w => w.items.flatMap(it => it.sets.map((x, i) => [w.date, w.title || '', it.name, it.kind, i + 1, x.r ?? '', it.kind === 'strength' ? setW(x) : '', x.bar ?? '', x.ps ?? '', x.min ?? '', x.dist ?? '', WK().unit, (w.prs || []).includes(it.name) ? 'yes' : '']))));
+    files['body.csv'] = csv(['date', 'weight_lb', 'body_fat_pct', ...PARTS.map(([k]) => k + '_in')],
+      entriesSorted().map(e => [e.date, e.weight ?? '', navyBF(e) ?? '', ...PARTS.map(([k]) => e[k] ?? '')]));
+    const nKeys = Object.keys(N().log).sort();
+    files['nutrition_entries.csv'] = csv(['date', 'meal', 'food', 'servings', 'kcal', 'protein_g', 'carbs_g', 'fat_g'],
+      nKeys.flatMap(k => nLog(k).map(e => [k, e.meal, e.name, e.qty, Math.round(e.kcal * e.qty), r1(e.p * e.qty), r1(e.c * e.qty), r1(e.f * e.qty)])));
+    files['nutrition_daily.csv'] = csv(['date', 'kcal', 'protein_g', 'carbs_g', 'fat_g', 'goal_kcal', 'goal_protein_g'],
+      nKeys.map(k => { const t = nTotals(k), g = goalsFor(k); return [k, Math.round(t.kcal), r1(t.p), r1(t.c), r1(t.f), g.kcal, g.p]; }));
+    const dayKeys = Object.keys(S.done).sort();
+    files['routines.csv'] = csv(['date', 'gate', 'routine', 'done', 'finished_at', 'late'],
+      dayKeys.flatMap(k => GATES.flatMap(g => S.gates[g.id].filter(r => S.done[k][r.id]).map(r => { const ts = finOf(r.id, k); return [k, g.name, r.title, 'yes', ts ? new Date(ts).toLocaleString() : '', ts && finText(r, k).late ? 'yes' : '']; }))));
+    files['water.csv'] = csv(['date', 'total_ml', 'target_ml'], Object.keys(W().log).sort().map(k => [k, wTotal(k), W().target]));
+    const JSZip = await loadZip(), zip = new JSZip();
+    for (const [name, text] of Object.entries(files)) zip.file(name, '﻿' + text);   // BOM so Excel reads UTF-8
+    const blob = await zip.generateAsync({ type: 'blob' });
+    if (await ask({ title: 'Spreadsheets ready', text: `${Object.keys(files).length} CSV files in one ZIP. Opens in Excel, Numbers or Google Sheets.`, ok: 'Save / share' }))
+      deliver(new Blob([blob], { type: 'application/zip' }), `metamorph-export-${today()}.zip`, 'MetaMorph export');
+  }
+
+  /* ----- reminders: real push notifications ----- */
+
+  // The push server (push/ in the repo, a Cloudflare Worker).
+  const PUSH_URL = 'https://metamorph-push.specimen-card-game.workers.dev';
+  const VAPID_PUBLIC = 'BLstPkxs99TdEmIzWipe9NqLXNKDJVa9PEr2Q7PUnHaRI-Zn6O5UlbQ3bVrzLB46nJg_AUSjlgBUrgwCk1zANo0';
+  const pushSupported = () => 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window;
+  const RM = () => S.reminders;
+  const unb64u = s => Uint8Array.from(atob(s.replace(/-/g, '+').replace(/_/g, '/') + '==='.slice((s.length + 3) % 4)), c => c.charCodeAt(0));
+
+  // Everything the server should remind about. Times before the day rolls over belong to the previous
+  // personal day, so on the calendar they fall on the next weekday/date.
+  function reminderItems() {
+    const r = RM(), items = [], ds = dayStart(), k0 = today();
+    const late = hhmm => hmToMin(hhmm) < ds;
+    const shiftDays = (days, hhmm) => (late(hhmm) ? days.map(d => (d + 1) % 7) : days);
+    const calDate = (k, hhmm) => (late(hhmm) ? keyOf(addDays(parseKey(k), 1)) : k);
+    if (r.routines) for (const g of activeGates()) for (const rt of S.gates[g.id]) {
+      const rp = rt.repeat || { type: 'daily' }, base = { title: rt.title, body: `${g.name} · starts now`, tag: 'r-' + rt.id };
+      // already done or skipped today: no ping for today's run
+      const skipToday = isDone(rt.id) || skipped(rt.id) ? [calDate(k0, startFor(rt))] : [];
+      if (rp.type === 'monthly') {
+        for (let i = 0; i < 35; i++) {
+          const d = addDays(pdayDate(), i), k = keyOf(d);
+          if (!scheduledOn(rt, d) || (i === 0 && skipToday.length)) continue;
+          const t = startFor(rt, d);
+          items.push({ ...base, id: `${rt.id}-${k}`, at: t, date: calDate(k, t) });
+        }
+        continue;
+      }
+      const days = rp.type === 'weekly' ? rp.days : [0, 1, 2, 3, 4, 5, 6];
+      if (rt.vary && rt.times && Object.keys(rt.times).length) {
+        for (const d of days) { const t = rt.times[d] || rt.start; items.push({ ...base, id: `${rt.id}-${d}`, at: t, days: shiftDays([d], t), skip: skipToday }); }
+      } else items.push({ ...base, id: rt.id, at: rt.start, days: shiftDays(days, rt.start), skip: skipToday });
+    }
+    if (r.water && on('water')) {
+      const st = wState();
+      for (const e of st.rows) items.push({ id: 'w-' + e.id, at: e.time, title: 'Water', body: `${fmtW(e.amount)} sip`, tag: 'water', skip: e.done ? [calDate(k0, e.time)] : [] });
+    }
+    if (r.todos && on('todo')) for (const t of S.todos) if (!t.done && t.date && t.time && t.date >= k0) items.push({ id: 't-' + t.id, at: t.time, date: calDate(t.date, t.time), title: t.text, body: 'To-do · due now', tag: 't-' + t.id });
+    if (r.review) items.push({ id: 'review', at: '18:00', days: [0], title: 'Weekly review', body: 'Take a minute to look back on your week', tag: 'review' });
+    return items;
+  }
+
+  // keep the server's copy of the schedule current (only sends when something actually changed)
+  let reminderTimer = 0;
+  function scheduleReminderSync() {
+    if (!RM() || !RM().on || !PUSH_URL || !pushSupported()) return;
+    clearTimeout(reminderTimer);
+    reminderTimer = setTimeout(() => syncReminders(), 2500);
+  }
+  async function syncReminders(force = false) {
+    const r = RM();
+    if (!r.on || !PUSH_URL || !pushSupported()) return false;
+    const reg = await navigator.serviceWorker.ready, sub = await reg.pushManager.getSubscription();
+    if (!sub) return false;
+    const items = reminderItems(), tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const body = { id: r.deviceId, sub: sub.toJSON(), tz, items }, hash = JSON.stringify([body.sub.endpoint, tz, items]);
+    if (!force && hash === r.lastHash) return true;
+    try {
+      const res = await fetch(PUSH_URL + '/sync', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+      if (!res.ok) return false;
+      r.lastHash = hash; r.synced = Date.now(); r.count = items.length; save();
+      if (V.data) render();   // Settings shows the fresh status
+      return true;
+    } catch (e) { return false; }
+  }
+  async function enableReminders() {
+    if (!PUSH_URL) return snack('The reminder server isn’t set up yet.');
+    if (!pushSupported()) return snack('This browser can’t receive notifications. On iPhone, add MetaMorph to your Home Screen first (iOS 16.4 or later).');
+    const perm = await Notification.requestPermission();
+    if (perm !== 'granted') return snack('Notifications are blocked. Allow them for MetaMorph in your phone’s settings.');
+    try {
+      const reg = await navigator.serviceWorker.ready;
+      if (!(await reg.pushManager.getSubscription())) await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: unb64u(VAPID_PUBLIC) });
+    } catch (e) { return snack('Couldn’t turn on notifications on this device.'); }
+    const r = RM();
+    if (!r.deviceId) r.deviceId = (uid() + uid() + uid()).slice(0, 32);
+    r.on = true; r.lastHash = ''; save(); render();
+    snack((await syncReminders(true)) ? 'Reminders on' : 'Reminders on, but the server couldn’t be reached. It’ll retry.');
+  }
+  async function disableReminders() {
+    const r = RM();
+    r.on = false; r.lastHash = ''; save(); render();
+    try {
+      await fetch(PUSH_URL + '/unsubscribe', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: r.deviceId }) });
+      const sub = await (await navigator.serviceWorker.ready).pushManager.getSubscription();
+      if (sub) await sub.unsubscribe();
+    } catch (e) {}
+    snack('Reminders off');
+  }
+  async function testReminder() {
+    await syncReminders(true);
+    try {
+      const res = await fetch(PUSH_URL + '/test', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: RM().deviceId }) });
+      snack(res.ok ? 'Test sent. It should arrive in a few seconds.' : 'The server couldn’t send a test.');
+    } catch (e) { snack('Couldn’t reach the reminder server.'); }
+  }
+
+  function remindersSettings() {
+    const r = RM();
+    if (!PUSH_URL) return '<p class="note" style="margin:0 0 6px">Push reminders are being set up.</p>';
+    if (!pushSupported()) return '<p class="note" style="margin:0 0 6px">This browser can’t receive notifications. On iPhone, add MetaMorph to your Home Screen first (iOS 16.4 or later).</p>';
+    if (!r.on) return `<button class="btn primary block" data-act="rm-on">Turn on reminders</button>
+      <p class="note" style="margin:6px 0">Routine start times, water sips, timed to-dos and a Sunday review prompt, even when the app is closed. Your reminder times and titles are kept on your own small server; nothing else is sent.</p>`;
+    return `${[['routines', 'Routines', 'When each routine starts'], ['water', 'Water', 'Each scheduled sip'], ['todos', 'Timed to-dos', 'When a task is due'], ['review', 'Weekly review', 'Sundays at 6:00 PM']].map(([k, l, d]) =>
+        `<label class="switch"><span>${l}<small>${d}</small></span><input type="checkbox" data-rm="${k}" ${r[k] ? 'checked' : ''}></label>`).join('')}
+      <p class="note" style="margin:6px 0">${r.synced ? `Up to date · ${r.count || 0} reminders · synced ${ago(r.synced)}` : 'Not synced yet'}</p>
+      <div class="grid2"><button class="btn" data-act="rm-test">Send a test</button><button class="btn" data-act="rm-off">Turn off</button></div>`;
+  }
+
+  /* ----- weekly review ----- */
+
+  function weekStats(mon) {
+    const days = Array.from({ length: 7 }, (_, i) => addDays(parseKey(mon), i)).filter(d => keyOf(d) <= today());
+    const keys = days.map(keyOf), inWeek = k => k >= mon && k <= keyOf(addDays(parseKey(mon), 6));
+    const gates = activeGates().map(g => {
+      let n = 0, held = 0, late = 0;
+      for (const d of days) {
+        const k = keyOf(d);
+        for (const r of S.gates[g.id].filter(r => scheduledOn(r, d) && !skipped(r.id, k))) {
+          n++;
+          if (isDone(r.id, k)) { held++; if (finOf(r.id, k) && finText(r, k).late) late++; }
+        }
+      }
+      return { g, n, held, late };
+    }).filter(x => x.n);
+    const wo = WK().log.filter(x => inWeek(x.date));
+    const fed = keys.map(k => ({ k, t: nTotals(k), g: goalsFor(k) })).filter(x => nLog(x.k).length);
+    const water = on('water') ? keys.filter(k => k >= W().since).map(k => wTotal(k) >= W().target) : [];
+    const ents = entriesSorted();
+    const before = ents.filter(e => e.date < mon), during = ents.filter(e => inWeek(e.date));
+    const wFrom = [...before].reverse().find(e => +e.weight > 0) || during.find(e => +e.weight > 0), wTo = [...during].reverse().find(e => +e.weight > 0);
+    const bfOf = list => { for (const e of [...list].reverse()) { const v = navyBF(e); if (v != null) return v; } return null; };
+    const bfFrom = bfOf(before) ?? (during.length ? navyBF(during[0]) : null), bfTo = bfOf(during);
+    const drillWeek = S.drill.sessions.filter(x => inWeek(pdayOf(x.t))).map(sessAvg).filter(v => v != null);
+    const prevMon = keyOf(addDays(parseKey(mon), -7));
+    const drillPrev = S.drill.sessions.filter(x => { const k = pdayOf(x.t); return k >= prevMon && k < mon; }).map(sessAvg).filter(v => v != null);
+    const todosDone = S.todos.filter(x => x.done && x.doneAt && inWeek(pdayOf(x.doneAt))).length;
+    return { days, gates, wo, fed, water, wFrom, wTo, bfFrom, bfTo, drillWeek, drillPrev, todosDone };
+  }
+
+  function reviewSheet() {
+    const mon = V.review, st = weekStats(mon), rv = S.reviews[mon] || {}, sun = addDays(parseKey(mon), 6);
+    const f = d => d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+    const pct = (a, b) => (b ? Math.round(100 * a / b) : 0);
+    const tot = st.gates.reduce((a, x) => ({ n: a.n + x.n, held: a.held + x.held }), { n: 0, held: 0 });
+    const vol = st.wo.reduce((t, x) => t + volume(x), 0), prs = st.wo.flatMap(x => x.prs || []);
+    const kcalOk = st.fed.filter(x => x.g.kcal && Math.abs(x.t.kcal - x.g.kcal) <= x.g.kcal * 0.1).length;
+    const protOk = st.fed.filter(x => x.g.p && x.t.p >= x.g.p * 0.95).length;
+    const avgK = st.fed.length ? Math.round(avg(st.fed.map(x => x.t.kcal))) : null, avgP = st.fed.length ? Math.round(avg(st.fed.map(x => x.t.p))) : null;
+    const dW = st.wFrom && st.wTo && st.wFrom !== st.wTo ? +st.wTo.weight - +st.wFrom.weight : null;
+    const dBF = st.bfFrom != null && st.bfTo != null ? Math.round((st.bfTo - st.bfFrom) * 10) / 10 : null;
+    const dLat = st.drillWeek.length && st.drillPrev.length ? avg(st.drillWeek) - avg(st.drillPrev) : null;
+    const row = (label, value, sub = '') => `<li><span>${label}${sub ? `<div class="t">${sub}</div>` : ''}</span><b class="num">${value}</b></li>`;
+    const isPast = keyOf(sun) < today();
+    return `<div class="sheet-bg ${V.reviewFresh ? 'enter' : ''}" data-act="rv-close-bg"><div class="sheet review"><div class="grab" aria-hidden="true"></div>
+      <div class="whatsnew-head">${orb('chaos', 48)}<div><h2>Weekly review</h2><span class="muted num">${f(parseKey(mon))} – ${f(sun)}${isPast ? '' : ' · so far'}</span></div></div>
+      <div class="calnav" style="margin:6px 0 12px"><button class="arrow" data-act="rv-week" data-d="-7" aria-label="Previous week">‹</button>
+        <div class="ttl" style="font-size:14px">${tot.n ? `${pct(tot.held, tot.n)}% of routines held` : 'No routines this week'}</div>
+        <button class="arrow" data-act="rv-week" data-d="7" aria-label="Next week" ${keyOf(addDays(parseKey(mon), 7)) > today() ? 'disabled' : ''}>›</button></div>
+      ${st.gates.length ? `<p class="label">Gates</p><div class="card rvgates">${st.gates.map(x => `<div class="rvg">${orb(x.g.id, 30)}<div style="flex:1;min-width:0">
+          <div class="row spread"><b>${x.g.name}</b><span class="num">${x.held}/${x.n}</span></div>
+          <div class="mbar"><i style="width:${pct(x.held, x.n)}%;background:${x.g.color}"></i></div>
+          <div class="t">${x.n - x.held ? `${x.n - x.held} missed` : 'none missed'}${x.late ? ` · <span class="late">${x.late} late</span>` : ''}</div></div></div>`).join('')}</div>` : ''}
+      <p class="label">The week in numbers</p>
+      <div class="card"><ul class="flog rvlist">
+        ${on('workouts') ? row('Workouts', st.wo.length, st.wo.length ? `${Math.round(vol).toLocaleString()} ${WK().unit} volume${prs.length ? ` · PRs: ${esc([...new Set(prs)].join(', '))}` : ''}` : '') : ''}
+        ${on('macros') ? row('Food logged', `${st.fed.length}/${st.days.length} days`, st.fed.length ? `avg ${avgK} kcal · ${avgP}g protein · calories on target ${kcalOk}/${st.fed.length} · protein hit ${protOk}/${st.fed.length}` : '') : ''}
+        ${on('water') && st.water.length ? row('Water target hit', `${st.water.filter(Boolean).length}/${st.water.length} days`) : ''}
+        ${on('body') && (dW != null || dBF != null) ? row('Body', [dW != null ? `${dW > 0 ? '+' : ''}${Math.round(dW * 10) / 10} lb` : '', dBF != null ? `${dBF > 0 ? '+' : ''}${dBF}% fat` : ''].filter(Boolean).join(' · '), B().phase.mode !== 'maintain' ? `phase: ${B().phase.mode}` : '') : ''}
+        ${on('practice') && st.drillWeek.length ? row('Drill recovery', `${avg(st.drillWeek).toFixed(1)} s`, dLat != null ? `${dLat <= 0 ? '↓' : '↑'} ${Math.abs(dLat).toFixed(1)} s vs the week before` : `${st.drillWeek.length} session${st.drillWeek.length === 1 ? '' : 's'}`) : ''}
+        ${on('todo') ? row('Tasks finished', st.todosDone) : ''}
+      </ul></div>
+      <p class="label">Looking back</p>
+      <div class="field"><label>Keep doing</label><textarea data-rv="keep" placeholder="What worked this week?">${esc(rv.keep || '')}</textarea></div>
+      <div class="field"><label>Change</label><textarea data-rv="change" placeholder="One thing to do differently next week">${esc(rv.change || '')}</textarea></div>
+      <button class="btn primary block" data-act="rv-done">${rv.t ? 'Save' : 'Mark week reviewed'}</button>
+      <button class="btn ghost block" data-act="rv-close" style="margin-top:8px">Close</button></div></div>`;
+  }
+
   /* ----- media: physique and form photos/videos ----- */
 
   // files are kept in a separate database so the main data stays small and fast
@@ -3178,6 +3442,17 @@
     return { get: id => tx('readonly', st => st.get(id)), put: (id, blob) => tx('readwrite', st => { st.put(blob, id); }), del: id => tx('readwrite', st => { st.delete(id); }) };
   })();
   const MAX_SIDE = 1600;
+  // previews are kept in the media database too (not in the main save), cached here for drawing
+  const thumbs = {};
+  async function loadThumbs() {
+    let moved = 0;
+    for (const x of S.media) {
+      if (x.thumb) { thumbs[x.id] = x.thumb; await mdb.put('thumb:' + x.id, x.thumb).catch(() => {}); delete x.thumb; moved++; }
+      else if (!thumbs[x.id]) { const t = await mdb.get('thumb:' + x.id).catch(() => null); if (t) thumbs[x.id] = t; }
+    }
+    if (moved) save();
+    if (S.media.length) render();
+  }
   const extOf = type => ({ 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp', 'video/mp4': 'mp4', 'video/quicktime': 'mov', 'video/webm': 'webm' }[type] || (type.split('/')[1] || 'bin'));
   const fmtBytes = n => n > 1e9 ? `${(n / 1e9).toFixed(1)} GB` : n > 1e6 ? `${(n / 1e6).toFixed(1)} MB` : `${Math.max(1, Math.round(n / 1e3))} KB`;
 
@@ -3213,6 +3488,58 @@
     });
   }
 
+  // In-app camera for physique photos: a faint ghost of your last photo in the same pose helps you line up.
+  let camStream = null, camTimer = 0;
+  function camSheet() {
+    const c = V.cam;
+    return `<div class="camera">
+      <div class="camstage ${c.facing === 'user' ? 'mirror' : ''}">
+        <video id="camvid" playsinline muted autoplay></video>
+        ${c.ghost ? `<img class="ghost" src="${c.ghost}" alt="">` : ''}
+        ${c.count ? `<div class="camcount num">${c.count}</div>` : ''}
+      </div>
+      <div class="camctl">
+        <div class="opts" style="justify-content:center">${['Front', 'Side', 'Back'].map(x => `<button data-act="cam-pose" data-v="${x}" class="${c.pose === x ? 'on' : ''}">${x}</button>`).join('')}</div>
+        <p class="camhint">${c.ghost ? 'Line up with the faint outline of your last ' + c.pose.toLowerCase() + ' photo' : 'No earlier ' + c.pose.toLowerCase() + ' photo yet; this one becomes your guide'}</p>
+        <div class="camrow">
+          <button class="btn" data-act="cam-close">Close</button>
+          <button class="shutter" data-act="cam-shoot" aria-label="Take photo"></button>
+          <button class="btn" data-act="cam-flip" aria-label="Switch camera">Flip</button>
+        </div>
+        <div class="opts" style="justify-content:center;margin-top:8px">${[[0, 'No timer'], [3, '3 s'], [10, '10 s']].map(([v, l]) => `<button data-act="cam-timer" data-v="${v}" class="${c.timer === v ? 'on' : ''}">${l}</button>`).join('')}</div>
+      </div>
+    </div>`;
+  }
+  async function camGhost() {
+    const c = V.cam; if (!c) return;
+    if (c.ghost) URL.revokeObjectURL(c.ghost);
+    c.ghost = null;
+    const last = S.media.filter(x => x.tag === 'physique' && x.kind === 'photo' && x.pose === c.pose).sort((a, b) => b.date.localeCompare(a.date) || b.t - a.t)[0];
+    if (last) { const blob = await mdb.get(last.id).catch(() => null); if (blob && V.cam === c) c.ghost = URL.createObjectURL(blob); }
+    render(); attachCam();
+  }
+  function attachCam() { const v = document.getElementById('camvid'); if (v && camStream && v.srcObject !== camStream) { v.srcObject = camStream; v.play().catch(() => {}); } }
+  async function camStart() {
+    camStop();
+    try {
+      camStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: V.cam.facing, width: { ideal: 1920 }, height: { ideal: 1920 } }, audio: false });
+      attachCam();
+    } catch (e) { V.cam = null; render(); snack('Camera unavailable. Use + Photo instead.'); }
+  }
+  function camStop() { clearInterval(camTimer); if (camStream) camStream.getTracks().forEach(t => t.stop()); camStream = null; }
+  async function camShoot() {
+    const v = document.getElementById('camvid');
+    if (!v || !v.videoWidth) return snack('Camera is still starting');
+    const c = document.createElement('canvas');
+    c.width = v.videoWidth; c.height = v.videoHeight;
+    c.getContext('2d').drawImage(v, 0, 0);
+    const blob = await new Promise(r => c.toBlob(r, 'image/jpeg', 0.92));
+    const pose = V.cam.pose;
+    beep(880, 0.08, 0); buzz();
+    await importMedia([new File([blob], `physique-${today()}.jpg`, { type: 'image/jpeg' })], { tag: 'physique', pose, date: today(), note: '' });
+    camGhost();
+  }
+
   async function importMedia(files, meta) {
     let n = 0, big = 0;
     snack(`Adding ${files.length} item${files.length === 1 ? '' : 's'}…`);
@@ -3223,7 +3550,8 @@
         if (isVideo) { const th = await videoThumb(file); if (th) { thumb = th.thumb; extra.dur = th.dur; } if (file.size > 150e6) big++; }
         else { const r = await shrinkPhoto(file); blob = r.blob; thumb = r.thumb; extra = { w: r.w, h: r.h }; }
         await mdb.put(id, blob);
-        S.media.push({ id, kind: isVideo ? 'video' : 'photo', type: blob.type || file.type, size: blob.size, thumb, date: meta.date, t: Date.now(),
+        if (thumb) { await mdb.put('thumb:' + id, thumb); thumbs[id] = thumb; }
+        S.media.push({ id, kind: isVideo ? 'video' : 'photo', type: blob.type || file.type, size: blob.size, date: meta.date, t: Date.now(),
                        tag: meta.tag, pose: meta.tag === 'physique' ? meta.pose : null, exercise: meta.tag === 'form' ? meta.exercise : null, note: meta.note || '', ...extra });
         n++;
       } catch (e) { console.warn('media import failed', e); }
@@ -3239,8 +3567,9 @@
     for (const x of list) { const m = x.date.slice(0, 7); let g = groups.find(y => y.m === m); if (!g) groups.push(g = { m, xs: [] }); g.xs.push(x); }
     const used = S.media.reduce((t, x) => t + (x.size || 0), 0);
     return `
-      <div class="grid2" style="margin-bottom:10px">
-        <button class="btn primary" data-act="m-add" data-kind="image">+ Photo</button>
+      <div class="grid3" style="margin-bottom:10px">
+        <button class="btn primary" data-act="cam-open">Camera</button>
+        <button class="btn" data-act="m-add" data-kind="image">+ Photo</button>
         <button class="btn" data-act="m-add" data-kind="video">+ Video</button>
       </div>
       <input type="file" id="mfile" accept="image/*" multiple hidden>
@@ -3249,7 +3578,7 @@
         ${S.media.filter(x => x.tag === 'physique' && x.kind === 'photo').length > 1 ? '<button data-act="m-compare">Compare</button>' : ''}</div>
       ${groups.length ? groups.map(g => `<div class="grouphead"><h3>${esc(parseKey(g.m + '-01').toLocaleDateString(undefined, { month: 'long', year: 'numeric' }))}</h3><span class="muted num" style="font-size:13px">${g.xs.length}</span></div>
         <div class="mgrid">${g.xs.map(x => `<button class="mtile" data-act="m-open" data-id="${x.id}" aria-label="${esc(x.kind)} ${esc(dayLabel(x.date))}">
-          ${x.thumb ? `<img src="${x.thumb}" alt="" draggable="false">` : `<span class="mph">${x.kind === 'video' ? '▶' : '◻'}</span>`}
+          ${thumbs[x.id] || x.thumb ? `<img src="${thumbs[x.id] || x.thumb}" alt="" draggable="false">` : `<span class="mph">${x.kind === 'video' ? '▶' : '◻'}</span>`}
           ${x.kind === 'video' ? '<span class="mbadge">▶</span>' : ''}
           <span class="mcap">${esc(x.tag === 'form' ? (x.exercise || 'Form') : (x.pose || 'Physique'))}</span></button>`).join('')}</div>`).join('')
         : '<p class="muted">Add progress photos (front, side, back) to see your physique change, and videos of your lifts to check your form.</p>'}
@@ -3324,7 +3653,7 @@
       if (!blob) continue;
       const name = `media/${x.id}.${extOf(x.type)}`;
       zip.file(name, blob, { binary: true });
-      meta.push({ ...x, file: name });
+      meta.push({ ...x, thumb: thumbs[x.id] || x.thumb || null, file: name });
     }
     zip.file('manifest.json', JSON.stringify({ app: 'metamorph-media', exported: new Date().toISOString(), items: meta }, null, 1));
     const out = await zip.generateAsync({ type: 'blob', compression: 'STORE' });
@@ -3346,7 +3675,8 @@
         const f = zip.file(it.file); if (!f) continue;
         const blob = new Blob([await f.async('arraybuffer')], { type: it.type });
         await mdb.put(it.id, blob);
-        const { file: _, ...meta } = it;
+        const { file: _, thumb: th, ...meta } = it;
+        if (th) { await mdb.put('thumb:' + it.id, th); thumbs[it.id] = th; }
         S.media.push(meta); n++;
       }
       save(); render(); snack(n ? `Restored ${n} item${n === 1 ? '' : 's'}` : 'Everything in that backup is already here.');
@@ -3547,7 +3877,7 @@
     </div></div>`;
   }
 
-  const anySheet = () => !!(V.mup || V.mview || V.mcmp || V.woEx || V.nmeal || V.qa || V.edit || V.data || V.whatsNew || V.wedit || V.fcheck || V.tedit || V.nadd || V.ngoals || V.nprep || V.sedit || V.scan);
+  const anySheet = () => !!(V.cam || V.review || V.mup || V.mview || V.mcmp || V.woEx || V.nmeal || V.qa || V.edit || V.data || V.whatsNew || V.wedit || V.fcheck || V.tedit || V.nadd || V.ngoals || V.nprep || V.sedit || V.scan);
 
   /* ---------- timers ---------- */
 
@@ -3783,6 +4113,42 @@
       }
       case 'b-del': { const id = el.dataset.id; undoable('Entry deleted', () => { B().entries = B().entries.filter(x => x.id !== id); }); break; }
 
+      /* camera */
+      case 'cam-open': V.cam = { facing: 'user', pose: 'Front', timer: 3, ghost: null, count: 0 }; render(); camStart().then(camGhost); break;
+      case 'cam-close': camStop(); if (V.cam && V.cam.ghost) URL.revokeObjectURL(V.cam.ghost); V.cam = null; render(); break;
+      case 'cam-flip': V.cam.facing = V.cam.facing === 'user' ? 'environment' : 'user'; render(); camStart(); break;
+      case 'cam-pose': V.cam.pose = el.dataset.v; camGhost(); break;
+      case 'cam-timer': V.cam.timer = Number(el.dataset.v); render(); attachCam(); break;
+      case 'cam-shoot': {
+        const c = V.cam;
+        if (!c.timer) { camShoot(); break; }
+        clearInterval(camTimer); c.count = c.timer; render(); attachCam();
+        camTimer = setInterval(() => {
+          if (V.cam !== c) return clearInterval(camTimer);
+          c.count--; beep(c.count ? 520 : 880, 0.06, 0);
+          if (c.count <= 0) { clearInterval(camTimer); render(); attachCam(); camShoot(); } else { render(); attachCam(); }
+        }, 1000);
+        break;
+      }
+      case 'csv-export': exportCSV(); break;
+
+      /* reminders */
+      case 'rm-on': enableReminders(); break;
+      case 'rm-off': disableReminders(); break;
+      case 'rm-test': testReminder(); break;
+
+      /* weekly review */
+      case 'rv-open': V.review = el.dataset.v; V.reviewFresh = true; render(); V.reviewFresh = false; break;
+      case 'rv-week': { const k = keyOf(addDays(parseKey(V.review), Number(el.dataset.d))); if (k <= today()) { V.review = k; render(); } break; }
+      case 'rv-done': {
+        const r = S.reviews[V.review] = S.reviews[V.review] || {};
+        document.querySelectorAll('[data-rv]').forEach(t => { r[t.dataset.rv] = t.value.trim(); });
+        r.t = Date.now(); save(); V.review = null; render(); snack('Week reviewed'); break;
+      }
+      case 'rv-close-bg': if (e.target !== el) break;
+      // fallthrough
+      case 'rv-close': V.review = null; render(); break;
+
       /* media */
       case 'm-add': document.getElementById(el.dataset.kind === 'video' ? 'mfilev' : 'mfile').click(); break;
       case 'm-filter': V.mfilter = el.dataset.v; render(); break;
@@ -3812,7 +4178,7 @@
         V.mview = null; V.murl = null;
         S.media = S.media.filter(m => m.id !== id); save(); render();
         // the file is only erased once the Undo window has passed
-        const timer = setTimeout(() => { if (!S.media.some(m => m.id === id)) mdb.del(id).catch(() => {}); }, 6000);
+        const timer = setTimeout(() => { if (!S.media.some(m => m.id === id)) { mdb.del(id).catch(() => {}); mdb.del('thumb:' + id).catch(() => {}); } }, 6000);
         snack('Deleted', () => { clearTimeout(timer); S.media.push(item); save(); render(); });
         break;
       }
@@ -4081,6 +4447,7 @@
     if (t.dataset && t.dataset.mcmp && V.mcmp) { V.mcmp[t.dataset.mcmp] = t.value; loadCompare(); return; }
     if (t.dataset && t.dataset.sec) { S.sections[t.dataset.sec] = t.checked; save(); render(); }
     if (t.dataset && t.dataset.pref) { S.prefs[t.dataset.pref] = t.checked; save(); render(); }
+    if (t.dataset && t.dataset.rm) { RM()[t.dataset.rm] = t.checked; save(); render(); }
     if (t.dataset && t.dataset.bprof) {
       const pr = B().profile, k = t.dataset.bprof;
       if (k === 'activity') pr.activity = +t.value;
@@ -4248,6 +4615,7 @@
       }
     }
     if (e.target.id === 'wo-title' && WK().draft) { WK().draft.title = e.target.value; save(); }
+    if (e.target.dataset && e.target.dataset.rv && V.review) { const r = S.reviews[V.review] = S.reviews[V.review] || {}; r[e.target.dataset.rv] = e.target.value; save(); }
     // body form: keep a draft and update the body-fat preview as you type
     const bf0 = e.target.closest && e.target.closest('#bform');
     if (bf0) {
@@ -4428,19 +4796,27 @@
     if (localStorage.getItem('metamorph.updated')) { V.whatsNew = true; localStorage.removeItem('metamorph.updated'); }
   } catch (e) {}
   if (S.seenVersion !== APP_VERSION) {
-    if (fromLocal) V.whatsNew = true;      // existing user on a new version
+    if (fromLocal || lsOff) V.whatsNew = true;      // existing user on a new version
     else S.seenVersion = APP_VERSION;      // fresh install: nothing to announce
   }
   // first run gets a short setup; people who already use the app never see it
   if (!S.onboarded) {
-    if (fromLocal) S.onboarded = true;
+    if (fromLocal || lsOff) S.onboarded = true;
     else V.onboard = { step: 0, wake: '07:00', bed: '22:30', sections: { ...S.sections }, starters: { hygiene: true, fitness: true, nutrition: true, sleep: true } };
   }
 
-  resumeRun();
-  render();
+  if (lsOff && !fromLocal) {
+    $app.innerHTML = `<div class="nexus" style="margin-top:30vh">${orb('chaos', 120, 'spin')}</div>`;
+    booted.then(() => { resumeRun(); render(); loadThumbs(); });
+  } else {
+    resumeRun();
+    render();
+    booted.then(loadThumbs);
+  }
 
   /* ---------- updates ---------- */
+
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') scheduleReminderSync(); });
 
   let updating = false;
   function showUpdate(worker) {

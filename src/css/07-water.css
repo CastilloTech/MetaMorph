@@ -1,0 +1,45 @@
+  /* ---------- water ---------- */
+  :root { --water: #2fd3c6; }
+  .vessel-wrap { display: grid; grid-template-columns: 116px 1fr; gap: 18px; align-items: center; }
+  .vessel { position: relative; height: 230px; border: 2px solid var(--line); border-top: 0; border-radius: 0 0 26px 26px; overflow: hidden; background: var(--surface-2); }
+  .vessel .fill { position: absolute; left: 0; right: 0; bottom: 0; transition: height .7s cubic-bezier(.2,.8,.2,1);
+                  background: linear-gradient(180deg, color-mix(in srgb, var(--water) 80%, white), var(--water) 35%, color-mix(in srgb, var(--water) 65%, black)); }
+  .vessel .fill::before { content: ""; position: absolute; left: -20%; right: -20%; top: -6px; height: 12px; background: color-mix(in srgb, var(--water) 65%, white); border-radius: 50%; opacity: .55; }
+  .vessel .pace { position: absolute; left: 0; right: 0; height: 0; border-top: 2px dashed var(--text); opacity: .75; }
+  .vessel .pace span { position: absolute; right: 6px; top: -17px; font-size: 10px; letter-spacing: .12em; color: var(--text); }
+  .wbig { font-size: 34px; font-weight: 300; line-height: 1.1; font-variant-numeric: tabular-nums; }
+  .wbig small { font-size: 15px; color: var(--muted); }
+  .pill { display: inline-block; padding: 5px 10px; border-radius: 999px; font-size: 13px; font-weight: 600; background: var(--surface-2); color: var(--muted); margin-top: 8px; }
+  .pill.ok { background: color-mix(in srgb, var(--ok) 22%, var(--surface)); color: var(--ok); }
+  .pill.behind { background: color-mix(in srgb, var(--accent) 22%, var(--surface)); color: var(--accent); }
+  .pill.ahead { background: color-mix(in srgb, var(--water) 20%, var(--surface)); color: var(--water); }
+  .quick { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+  .quick .btn { padding: 12px 6px; }
+  .btn.water { background: var(--water); border-color: var(--water); color: #04201d; }
+  .custom { display: grid; grid-template-columns: 1fr auto; gap: 8px; margin-top: 8px; }
+  .custom input, .wrow input { background: var(--surface-2); border: 1px solid var(--line); border-radius: 10px; padding: 10px; width: 100%; }
+  .sched { list-style: none; margin: 0; padding: 0; }
+  .sched li { display: grid; grid-template-columns: 22px 1fr auto; gap: 10px; align-items: center; padding: 8px 0; border-top: 1px solid var(--line); font-size: 15px; color: var(--muted); }
+  .sched li:first-child { border-top: 0; }
+  .sched .d { width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--line); }
+  .sched li.done .d { background: var(--water); border-color: var(--water); }
+  .sched li.next { color: var(--text); font-weight: 600; }
+  .sched li.next .d { border-color: var(--water); }
+  .wlog { list-style: none; margin: 0; padding: 0; }
+  .wlog li { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-top: 1px solid var(--line); font-size: 15px; }
+  .wlog li:first-child { border-top: 0; }
+  .wlog button { color: var(--muted); padding: 4px 8px; }
+  .week7 { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; height: 110px; margin-top: 8px; }
+  .week7 .col { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+  .week7 .bw { flex: 1; width: 100%; display: flex; align-items: flex-end; justify-content: center; position: relative; }
+  .week7 .b { width: 100%; max-width: 26px; border-radius: 6px 6px 2px 2px; background: color-mix(in srgb, var(--water) 40%, var(--surface-2)); min-height: 2px; }
+  .week7 .b.hit { background: var(--water); }
+  .week7 .tl2 { position: absolute; left: -3px; right: -3px; border-top: 1px dashed var(--muted); opacity: .6; }
+  .week7 .lbl { font-size: 11px; color: var(--muted); }
+  .week7 .lbl.today { color: var(--water); font-weight: 700; }
+  .wrow { display: grid; grid-template-columns: 1fr 1fr 40px; gap: 8px; align-items: center; margin-bottom: 8px; }
+  .wrow button { height: 40px; border-radius: 10px; background: var(--surface-2); color: var(--muted); }
+  .drop { width: 22px; height: 22px; display: block; margin: 0 auto; flex: none; }
+  .toast .drop { width: 32px; height: 32px; }
+  .toast.watert { border-color: var(--water); }
+

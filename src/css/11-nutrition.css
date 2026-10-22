@@ -1,0 +1,29 @@
+  /* ---------- nutrition ---------- */
+  .sechead { display: flex; justify-content: space-between; align-items: baseline; margin: 22px 0 10px; }
+  .sechead h3 { margin: 0; font-size: 18px; }
+  .mac { margin-bottom: 12px; font-size: 14px; }
+  .mac:last-child { margin-bottom: 0; }
+  .mbar { height: 8px; background: var(--surface-2); border-radius: 4px; overflow: hidden; margin-top: 5px; }
+  .mbar i { display: block; height: 100%; background: var(--gc, var(--accent)); border-radius: 4px; transition: width .5s; }
+  .mbar i.over { background: var(--late) !important; }
+  .meal + .meal { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--line); }
+  .flog, .foodlist { list-style: none; margin: 8px 0 0; padding: 0; }
+  .flog li, .foodlist li { display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: center; padding: 8px 0; border-top: 1px solid var(--line); font-size: 15px; }
+  .flog li:first-child, .foodlist li:first-child { border-top: 0; }
+  .flog .t, .foodlist .t { font-size: 12px; color: var(--muted); }
+  .flog button { color: var(--muted); padding: 4px 8px; }
+  .foodlist { max-height: 46vh; max-height: 46dvh; overflow-y: auto; overscroll-behavior: contain; }
+  .search { width: 100%; background: var(--surface-2); border: 1px solid var(--line); border-radius: 10px; padding: 12px; }
+  .qty { display: inline-flex; align-items: center; gap: 10px; }
+  .qty button { width: 34px; height: 34px; border-radius: 10px; background: var(--surface-2); border: 1px solid var(--line); font-size: 18px; }
+  .qty b { min-width: 34px; text-align: center; }
+  .grid4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+  .grid4 .field input { padding: 10px 8px; }
+  .ing { border: 1px solid var(--line); border-radius: 12px; padding: 10px; margin-bottom: 8px; display: grid; gap: 8px; }
+  .ing .top { display: grid; grid-template-columns: 1fr 40px; gap: 8px; }
+  .ing input, .sheet select { width: 100%; background: var(--surface-2); border: 1px solid var(--line); border-radius: 10px; padding: 10px 8px; color: var(--text); }
+  .ing .top button { border-radius: 10px; background: var(--surface-2); color: var(--muted); }
+  .ing .grid4 input { text-align: center; }
+  .ing .lbls { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; font-size: 11px; color: var(--muted); text-align: center; margin-bottom: -4px; }
+  .preptot { background: var(--surface-2); border-radius: 12px; padding: 12px; font-size: 14px; margin: 6px 0 12px; }
+

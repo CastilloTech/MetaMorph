@@ -1,0 +1,49 @@
+  /* ---------- run screen ---------- */
+  .run { position: fixed; inset: 0; background: var(--bg); z-index: 20; display: flex; flex-direction: column;
+         padding: calc(20px + env(safe-area-inset-top)) 16px calc(20px + env(safe-area-inset-bottom)); animation: fade .25s ease; }
+  .run .inner { max-width: 560px; width: 100%; margin: 0 auto; flex: 1; display: flex; flex-direction: column; }
+  .run .top { display: flex; justify-content: space-between; align-items: center; color: var(--muted); gap: 12px; }
+  .run .center { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 12px; animation: rise .35s ease; }
+  .phase { font-size: 15px; letter-spacing: .3em; font-weight: 700; }
+  .clock { font-size: 84px; font-weight: 300; font-variant-numeric: tabular-nums; line-height: 1; }
+  .instr { color: var(--muted); max-width: 30ch; font-size: 17px; }
+  .ritual { font-size: 22px; max-width: 24ch; line-height: 1.35; }
+  .stepname { font-size: 30px; font-weight: 600; max-width: 18ch; line-height: 1.2; }
+  .bigtap { width: 100%; padding: 26px; border-radius: 18px; font-size: 20px; font-weight: 700; }
+  .bigtap.lock { background: var(--focus); color: var(--accent-ink); }
+  .bigtap.catch { background: var(--surface-2); border: 1px solid var(--line); }
+  .bigtap.wait { background: none; border: 1px dashed var(--line); color: var(--muted); }
+  .bar { height: 4px; background: var(--surface-2); border-radius: 2px; overflow: hidden; width: 100%; }
+  .bar > i { display: block; height: 100%; background: currentColor; width: 0; }
+  .dots { display: flex; gap: 6px; justify-content: center; }
+  .dots i { width: 8px; height: 8px; border-radius: 50%; background: var(--surface-2); }
+  .dots i.on { background: var(--muted); }
+  .dots i.now { background: var(--text); }
+  .controls { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .controls.one { grid-template-columns: 1fr; }
+
+  .segs { display: flex; gap: 4px; margin: 14px 0 0; }
+  .segs > span { height: 5px; border-radius: 3px; background: var(--surface-2); overflow: hidden; min-width: 8px; }
+  .segs > span > i { display: block; height: 100%; width: 0; background: var(--gc, var(--accent)); }
+  .segs > span.done > i { width: 100%; background: var(--ok); }
+  .segs > span.over > i { width: 100% !important; background: var(--late); }
+  .clock.late { color: var(--late); }
+  .latebars { display: grid; gap: 6px; width: 100%; max-width: 420px; }
+  .latebar { display: grid; grid-template-columns: 1fr auto auto; gap: 10px; align-items: center; padding: 8px 8px 8px 14px; border-radius: 12px;
+             background: color-mix(in srgb, var(--late) 14%, var(--surface)); border: 1px solid color-mix(in srgb, var(--late) 45%, var(--line)); text-align: left; font-size: 14px; }
+  .latebar b { color: var(--late); font-variant-numeric: tabular-nums; }
+  .latebar .btn { padding: 7px 12px; font-size: 13px; }
+  .recap .ot { color: var(--late); font-variant-numeric: tabular-nums; }
+  .seglabels { display: flex; justify-content: space-between; font-size: 13px; color: var(--muted); margin-top: 8px; }
+  .run .orb { width: 150px; height: 150px; margin-bottom: 6px; }
+  .autonext { font-size: 15px; color: var(--muted); }
+  .autonext b { color: var(--text); font-variant-numeric: tabular-nums; }
+  .autoring { width: 64px; height: 64px; }
+  .autoring circle { fill: none; stroke-width: 5; }
+  .autoring .bg { stroke: var(--surface-2); }
+  .autoring .fg { stroke: var(--gc, var(--accent)); stroke-linecap: round; transform: rotate(-90deg); transform-origin: 50% 50%; }
+  .check { width: 64px; height: 64px; border-radius: 50%; background: var(--ok); color: #0d1a12; display: grid; place-items: center; font-size: 30px; }
+  .upnext { color: var(--muted); font-size: 12px; letter-spacing: .25em; font-weight: 700; margin-top: 18px; }
+  .recap { list-style: none; padding: 0; margin: 4px 0 0; color: var(--muted); font-size: 15px; }
+  .recap li::before { content: "✓  "; color: var(--ok); }
+

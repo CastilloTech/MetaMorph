@@ -1,0 +1,13 @@
+  /* ---------- workouts ---------- */
+  .woex { border-top: 1px solid var(--line); padding-top: 12px; margin-top: 12px; }
+  .woex .t { font-size: 12px; color: var(--muted); margin: 2px 0 8px; }
+  .woex .x, .sets .x { color: var(--muted); padding: 4px 8px; }
+  .sets { display: grid; grid-template-columns: 30px 1fr 1fr 34px; gap: 6px 8px; align-items: center; margin-bottom: 8px; }
+  .sets > span { font-size: 11px; color: var(--muted); text-align: center; text-transform: uppercase; letter-spacing: .06em; }
+  .sets > span.n { font-size: 14px; letter-spacing: 0; }
+  .sets input { width: 100%; background: var(--surface-2); border: 1px solid var(--line); border-radius: 10px; padding: 9px; text-align: center; font-variant-numeric: tabular-nums; }
+  .wo textarea { width: 100%; margin-top: 10px; min-height: 52px; background: var(--surface-2); border: 1px solid var(--line); border-radius: 10px; padding: 10px; resize: vertical; }
+  .wohist .line { font-size: 14px; color: var(--muted); margin-top: 4px; }
+  .wohist .line b { color: var(--text); font-weight: 600; }
+  .pr { font-size: 10px; font-weight: 700; letter-spacing: .08em; color: #1a1408; background: var(--accent); border-radius: 999px; padding: 2px 7px; margin-left: 6px; }
+

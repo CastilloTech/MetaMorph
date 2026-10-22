@@ -1,0 +1,22 @@
+# MetaMorph push server. Deploy with:  cd push && npx wrangler deploy
+name = "metamorph-push"
+workers_dev = true
+preview_urls = false
+main = "src/worker.js"
+compatibility_date = "2026-10-01"
+
+# check for due reminders once a minute
+[triggers]
+crons = ["* * * * *"]
+
+[vars]
+VAPID_PUBLIC = "BLstPkxs99TdEmIzWipe9NqLXNKDJVa9PEr2Q7PUnHaRI-Zn6O5UlbQ3bVrzLB46nJg_AUSjlgBUrgwCk1zANo0"
+VAPID_SUBJECT = "https://github.com/CastilloTech/MetaMorph"
+ALLOWED_ORIGINS = "https://castillotech.github.io,http://127.0.0.1:5173,http://127.0.0.1:8765"
+
+# filled in by the setup step (npx wrangler kv namespace create SUBS)
+[[kv_namespaces]]
+binding = "SUBS"
+id = "197262f96b204ddf9066168bc3730e42"
+
+# VAPID_PRIVATE_JWK is a secret: npx wrangler secret put VAPID_PRIVATE_JWK

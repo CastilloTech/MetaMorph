@@ -1,0 +1,16 @@
+  /* ---------- update prompt ---------- */
+  .toast { position: fixed; left: 16px; right: 16px; bottom: calc(84px + env(safe-area-inset-bottom)); max-width: 528px; margin: 0 auto;
+           background: var(--surface-2); border: 1px solid var(--accent); border-radius: 14px; padding: 12px 12px 12px 14px;
+           display: flex; align-items: center; gap: 12px; z-index: 15; box-shadow: 0 12px 30px rgba(0,0,0,.45); }
+  .toast.anim { animation: rise .3s ease; }
+  main.has-toast { padding-bottom: calc(180px + env(safe-area-inset-bottom)); }
+  .toast .orb { width: 36px; height: 36px; flex: none; }
+  .toast .msg { flex: 1; font-size: 13px; color: var(--muted); }
+  .toast .msg b { display: block; font-size: 15px; color: var(--text); }
+  .toast .btn { padding: 9px 12px; font-size: 14px; }
+  .news { margin: 0 0 6px; padding-left: 20px; }
+  .news li { margin: 6px 0; }
+  .whatsnew-head { display: flex; align-items: center; gap: 14px; margin-bottom: 10px; }
+  .whatsnew-head .orb { width: 56px; height: 56px; }
+  .whatsnew-head h2 { margin: 0; }
+

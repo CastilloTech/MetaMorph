@@ -1,0 +1,7 @@
+  /* ---------- slide transitions ---------- */
+  @keyframes inR { from { opacity: 0; transform: translateX(28px); } to { opacity: 1; transform: none; } }
+  @keyframes inL { from { opacity: 0; transform: translateX(-28px); } to { opacity: 1; transform: none; } }
+  .slide-r { animation: inR .28s cubic-bezier(.2,.8,.2,1); }
+  .slide-l { animation: inL .28s cubic-bezier(.2,.8,.2,1); }
+  @media (prefers-reduced-motion: reduce) { .slide-r, .slide-l { animation: none; } }
+

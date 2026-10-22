@@ -1,0 +1,34 @@
+  /* ---------- drill ---------- */
+  .orb.still { animation: none !important; filter: brightness(.72) saturate(.85); }
+  .drillhero { display: flex; gap: 16px; align-items: center; }
+  .drillhero .orb { width: 96px; height: 96px; flex: none; }
+  .drillhero h2 { margin: 0 0 4px; font-size: 20px; }
+  .bigstat { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+  .bigstat b { font-size: 40px; font-weight: 300; font-variant-numeric: tabular-nums; line-height: 1; }
+  .delta { font-size: 13px; font-weight: 600; }
+  .delta.good { color: var(--ok); }
+  .delta.bad { color: var(--danger); }
+  .spark { width: 100%; height: 44px; display: block; margin-top: 10px; }
+  .setrow { display: grid; grid-template-columns: 84px 1fr; align-items: center; gap: 10px; margin: 0 0 10px; }
+  .setrow > span { color: var(--muted); font-size: 14px; }
+  .opts { display: flex; gap: 6px; flex-wrap: wrap; }
+  .opts button { padding: 8px 10px; min-width: 46px; border-radius: 10px; background: var(--surface-2); border: 1px solid var(--line); color: var(--muted); font-size: 14px; font-variant-numeric: tabular-nums; }
+  .opts button.on { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); font-weight: 600; }
+  details.how summary { cursor: pointer; color: var(--muted); font-size: 14px; list-style: none; }
+  details.how summary::-webkit-details-marker { display: none; }
+  details.how ol { margin: 10px 0 0; padding-left: 20px; color: var(--muted); font-size: 14px; }
+  details.how li { margin: 6px 0; }
+  .run.drillrun .stage { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 22px; }
+  .run.drillrun .orb { width: 210px; height: 210px; }
+  .run.drillrun .legend2 { color: var(--muted); font-size: 13px; text-align: center; line-height: 1.7; }
+  .tapzone { width: 100%; height: 132px; border-radius: 22px; background: var(--surface); border: 1px solid var(--line); color: var(--muted); font-size: 17px; font-weight: 600; position: relative; overflow: hidden; touch-action: manipulation; user-select: none; -webkit-user-select: none; }
+  .tapzone .rip { position: absolute; inset: 0; background: var(--text); opacity: 0; pointer-events: none; }
+  .tapzone.hit .rip { animation: rip .35s ease-out; }
+  @keyframes rip { from { opacity: .12; } to { opacity: 0; } }
+  .lat { display: flex; align-items: flex-end; gap: 4px; height: 70px; margin: 14px 0 4px; }
+  .lat i { flex: 1; background: var(--accent); border-radius: 3px 3px 0 0; min-height: 3px; opacity: .85; }
+  .lat i.miss { background: transparent; border: 1px dashed var(--danger); opacity: .6; height: 100%; }
+  .stats4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 14px; text-align: center; }
+  .stats4 b { display: block; font-size: 20px; font-variant-numeric: tabular-nums; }
+  .stats4 span { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
+

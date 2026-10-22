@@ -1,0 +1,5 @@
+  /* ---------- grimoire type ---------- */
+  .sechead h3, .gatehead .nm, .hero .ti, .sheet h2, .ask h2, .onb h1, .drillhero h2, .stepname, .whatsnew-head h2 { font-family: var(--display); letter-spacing: .03em; font-weight: 700; }
+  .hero .ti { font-size: 23px; }
+  .label, .phase, .upnext, .hero .when, .grouphead h3 { font-family: var(--display); letter-spacing: .14em; }
+

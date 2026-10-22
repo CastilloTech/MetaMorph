@@ -1,9 +1,10 @@
-name: Deploy to GitHub Pages
+name: Test and deploy to GitHub Pages
 
 on:
   push:
     branches: [main]
-    paths: ['app/**', '.github/workflows/pages.yml']
+    paths: ['app/**', 'src/**', 'tests/**', 'push/**', 'build.mjs', 'package.json', 'package-lock.json', '.github/workflows/pages.yml']
+  pull_request:
   workflow_dispatch:
 
 permissions:
@@ -12,11 +13,35 @@ permissions:
   id-token: write
 
 concurrency:
-  group: pages
+  group: pages-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      TZ: America/New_York
+      CHROME_PATH: /usr/bin/google-chrome
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Build from src/
+        run: npm run build
+      - name: The committed app/index.html matches the build
+        run: git diff --exit-code app/index.html || (echo "app/index.html is out of date - run npm run build and commit it" && exit 1)
+      - name: Run all test suites
+        run: node tests/run.js
+      - name: Push server checks (encryption, signing, scheduling)
+        run: node push/test.mjs
+
+  # only publishes when every test passes, and only from main
   deploy:
+    needs: test
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     environment:
       name: github-pages

@@ -1,0 +1,10 @@
+# keep source, build output and tests on LF everywhere so the build is identical on every machine
+src/** text eol=lf
+tests/*.js text eol=lf
+build.mjs text eol=lf
+app/index.html text eol=lf
+*.jpg binary
+*.mp4 binary
+*.webp binary
+*.png binary
+*.woff2 binary
