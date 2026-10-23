@@ -82,9 +82,9 @@ const { open, sleep } = require('./h');
     ok('shopping list total', (await text('.sumrow b')) === '$3.47');
 
     // ---------- sections, gestures ----------
-    await tap('[data-act=data]');
+    await tap('[data-act=data]'); await tap('[data-act=dpage][data-v=general]');
     await p.$eval('[data-sec=water]', e => e.click()); await sleep(250);
-    ok('hiding Water removes its tab', !(await texts('nav [data-act=tab]')).includes('Water'));
+    ok('hiding Water removes it from Today', !(await has('.wstrip')) && !(await texts('nav [data-act=tab]')).includes('Water'));
     await p.$eval('[data-sec=water]', e => e.click()); await sleep(250);
     await tap('[data-act=data-close]');
     await seed(`(s, { now, hm }) => { s.done = {}; s.fin = {}; s.gates.fitness = [{ id: 'F', title: 'Training', start: hm(now + 60), repeat: { type: 'daily' }, steps: [{ id: 'f1', title: 'Lift', minutes: 10, work: '' }] }]; }`);

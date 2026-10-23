@@ -147,6 +147,8 @@
   $app.addEventListener('click', e => {
     const el = e.target.closest('[data-act]');
     if (!el || !el.dataset.act.startsWith('cb-')) return;
+    // a redraw can reuse the tapped element for another button: stop the generic handlers from acting on it too
+    e.stopImmediatePropagation();
     switch (el.dataset.act) {
       case 'cb-now': cloudBackup(true); break;
       case 'cb-off': ask({ title: 'Turn off cloud backup?', text: 'New backups stop. The ones on your server stay for up to 30 days.', ok: 'Turn off', danger: true }).then(y => { if (y) cbTurnOff(); }); break;

@@ -52,10 +52,10 @@
   }
   function quickBar() {
     const chips = [], last = on('macros') ? lastFood() : null;
-    if (on('water')) chips.push(`<button class="qchip" data-act="w-add" data-ml="${W().pour}">${DROP}<span>+${fmtW(W().pour)}</span></button>`);
-    if (last) chips.push(`<button class="qchip" data-act="q-again" title="Log ${esc(last.name)} again"><span class="qi">↻</span><span>${esc(last.name.length > 18 ? last.name.slice(0, 17) + '…' : last.name)}</span></button>`);
-    if (on('body')) chips.push('<button class="qchip" data-act="q-weigh"><span class="qi">⚖</span><span>Weight</span></button>');
-    if (on('companion') && svBorn()) chips.push(`<button class="qchip" data-act="sv-tab" data-v="chat"><span class="qi">✦</span><span>${esc(svName())}</span></button>`);
+    if (on('water')) chips.push(`<button class="qchip" data-act="w-add" data-ml="${W().pour}"><span class="qi w">${ICONS.drop}</span><span>+${fmtW(W().pour)}</span></button>`);
+    if (last) chips.push(`<button class="qchip" data-act="q-again" title="Log ${esc(last.name)} again"><span class="qi">${ICONS.again}</span><span>${esc(last.name.length > 18 ? last.name.slice(0, 17) + '…' : last.name)}</span></button>`);
+    if (on('body')) chips.push(`<button class="qchip" data-act="q-weigh"><span class="qi">${ICONS.scale}</span><span>Weight</span></button>`);
+    if (on('companion') && svBorn()) chips.push(`<button class="qchip" data-act="sv-tab" data-v="chat"><span class="qi">${ICONS.chat}</span><span>${esc(svName())}</span></button>`);
     return chips.length > 1 ? `<div class="qbar" role="toolbar" aria-label="Quick log">${chips.join('')}</div>` : '';
   }
 
@@ -175,6 +175,8 @@
   $app.addEventListener('click', e => {
     const el = e.target.closest('[data-act]');
     if (!el || !/^(q-|siri-)/.test(el.dataset.act)) return;
+    // a redraw can reuse the tapped element for another button: stop the generic handlers from acting on it too
+    e.stopImmediatePropagation();
     const act = el.dataset.act;
     switch (act) {
       case 'q-close-bg': if (e.target !== el) break;   // falls through

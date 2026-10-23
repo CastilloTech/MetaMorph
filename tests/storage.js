@@ -46,6 +46,7 @@ const writeIdb = (p, s) => p.evaluate(s => new Promise(res => { const q = indexe
     const items = await q.$$eval('.todos .tx div:first-child', l => l.map(x => x.textContent));
     ok(`everything still there after reload (${items.join(', ')})`, items.includes('Added while full') && items.includes('Keep me'));
     await q.$eval('[data-act=data]', e => e.click()); await sleep(300);
+    await q.$eval('[data-act=dpage][data-v=backup]', e => e.click()); await sleep(300);
     ok('Settings shows the quick copy is off', (await q.$eval('.sheet', e => e.textContent)).includes('Off (data outgrew it)'));
     ok('no page errors (full storage run)' + (errs.length ? ': ' + errs.join(' | ') : ''), !errs.length);
     await b.close();

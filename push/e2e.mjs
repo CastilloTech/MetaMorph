@@ -48,6 +48,7 @@ try {
   await p.evaluate(() => { const s = JSON.parse(localStorage.getItem('metamorph.v1')); s.onboarded = true; s.seenVersion = 999; localStorage.setItem('metamorph.v1', JSON.stringify(s)); });
   await p.reload(); await sleep(800);
   await p.$eval('[data-act=data]', e => e.click()); await sleep(300);
+  await p.$eval('[data-act=dpage][data-v=reminders]', e => e.click()); await sleep(300);
   ok('Settings offers "Turn on reminders"', !!(await p.$('[data-act=rm-on]')));
   await p.$eval('[data-act=rm-on]', e => e.click()); await sleep(6000);
   const users = JSON.parse(kv.data.subs || '{}'), u = Object.values(users)[0];

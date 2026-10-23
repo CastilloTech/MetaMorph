@@ -5,6 +5,11 @@
     eye: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>',
   };
   function nowStack() {
+    const rows = nowRows();
+    return rows.length ? `<div class="card nowstack"><p class="label" style="margin:10px 0 2px">Needs you</p>${rows.join('')}</div>` : '';
+  }
+  // the rows of the Today list: water due, to-dos, check-ins, the weekly review, an open workout
+  function nowRows() {
     const rows = [], k = today();
     const wd = waterDue();
     if (wd) rows.push(`<div class="nowrow"><span class="ic">${DROP}</span><span><div class="tt">Water</div><div class="ss num">${fmtW(wd.next.amount)} due since ${clock(wd.next.time)}</div></span>
@@ -27,6 +32,6 @@
     }
     if (on('workouts') && WK().draft) rows.push(`<div class="nowrow"><span class="ic">${orb('fitness', 26)}</span><span><div class="tt">Workout in progress</div><div class="ss">${WK().draft.items.length} exercise${WK().draft.items.length === 1 ? '' : 's'} · started ${hm(WK().draft.t)}</div></span>
       <button class="btn small" data-act="now-workout">Resume</button></div>`);
-    return rows.length ? `<div class="card nowstack"><p class="label" style="margin:10px 0 2px">Needs you</p>${rows.join('')}</div>` : '';
+    return rows;
   }
 

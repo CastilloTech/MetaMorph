@@ -95,7 +95,7 @@ const { open, sleep, URL: BASE } = require('./h');
     ok('“done” completes the routine that was on then, at that time', !!s.done[dk] && !!s.done[dk].C && s.fin[dk].C === inbox[2].t);
     const chats = await ss('__chats'), sent = chats && chats[0] && chats[0].messages.slice(-1)[0].content.slice(-1)[0].text;
     ok(`notes go to your companion (“${sent}”)`, !!sent && /^\(Sent from my phone at .+\) had a chicken bowl$/.test(sent));
-    ok('companion says it read them', (await text('.sv-card')).includes('I read what you sent from your phone'));
+    ok('companion says it read them', (await text('.needs')).includes('I read what you sent from your phone'));
     ok('a confirmation lists what went in', /From your phone: 500 ml water · weight 176\.4 lb · Wind-down done at/.test(await text('.snack')));
     const acks = await ss('__acks');
     ok('applied messages are cleared from the server', !!acks && acks[0].join() === 'i1,i2,i3,i4' && (await ss('__pulls'))[0] === 'pair-code-123');
@@ -103,7 +103,7 @@ const { open, sleep, URL: BASE } = require('./h');
     await p.reload(); await sleep(2500);
     s = await state();
     ok('nothing is applied twice', Object.values(s.water.log).flat().filter(e => e.ml === 500).length === 1 && s.body.entries.length === 1 && (await ss('__chats')).length === 1);
-    await tap('.sv-card [data-act=sv-tab][data-v=chat]', 400);
+    await tap('.needs [data-act=sv-tab][data-v=chat]', 400);
     ok('opening the chat clears the note', (await state()).servitor.unread === false && (await texts('.sv-msg.them')).some(x => x.includes('chicken bowl')));
     await tap('[data-act=sv-close]');
 

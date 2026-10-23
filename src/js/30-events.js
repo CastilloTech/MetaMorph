@@ -48,7 +48,7 @@
       case 'whatsnew-close': V.whatsNew = false; S.seenVersion = APP_VERSION; save(); render(); break;
 
       /* backup */
-      case 'data': V.data = true; render(); break;
+      case 'data': V.data = true; V.dpage = null; render(); break;
       case 'data-close-bg': if (e.target !== el) break;
       // fallthrough
       case 'data-close': V.data = false; render(); break;

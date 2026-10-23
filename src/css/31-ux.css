@@ -1,0 +1,92 @@
+  /* ---------- look & feel ---------- */
+  .ic { width: 20px; height: 20px; flex: none; display: block; }
+
+  /* sheets: a title bar that stays at the top, with a close button */
+  .shead { position: sticky; top: -20px; z-index: 6; display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 10px;
+    margin: -20px -16px 12px; padding: 22px 16px 10px; background: var(--surface); border-top-left-radius: 20px; border-top-right-radius: 20px; }
+  .shead .grab { position: absolute; top: 0; left: 0; right: 0; margin: 0; height: 22px; }
+  .shead h2 { margin: 0; min-width: 0; display: flex; align-items: center; gap: 6px; }
+  .sclose { grid-column: 2; width: 34px; height: 34px; border-radius: 50%; background: var(--surface-2); color: var(--muted); display: grid; place-items: center; }
+  .sclose .ic { width: 18px; height: 18px; }
+  .sclose:active { transform: scale(.92); }
+  .sback { width: 34px; height: 34px; margin-left: -8px; border-radius: 50%; display: grid; place-items: center; color: var(--accent); }
+  .sback .ic { width: 22px; height: 22px; }
+  .pgin { animation: pgin .22s ease-out; }
+  @keyframes pgin { from { opacity: 0; transform: translateX(14px); } }
+
+  /* Settings menu */
+  .menu { display: grid; gap: 8px; }
+  .srow2 { display: grid; grid-template-columns: 38px 1fr 18px; gap: 12px; align-items: center; padding: 12px; border-radius: 14px; background: var(--surface-2); border: 1px solid var(--line); text-align: left; }
+  .srow2:active { transform: scale(.985); }
+  .srow2 .si { width: 38px; height: 38px; border-radius: 11px; display: grid; place-items: center; background: color-mix(in srgb, var(--accent) 16%, transparent); color: var(--accent); }
+  .srow2 .st2 b { display: block; font-size: 15px; }
+  .srow2 .st2 small { display: block; color: var(--muted); font-size: 13px; margin-top: 1px; }
+  .srow2 > .ic { color: var(--muted); width: 18px; height: 18px; }
+  .warn { color: var(--late); }
+
+  /* Today header: progress ring around the orb (or your companion), with its line */
+  .thead { display: grid; grid-template-columns: auto 1fr; gap: 14px; align-items: center; margin: 2px 0 14px; cursor: pointer; }
+  .thring { --s: 84px; width: var(--s); height: var(--s); border-radius: 50%; padding: 4px; flex: none;
+    background: conic-gradient(var(--sv) calc(var(--p) * 1%), color-mix(in srgb, var(--text) 10%, transparent) 0); }
+  .thface { width: 100%; height: 100%; border-radius: 50%; overflow: hidden; background: var(--bg); display: grid; place-items: center; border: 2px solid var(--bg); }
+  .thface img { width: 100%; height: 100%; object-fit: cover; }
+  .thface .orb { width: 64px; height: 64px; filter: drop-shadow(0 0 calc(4px + 12px * var(--held)) rgba(150, 120, 255, calc(.25 + .5 * var(--held)))); }
+  .thead.resting .thface { filter: grayscale(.6) brightness(.85); }
+  .thead.radiant .thring { box-shadow: 0 0 22px 2px color-mix(in srgb, var(--sv) 45%, transparent); }
+  .thtop { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+  .thtop b { font-family: var(--display); font-weight: 700; font-size: 18px; letter-spacing: .04em; }
+  .thtop span { color: var(--muted); font-size: 12.5px; white-space: nowrap; }
+  .thtext p { margin: 4px 0 0; font-size: 15px; line-height: 1.4; }
+
+  /* the Needs-you list with your companion's nudges */
+  .needs { margin-top: 14px; }
+  .nowrow.nz { align-items: start; }
+  .nowrow .ic.sv { color: var(--sv); }
+  .nowrow .ic.sv svg { width: 18px; height: 18px; }
+  .nzt { font-size: 14.5px; line-height: 1.4; }
+  .nzacts { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+  .nzx { width: 36px; height: 36px; margin: -4px -8px 0 0; border-radius: 50%; display: grid; place-items: center; color: var(--muted); }
+  .nzx .ic { width: 16px; height: 16px; }
+
+  /* water on Today */
+  .wstrip { width: 100%; display: grid; grid-template-columns: 34px 1fr auto 16px; gap: 10px; align-items: center; padding: 12px 14px; margin: 0 0 4px;
+    border-radius: var(--radius); background: var(--surface); border: 1px solid var(--line); text-align: left; }
+  .wstrip:active { transform: scale(.99); }
+  .wstrip .wi { width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; background: var(--surface-2); color: var(--water); }
+  .wstrip .wt b { display: block; font-size: 14px; margin-bottom: 6px; }
+  .wbar { position: relative; display: block; height: 6px; border-radius: 3px; background: var(--surface-2); }
+  .wbar i { position: absolute; inset: 0 auto 0 0; border-radius: 3px; background: var(--water); }
+  .wbar em { position: absolute; top: -3px; width: 2px; height: 12px; background: var(--muted); border-radius: 1px; }
+  .wstrip .wn { color: var(--muted); font-size: 13px; }
+  .wstrip > .ic { color: var(--muted); width: 16px; height: 16px; }
+  .backbar { display: inline-flex; align-items: center; gap: 2px; margin: 0 0 10px -6px; padding: 8px 8px 8px 2px; color: var(--accent); font-weight: 600; }
+  .backbar .ic { width: 22px; height: 22px; }
+  .qchip .qi .ic { width: 16px; height: 16px; }
+  .qchip .qi.w { color: var(--water); }
+
+  /* what you just completed lights up for a moment */
+  .justdone { animation: justdone .85s ease-out; }
+  @keyframes justdone { 0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--ok) 70%, transparent); background-color: color-mix(in srgb, var(--ok) 22%, transparent); } 100% { box-shadow: 0 0 0 14px transparent; } }
+  .tl .it.justdone .st { animation: popin .45s cubic-bezier(.2, 1.6, .4, 1); }
+  @keyframes popin { from { transform: scale(.4); opacity: 0; } }
+
+  /* a clear pressed state everywhere, and comfortable tap areas for small links */
+  .btn:active, .qchip:active, .chk:active { transform: scale(.96); filter: brightness(1.15); }
+  .linkbtn { padding: 10px 8px; margin: -10px -8px; border-radius: 8px; }
+  .linkbtn:active { background: var(--surface-2); }
+
+  /* the tour after an update */
+  .tour { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; gap: 0; margin: 0 -16px; scrollbar-width: none; overscroll-behavior-x: contain; }
+  .tour::-webkit-scrollbar { display: none; }
+  .tcard { flex: 0 0 100%; scroll-snap-align: center; padding: 8px 24px 6px; text-align: center; display: flex; flex-direction: column; align-items: center; }
+  .tcard .tic { width: 64px; height: 64px; border-radius: 20px; display: grid; place-items: center; background: color-mix(in srgb, var(--sv) 18%, transparent); color: var(--sv); margin: 6px 0 12px; }
+  .tcard .tic .ic { width: 32px; height: 32px; }
+  .tcard h3 { font-family: var(--display); margin: 0 0 8px; font-size: 20px; }
+  .tcard p { margin: 0 0 14px; color: var(--muted); line-height: 1.45; min-height: 5.8em; }
+  .tcard .tnum { color: var(--muted); font-size: 12px; margin-top: 10px; }
+  .tdots { display: flex; justify-content: center; gap: 6px; margin: 6px 0 14px; }
+  .tdots i { width: 7px; height: 7px; border-radius: 50%; background: var(--line); transition: background .2s, transform .2s; }
+  .tdots i.on { background: var(--sv); transform: scale(1.25); }
+  .tmore { margin-top: 14px; color: var(--muted); font-size: 14px; }
+  .tmore summary { cursor: pointer; padding: 8px 0; }
+  @media (prefers-reduced-motion: reduce) { .pgin, .justdone, .tl .it.justdone .st { animation: none; } }

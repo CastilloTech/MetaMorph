@@ -73,7 +73,8 @@
   // sections the user has switched off are hidden (their data stays)
   const on = k => S.sections[k] !== false;
   const activeGates = () => GATES.filter(g => !g.other || on('other'));
-  const visibleTabs = () => ['today', 'gates', ...(on('water') ? ['water'] : []), ...(on('todo') || on('supplies') ? ['todo'] : []), ...(on('practice') ? ['practice'] : []), ...(on('body') ? ['body'] : [])];
+  // Water opens from Today rather than having its own tab
+  const visibleTabs = () => ['today', 'gates', ...(on('todo') || on('supplies') ? ['todo'] : []), ...(on('practice') ? ['practice'] : []), ...(on('body') ? ['body'] : [])];
   // a routine skipped for a day leaves that day's timeline and counts (it isn't a miss)
   const skipped = (id, k = today()) => !!(S.skip[k] && S.skip[k][id]);
   const allRoutines = (d = pdayDate()) => activeGates().flatMap(g => S.gates[g.id].filter(r => scheduledOn(r, d) && !skipped(r.id, keyOf(d))).map(r => ({ gate: g.id, r })))

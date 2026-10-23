@@ -57,7 +57,7 @@ const { open, sleep } = require('./h');
     ok(`Now stack shows the current sip at its own amount (${await text('.nowrow .ss')})`, (await text('.nowrow .ss')).startsWith('300 ml'));
     await tap('nav [data-v=gates]');
     ok('no water pop-up on other tabs', !(await has('.toast.watert')));
-    await tap('nav [data-v=water]');
+    await tap('nav [data-v=today]'); await tap('[data-act=open-water]');   // water opens from Today
     const cls = await p.$$eval('.sched li', l => l.map(x => x.className));
     ok(`missed sip marked, current sip next (${cls.join(',')})`, cls[0] === 'missed' && cls[1] === 'next');
     await tap('.quick [data-act=w-add]');
@@ -66,7 +66,7 @@ const { open, sleep } = require('./h');
     ok('next sip shows its own amount', (await text('.card .num')).includes('350') || (await texts('.card')).some(x => x.includes('Next sip') && x.includes('350 ml')));
 
     // ---------- settings ----------
-    await tap('[data-act=data]');
+    await tap('[data-act=data]'); await tap('[data-act=dpage][data-v=general]');
     ok('Settings has "New day starts at"', await has('[data-pref-time=dayStart]'));
   } catch (e) { t.ok('CRASH ' + e.message, false); }
   await t.done();

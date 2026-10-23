@@ -59,6 +59,7 @@
     if (st.next && st.next.at <= Date.now() + 20 * 60000) { W().hit[k] = W().hit[k] || {}; W().hit[k][st.next.id] = true; }
     (W().log[k] = W().log[k] || []).push({ t: Date.now(), ml: Math.max(1, Math.round(ml)) });
     save();
+    chime('water');
   }
   function waterMark(d) {
     const k = keyOf(d);

@@ -248,18 +248,6 @@
     } catch (e) { snack('Couldn’t read that picture.'); }
   }
 
-  /* --- Today card --- */
-  function companionCard() {
-    if (!on('companion')) return '';
-    if (!svBorn()) return `<div class="card sv-card" data-act="sv-open">${svAvatar(52, { form: 'resting', charge: 0 })}
-      <div class="sv-say"><div class="sv-name"><b>Meet your companion</b></div><p>A friendly guide who keeps you consistent and reminds you of your goals.</p></div></div>`;
-    const st = svStats(), nz = svNudges().find(x => x.card);
-    return `<div class="card sv-card" data-act="sv-open">${svAvatar(52, st)}
-      <div class="sv-say"><div class="sv-name"><b>${esc(svName())}</b><span class="num">${st.charge}% charged</span></div>
-        <p>${esc(nz ? nz.text : svGreeting())}</p>
-        ${nz && !nz.now ? `<div class="sv-acts">${nz.btn}<button class="linkbtn" data-act="sv-dismiss" data-id="${esc(nz.id)}">Not now</button></div>` : ''}</div></div>`;
-  }
-
   /* --- the companion's sheet: home and chat --- */
   function companionSheet() {
     const fresh = V.svFresh ? 'enter' : '';
@@ -483,6 +471,8 @@
   $app.addEventListener('click', e => {
     const el = e.target.closest('[data-act]');
     if (!el || !el.dataset.act.startsWith('sv-')) return;
+    // a redraw can reuse the tapped element for another button: stop the generic handlers from acting on it too
+    e.stopImmediatePropagation();
     const act = el.dataset.act, sv = SV();
     switch (act) {
       case 'sv-open': V.data = false; V.sv = V.sv || 'home'; V.svFresh = true; render(); V.svFresh = false; break;

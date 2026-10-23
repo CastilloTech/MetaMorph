@@ -40,6 +40,8 @@
     const v = w.dx > 0;
     if (w.it.dataset.todo) { const x = S.todos.find(t => t.id === w.it.dataset.id); if (x) setTodo(x, v); }
     else completeRoutine(findRoutine(w.it.dataset.gate, w.it.dataset.id), v);
+    // the swipe hints go away once you've used it
+    if (v && !S.tips.swiped) { S.tips.swiped = true; save(); }
     setTimeout(render, 220);
   }
   $app.addEventListener('pointerup', endSwipe);

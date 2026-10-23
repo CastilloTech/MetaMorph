@@ -39,7 +39,7 @@ const DL = path.join(require('os').tmpdir(), 'metamorph-test-csv');
     ok('button shows it is reviewed', (await text('[data-act=rv-open]')).includes('✓'));
 
     // CSV export
-    await tap('[data-act=data]');
+    await tap('[data-act=data]'); await tap('[data-act=dpage][data-v=backup]');
     await p.evaluate(() => { navigator.canShare = undefined; });
     await tap('[data-act=csv-export]', 1500);
     ok('export asks before saving', (await text('.ask h2')) === 'Spreadsheets ready');

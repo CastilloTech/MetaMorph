@@ -43,7 +43,7 @@ const { open, sleep } = require('./h');
     }`);
 
     // ---------- cloud backup ----------
-    await tap('[data-act=data]');
+    await tap('[data-act=data]'); await tap('[data-act=dpage][data-v=backup]');
     ok('Settings offers cloud backup with a passphrase', (await text('.sheet')).includes('Cloud backup') && await has('#cbpass'));
     await p.$eval('#cbpass', e => { e.value = 'correct horse battery'; });
     await p.$eval('#cbpass2', e => { e.value = 'correct horse batterx'; });
@@ -62,14 +62,14 @@ const { open, sleep } = require('./h');
     // lose some data, then restore it
     await tap('[data-act=data-close]');
     await seed(`(s) => { s.todos = []; }`);
-    await tap('[data-act=data]');
+    await tap('[data-act=data]'); await tap('[data-act=dpage][data-v=backup]');
     await tap('[data-act=cb-restore]', 300);
     await p.$eval('#cbrpass', e => { e.value = 'wrong passphrase'; });
     await p.$eval('#cbrf', f => f.requestSubmit()); await sleep(600);
     await tap('[data-act=cb-pick]', 3000);
     ok('a wrong passphrase can’t open it', (await text('.sheet')).includes('doesn’t open this backup') && (await state()).todos.length === 0);
     await tap('[data-act=cb-close]');
-    await tap('[data-act=data]');
+    await tap('[data-act=data]'); await tap('[data-act=dpage][data-v=backup]');
     await tap('[data-act=cb-restore]', 300);
     await p.$eval('#cbrpass', e => { e.value = 'correct horse battery'; });
     await p.$eval('#cbrf', f => f.requestSubmit()); await sleep(600);
@@ -88,7 +88,7 @@ const { open, sleep } = require('./h');
 
     // ---------- morning message and evening check-in ----------
     await seed(`(s) => { s.reminders.lastHash = ''; s.reminders.briefAt = '06:45'; }`);
-    await tap('[data-act=data]'); await p.$eval('[data-rm=water]', e => e.click()); await sleep(3500);
+    await tap('[data-act=data]'); await tap('[data-act=dpage][data-v=reminders]'); await p.$eval('[data-rm=water]', e => e.click()); await sleep(3500);
     const items = JSON.parse(await ss('__sync') || '{"items":[]}').items, todayKey = items.find(x => x.id.startsWith('brief-')).id.slice(6);
     const brief = items.find(x => x.id === 'brief-' + todayKey), wrap = items.find(x => x.id === 'wrap-' + todayKey);
     ok(`morning message with the plan (${brief && brief.body})`, !!brief && brief.title === 'Nyx' && brief.at === '06:45' && /^Good morning! 2 routines today, starting with Morning routine at .+ Calorie goal: 2,200\..*Remember: “Bench 225 by summer”/.test(brief.body));
@@ -118,7 +118,7 @@ const { open, sleep } = require('./h');
         : { role: 'assistant', t: i, content: [{ type: 'thinking', thinking: '', signature: 's'.repeat(1500) }, { type: 'text', text: 'answer ' + i }] });
       s.servitor.chat = { log, props: {} };
     }`);
-    await tap('.sv-card', 400); await tap('[data-act=sv-tab][data-v=chat]', 300);
+    await tap('.thead', 400); await tap('[data-act=sv-tab][data-v=chat]', 300);
     const sizeBefore = JSON.stringify((await state()).servitor.chat).length;
     await p.$eval('#svmsg', e => { e.value = 'how am I doing?'; });
     await p.$eval('#svchatf', f => f.requestSubmit()); await sleep(1200);

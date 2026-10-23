@@ -43,7 +43,7 @@
     r.steps.forEach(x => setDone(x.id, v, k));
     setFin(r.id, v && stamp ? Date.now() : null, k);
     save();
-    if (v && stamp) checkHeld(r, k);
+    if (v && stamp) { checkHeld(r, k); if (k === today()) { V.flash = r.id; chime(); } }
   }
   const hm = ts => new Date(ts).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
   function finText(r, k = today()) {

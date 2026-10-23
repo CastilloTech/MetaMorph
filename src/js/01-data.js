@@ -15,8 +15,17 @@
   const KEY = 'metamorph.v1';
 
   // Keep in step with CACHE in sw.js. Add a CHANGELOG entry for each release.
-  const APP_VERSION = 16;
+  const APP_VERSION = 17;
   const CHANGELOG = {
+    17: [
+      'A calmer Today: one header with your progress and your companion’s line, the routine that’s on now right below, and one “Needs you” list',
+      'Water lives on Today now (tap its bar for the full view), so the tab bar has more room',
+      'Settings is a short menu: General, Reminders, your companion, Siri & Shortcuts, Backup & data',
+      'Every sheet has a title bar with a close button that stays at the top',
+      'Completing something lights it up, with an optional soft chime (Settings → General → Sounds)',
+      'Swipe hints show until you’ve used the gesture, then get out of the way',
+      'One set of icons throughout, and bigger tap areas for small links',
+    ],
     16: [
       'Meet your companion (on Today): a friendly servitor whose one purpose is keeping you consistent',
       'It charges up as you hold your Gates, drink water and hit your calorie goal, glows brighter on good streaks, and dims when days slip',
@@ -181,6 +190,8 @@
     if (!s.reminders) s.reminders = { on: false, routines: true, water: true, todos: true, review: true, deviceId: null, lastHash: '' };
     if (s.water && !s.water.hit) s.water.hit = {};
     if (s.sections.companion === undefined) s.sections.companion = true;
+    if (!s.tips) s.tips = {};
+    if (s.prefs && s.prefs.sound === undefined) s.prefs.sound = true;
     if (!s.cloud) s.cloud = { on: false, salt: null, last: null, size: 0, err: null };
     if (s.reminders && s.reminders.brief === undefined) Object.assign(s.reminders, { brief: true, wrap: true, briefAt: null, wrapAt: null });
     if (!s.servitor) s.servitor = { name: '', born: null, avatar: null, goals: [], dismissed: {}, best: 0, code: '', chat: { log: [], props: {} } };

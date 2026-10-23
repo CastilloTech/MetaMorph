@@ -4,7 +4,7 @@
 const http = require('http'), fs = require('fs'), path = require('path'), { spawn } = require('child_process');
 
 const APP = path.join(__dirname, '..', 'app'), PORT = 8765;
-const SUITES = ['reg', 'storage', 'schedule', 'nutrition', 'workouts', 'body', 'media', 'review', 'companion', 'quick', 'cloud'];
+const SUITES = ['reg', 'storage', 'schedule', 'nutrition', 'workouts', 'body', 'media', 'review', 'companion', 'quick', 'cloud', 'ux'];
 const TYPES = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.webmanifest': 'application/manifest+json',
                 '.png': 'image/png', '.webp': 'image/webp', '.woff2': 'font/woff2', '.svg': 'image/svg+xml' };
 

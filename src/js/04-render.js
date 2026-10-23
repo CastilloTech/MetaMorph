@@ -11,22 +11,24 @@
     let tz = '';
     try { tz = new Intl.DateTimeFormat(undefined, { timeZoneName: 'short' }).formatToParts(new Date()).find(x => x.type === 'timeZoneName').value; } catch (e) {}
     const tabs = visibleTabs();
-    if (!tabs.includes(V.tab)) V.tab = 'today';
+    // Water opens from Today (it isn't a tab any more), so it counts as Today in the tab bar
+    if (!tabs.includes(V.tab) && !(V.tab === 'water' && on('water'))) V.tab = 'today';
+    const navTab = V.tab === 'water' ? 'today' : V.tab;
     if (V.gate === 'other' && !on('other')) V.gate = 'sleep';
-    const body = { today: todayView, gates: gatesView, water: waterView, todo: todoTabView, practice: practiceView, body: bodyView }[V.tab]();
+    const body = { today: todayView, gates: gatesView, water: () => `<button class="backbar" data-act="tab" data-v="today">${ICONS.back}<span>Today</span></button>${waterView()}`, todo: todoTabView, practice: practiceView, body: bodyView }[V.tab]();
     const wd = waterDue();
-    view.html = `
+    view.html = sheetChrome(`
       <header><h1>MetaMorph</h1><div class="right"><span class="date">${esc(dateStr)}${tz ? ` · ${esc(tz)}` : ''}</span>
         <button class="iconbtn" data-act="data" aria-label="Backup and data">⋯${backupDue() ? '<span class="badge"></span>' : ''}</button></div></header>
       <main class="${V.update ? 'has-toast' : ''}"><div class="${V.slide ? 'slide-' + V.slide : ''}">${body}</div></main>
       <nav class="tabs"><div class="inner" style="grid-template-columns:repeat(${tabs.length}, 1fr)">
         ${[['today', 'Today'], ['gates', 'Gates'], ['water', 'Water'], ['todo', 'To-do'], ['practice', 'Practice'], ['body', 'Body']].filter(([k]) => tabs.includes(k)).map(([k, l]) =>
-          `<button data-act="tab" data-v="${k}" class="${V.tab === k ? 'on' : ''}" aria-label="${l}">${TAB_ICON[k]}<span>${l}</span></button>`).join('')}
-        <span class="ind" aria-hidden="true" style="width:calc(${100 / tabs.length}% - ${4 * (tabs.length - 1) / tabs.length}px);transform:translateX(calc(${Math.max(0, tabs.indexOf(V.tab))} * (100% + 4px)))"></span>
+          `<button data-act="tab" data-v="${k}" class="${navTab === k ? 'on' : ''}" aria-label="${l}">${TAB_ICON[k]}<span>${l}</span></button>`).join('')}
+        <span class="ind" aria-hidden="true" style="width:calc(${100 / tabs.length}% - ${4 * (tabs.length - 1) / tabs.length}px);transform:translateX(calc(${Math.max(0, tabs.indexOf(navTab))} * (100% + 4px)))"></span>
       </div></nav>
       ${V.edit ? editSheet() : ''}
       ${V.data ? dataSheet() : ''}
-      ${V.whatsNew ? whatsNewSheet() : ''}
+      ${V.whatsNew ? (tourDue() ? tourSheet() : whatsNewSheet()) : ''}
       ${V.wedit ? waterSheet() : ''}
       ${V.fcheck ? checkSheet() : ''}
       ${V.tedit ? todoSheet() : ''}
@@ -53,7 +55,7 @@
           <button class="btn ghost" data-act="update-later">Later</button>
           <button class="btn primary" data-act="update-now">Update</button>
         </div>` : ''}
-    `;
+    `);
     V.gateFx = false;
     V.slide = null;
     V.toastFx = false;
@@ -64,6 +66,8 @@
     for (const k of ['tedit', 'nadd', 'ngoals', 'nprep', 'sedit', 'qa', 'nmeal', 'mup', 'mcmp']) if (V[k]) V[k].fresh = false;
     V.mviewFresh = false;
     updateClocks();
+    flashDone();
+    if (V.whatsNew) tourSync();
     // let the water fill rise from where it was
     if (V.wFrom != null) {
       V.wFrom = null;

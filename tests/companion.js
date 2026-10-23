@@ -19,8 +19,8 @@ const path = require('path');
     }`);
 
     // meeting it
-    ok('Today invites you to meet your companion', (await text('.sv-card')).includes('Meet your companion'));
-    await tap('.sv-card', 400);
+    ok('Today invites you to meet your companion', (await text('.thead')).includes('meet your companion'));
+    await tap('.thead', 400);
     ok('setup asks for a name', await has('#svname'));
     await p.$eval('#svname', e => { e.value = 'Nyx'; });
     await tap('[data-act=sv-create]', 400);
@@ -30,16 +30,16 @@ const path = require('path');
     await tap('[data-act=sv-close]');
 
     // the Today card stays on the routine that's on now, like the water schedule
-    let card = await text('.sv-card');
+    let card = await text('.thead');
     ok(`card shows name and charge (${card.slice(0, 40)})`, card.startsWith('Nyx') && card.includes('33% charged'));
-    ok('card follows the current routine (the banner below has the buttons)', card.includes('Wind-down is on now') && !(await has('.sv-card [data-act=complete]')) && await has('.hero [data-act=complete][data-id=C]'));
+    ok('header follows the current routine (the banner below has the buttons)', card.includes('Wind-down is on now') && !(await has('.thead [data-act=complete]')) && await has('.hero [data-act=complete][data-id=C]'));
     ok('card does not dwell on the overdue routine', !card.includes('Training'));
-    await tap('.sv-card', 400);
+    await tap('.thead', 400);
     ok('Home notes the overdue routine and how to finish it late', /Training is overdue on your timeline\. If you did it late, swipe right/.test(await text('.sv-notes')));
     await tap('[data-act=sv-close]');
     await tap('.hero [data-act=complete][data-id=C]', 400);
     s = await state();
-    card = await text('.sv-card');
+    card = await text('.thead');
     ok(`Complete marks it held and the card moves on (${card.slice(0, 50)})`, !!s.done[Object.keys(s.done).pop()].C && card.includes('67% charged') && !card.includes('Wind-down is on now'));
 
     // the overdue routine stays on the timeline; swiping right marks it done late
@@ -57,7 +57,7 @@ const path = require('path');
     ok('timeline shows it finished late', (await texts('.tl .it')).some(x => x.includes('Training') && /late · /.test(x)));
 
     // goals
-    await tap('.sv-card', 400);
+    await tap('.thead', 400);
     await p.$eval('#svgoal', e => { e.value = 'Bench 225 by summer'; });
     await p.$eval('#svgoalf', f => f.requestSubmit());
     await sleep(300);
@@ -91,14 +91,14 @@ const path = require('path');
         return real(u, o);
       };
     });
-    await tap('.sv-card [data-act=sv-dismiss]');   // any saved change triggers a sync
+    // the launch itself saves, which triggers a sync
     await sleep(3200);
     const sync = await p.evaluate(() => window.__sync);
     const rt = sync && sync.items.find(x => x.id === 'F');
     ok(`reminders speak in the companion's voice (${rt && rt.body})`, !!rt && rt.body.startsWith('Nyxie: ') && rt.body.includes('Training'));
 
     // chat: pairing, then a suggestion accepted
-    await tap('.sv-card', 400);
+    await tap('.thead', 400);
     await tap('[data-act=sv-tab][data-v=chat]', 300);
     ok('chat asks for the pairing code first', await has('#svcode'));
     await p.$eval('#svcode', e => { e.value = 'test-code-1234'; });
@@ -166,7 +166,7 @@ const path = require('path');
       s.gates.fitness = []; s.gates.sleep = []; s.servitor.born = Date.now() - 5 * 864e5; s.servitor.dismissed = {};
       s.done = { [d(1)]: { H: true }, [d(2)]: { H: true }, [d(3)]: { H: true } }; s.fin = {};
     }`);
-    await tap('.sv-card', 400);
+    await tap('.thead', 400);
     ok('streak counts days at full charge', /3\s*day streak/.test(await text('.sv-stats')));
     ok('streak praise among nudges', (await text('.sv-notes')).includes('3 days in a row'));
     await tap('[data-act=sv-close]');
@@ -178,19 +178,20 @@ const path = require('path');
       s.nutri.log = { [key()]: [{ id: 'n1', t: Date.now(), meal: 'Lunch', name: 'Meal', qty: 1, kcal: 2000, p: 40, c: 250, f: 70, src: 'quick' }] };
       s.done = { [key()]: { H: true } };
     }`);
-    ok('calories on goal give full charge, even with low protein', (await text('.sv-card')).includes('100% charged'));
+    ok('calories on goal give full charge, even with low protein', (await text('.thead')).includes('100% charged'));
     await seed(`(s, { key }) => { s.nutri.log[key()][0].kcal = 4000; }`);
-    ok('far over the calorie goal takes charge away', (await text('.sv-card')).includes('75% charged'));
-    await tap('.sv-card', 400);
+    ok('far over the calorie goal takes charge away', (await text('.thead')).includes('75% charged'));
+    await tap('.thead', 400);
     ok('over-goal calories are noticed', /4,000 of 2,000 kcal, 2,000 over/.test(await text('.sv-notes')));
     await tap('[data-act=sv-close]');
 
     // settings: open from Settings, hide with Sections
     await tap('[data-act=data]');
-    ok('Settings has a Companion entry', (await text('[data-act=data] ~ *, .sheet')).includes('Open Nyxie'));
+    ok('Settings has a Companion entry', await has('.menu [data-act=sv-open]') && (await text('.menu')).includes('Nyxie'));
+    await tap('[data-act=dpage][data-v=general]');
     await p.$eval('[data-sec=companion]', e => { e.click(); }); await sleep(300);
     await tap('[data-act=data-close]');
-    ok('turning the section off hides the card', !(await has('.sv-card')));
+    ok('turning the section off removes it from Today', !(await text('.thead')).includes('Nyxie') && !(await has('.thead[data-act=sv-open]')));
   } catch (e) { ok('CRASH ' + e.stack, false); }
   await t.done();
 })();

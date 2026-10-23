@@ -121,7 +121,7 @@
     const timed = S.todos.filter(x => x.date === k && x.time);
     const loose = S.todos.filter(x => !x.done && x.date && (x.date < k || (x.date === k && !x.time)));
     if (!items.length && !timed.length && !loose.length)
-      return `<div class="nexus">${orb('chaos', 150, 'spin')}<div class="cap">Nothing scheduled today</div></div>${companionCard()}${quickBar()}${nowStack()}`;
+      return `${todayHead(0, 0)}${needsYou()}${quickBar()}${waterStrip()}`;
 
     const pick = items.find(x => status(x.r) === 'now')
       || items.find(x => status(x.r) === 'upcoming')
@@ -134,7 +134,7 @@
       const when = st === 'now' ? 'NOW' : st === 'upcoming' ? `UP NEXT · ${untilText(r).toUpperCase()}` : 'OVERDUE';
       const chips = r.steps.map((x, i) => `<button class="stepchip ${isDone(x.id) ? 'done' : ''}" data-act="step-toggle" data-gate="${gate}" data-id="${r.id}" data-i="${i}">${isDone(x.id) ? '✓ ' : ''}${esc(x.title)}</button>`).join('<span class="arrow">→</span>');
       hero = `
-        <div class="card hero" style="--gc:${g.color}">
+        <div class="card hero" style="--gc:${g.color}" data-rid="${r.id}">
           <div class="top">${orb(gate, 56)}<div>
           <div class="when">${when}</div>
           <div class="ti">${esc(r.title)}</div>
@@ -154,13 +154,12 @@
     const entries = [...items.map(x => ({ m: rel(toMin(startFor(x.r))), kind: 'r', ...x })), ...timed.map(t => ({ m: rel(toMin(t.time)), kind: 't', t }))]
       .sort((a, b) => a.m - b.m);
     return `
-      <div class="nexus" style="--held:${items.length ? (doneCount / items.length).toFixed(2) : 0}">${orb('chaos', 150, 'spin')}
-        <div class="cap"><b class="num">${doneCount}/${items.length}</b> held today</div></div>
-      ${companionCard()}
-      ${quickBar()}
-      ${nowStack()}
+      ${todayHead(items.length, doneCount)}
       ${hero}
-      <div class="row spread" style="margin-top:18px"><p class="label" style="margin:0">Timeline</p><span class="muted num" style="font-size:13px">${doneCount}/${items.length} done</span></div>
+      ${needsYou()}
+      ${quickBar()}
+      ${waterStrip()}
+      <p class="label" style="margin:18px 0 0">Timeline</p>
       <ul class="tl">
         ${entries.map(en => en.kind === 't' ? todoTimelineItem(en.t) : (() => {
           const { gate, r } = en, st = status(r), sd = stepsDone(r);
@@ -168,9 +167,9 @@
           if (st === 'done') { const fi = finText(r); right = `<span class="st ${fi.late ? 'late' : ''}">${fi.txt}</span>`; }
           else if (st === 'now') right = `<span class="st cleft" data-left="${windowOf(r).end}"></span>`;
           else if (st === 'upcoming') right = `<span class="st">${untilText(r)}</span>`;
-          else right = `<span class="st late">${sd ? `${sd}/${r.steps.length} · ` : ''}overdue<small>swipe when done</small></span>`;
+          else right = `<span class="st late">${sd ? `${sd}/${r.steps.length} · ` : ''}overdue${S.tips.swiped ? '' : '<small>swipe when done</small>'}</span>`;
           return `<li style="--gc:${gateOf(gate).color}"><div class="swbg"><span class="l">${st === 'open' ? '✓ Done late' : '✓ Held'}</span><span class="r">Undo</span></div>
-            <div class="it ${st}${st === 'done' ? ' locked' : ''}" ${st === 'done' ? '' : `data-act="run" data-gate="${gate}" data-id="${r.id}"`}>
+            <div class="it ${st}${st === 'done' ? ' locked' : ''}" data-rid="${r.id}" ${st === 'done' ? '' : `data-act="run" data-gate="${gate}" data-id="${r.id}"`}>
             <span class="t num">${clock(startFor(r))}</span>
             <span class="dot"></span>
             <span><div class="nm">${orb(gate, 22)}${esc(r.title)}</div>
@@ -180,7 +179,7 @@
           </div></li>`;
         })()).join('')}
       </ul>
-      <p class="swhint">Swipe right to mark done · left to undo</p>
+      ${S.tips.swiped ? '' : '<p class="swhint">Swipe right to mark done · left to undo</p>'}
       ${loose.length ? `<div class="card" style="margin-top:14px"><div class="row spread"><p class="label" style="margin:0">To-do today</p><button class="linkbtn" data-act="tab" data-v="todo">Open list</button></div>
         <ul class="todos">${loose.map(todoRow).join('')}</ul></div>` : ''}`;
   }

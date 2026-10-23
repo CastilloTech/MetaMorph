@@ -37,7 +37,7 @@
         ${right}
       </div></li>`;
   }
-  function setTodo(x, v) { x.done = v; x.doneAt = v ? Date.now() : null; save(); }
+  function setTodo(x, v) { x.done = v; x.doneAt = v ? Date.now() : null; save(); if (v) chime(); }
 
   function todoView() {
     const k = today(), open = S.todos.filter(x => !x.done);
