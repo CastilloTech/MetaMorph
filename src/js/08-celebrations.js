@@ -27,6 +27,6 @@
     const key = k + (all ? ':all' : ':' + g.id);
     if (celebrated.has(key)) return;
     celebrated.add(key);
-    setTimeout(() => celebrate(all ? 'all' : 'gate', all ? 'chaos' : g.id), 260);
+    setTimeout(() => celebrate(all ? 'all' : 'gate', all ? 'chaos' : g.id, on('companion') ? svLine(all ? 'all' : 'gate', key) : null), 260);
   }
 

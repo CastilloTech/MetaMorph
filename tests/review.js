@@ -44,6 +44,8 @@ const DL = path.join(require('os').tmpdir(), 'metamorph-test-csv');
     await tap('[data-act=csv-export]', 1500);
     ok('export asks before saving', (await text('.ask h2')) === 'Spreadsheets ready');
     await tap('.ask [data-o=yes]', 1500);
+    // downloads can take a few seconds to finish writing
+    for (let i = 0; i < 30 && !fs.readdirSync(DL).some(f => f.endsWith('.zip')); i++) await sleep(500);
     const zips = fs.readdirSync(DL).filter(f => f.endsWith('.zip'));
     ok(`CSV ZIP downloaded (${zips.join()})`, zips.length === 1);
     if (zips.length) {
@@ -60,11 +62,15 @@ const DL = path.join(require('os').tmpdir(), 'metamorph-test-csv');
 
     // pose-guide camera (fake camera)
     await tap('nav [data-v=body]'); await tap('[data-act=b-tab][data-v=media]');
-    await tap('[data-act=cam-open]', 1500);
-    ok('camera opens with a live feed', await p.$eval('#camvid', v => v.videoWidth > 0).catch(() => false));
+    await tap('[data-act=cam-open]', 300);
+    const live = () => p.$eval('#camvid', v => v.videoWidth > 0).catch(() => false);
+    for (let i = 0; i < 20 && !(await live()); i++) await sleep(400);   // the camera can take a couple of seconds to start
+    ok('camera opens with a live feed', await live());
     ok('no ghost before the first photo', !(await has('.camstage .ghost')));
     await tap('[data-act=cam-timer][data-v="0"]');
-    await tap('[data-act=cam-shoot]', 2500);
+    await tap('[data-act=cam-shoot]', 300);
+    for (let i = 0; i < 20 && !(await state()).media.length; i++) await sleep(400);
+    await sleep(600);
     const st2 = await state();
     ok('shot saved as a Front physique photo', st2.media.length === 1 && st2.media[0].tag === 'physique' && st2.media[0].pose === 'Front');
     ok('ghost of the last Front photo appears', await p.$eval('.camstage .ghost', g => g.src.startsWith('blob:')).catch(() => false));
@@ -73,7 +79,7 @@ const DL = path.join(require('os').tmpdir(), 'metamorph-test-csv');
     await tap('[data-act=cam-timer][data-v="3"]');
     await tap('[data-act=cam-shoot]', 600);
     ok('timer counts down on screen', (await text('.camcount')) !== null);
-    await sleep(4200);
+    for (let i = 0; i < 25 && !(await state()).media.some(x => x.pose === 'Side'); i++) await sleep(400);
     ok('timed shot saved as Side', (await state()).media.some(x => x.pose === 'Side'));
     await tap('[data-act=cam-close]');
     ok('camera closes and stops', !(await has('.camera')));

@@ -35,8 +35,8 @@ jobs:
         run: git diff --exit-code app/index.html || (echo "app/index.html is out of date - run npm run build and commit it" && exit 1)
       - name: Run all test suites
         run: node tests/run.js
-      - name: Push server checks (encryption, signing, scheduling)
-        run: node push/test.mjs
+      - name: Push server checks (encryption, signing, scheduling, companion chat)
+        run: npm ci --prefix push && node push/test.mjs
 
   # only publishes when every test passes, and only from main
   deploy:

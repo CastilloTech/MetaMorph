@@ -8,6 +8,10 @@
 //   VAPID_PRIVATE_JWK   matching private key as a JWK string (secret)
 //   VAPID_SUBJECT       mailto: contact the push services can reach
 //   ALLOWED_ORIGINS     comma-separated origins allowed to call the API
+//   (the companion chat's bindings are listed in chat.js)
+import { handleChat } from './chat.js';
+import { handleInbox } from './inbox.js';
+import { handleBackup } from './backup.js';
 
 const KEY = 'subs';
 
@@ -15,7 +19,7 @@ export default {
   async fetch(req, env) {
     const origin = req.headers.get('Origin') || '';
     const allowed = (env.ALLOWED_ORIGINS || '').split(',').map(s => s.trim()).filter(Boolean);
-    const cors = { 'Access-Control-Allow-Origin': allowed.includes(origin) ? origin : allowed[0] || '*', 'Access-Control-Allow-Methods': 'POST, GET, OPTIONS', 'Access-Control-Allow-Headers': 'Content-Type', Vary: 'Origin' };
+    const cors = { 'Access-Control-Allow-Origin': allowed.includes(origin) ? origin : allowed[0] || '*', 'Access-Control-Allow-Methods': 'POST, GET, PUT, OPTIONS', 'Access-Control-Allow-Headers': 'Content-Type, X-Companion-Code', Vary: 'Origin' };
     const json = (data, status = 200) => new Response(JSON.stringify(data), { status, headers: { ...cors, 'Content-Type': 'application/json' } });
     if (req.method === 'OPTIONS') return new Response(null, { headers: cors });
     if (allowed.length && origin && !allowed.includes(origin)) return json({ error: 'origin not allowed' }, 403);
@@ -23,6 +27,9 @@ export default {
     const url = new URL(req.url);
     try {
       if (req.method === 'GET' && url.pathname === '/') return json({ ok: true, service: 'metamorph-push' });
+      if (req.method === 'POST' && url.pathname === '/chat') return await handleChat(req, env, json);
+      if (url.pathname === '/inbox' || url.pathname === '/inbox/ack') return await handleInbox(req, env, json, url.pathname);
+      if (url.pathname === '/backup' || url.pathname === '/backups') return await handleBackup(req, env, json, url.pathname, url, cors);
       if (req.method === 'POST' && url.pathname === '/sync') {
         const body = await req.json();
         if (!validId(body.id) || !body.sub || !body.sub.endpoint || !body.sub.keys) return json({ error: 'bad request' }, 400);

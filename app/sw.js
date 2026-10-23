@@ -1,6 +1,6 @@
 // Bump the version whenever app files change so installed copies update.
 // Keep APP_VERSION in index.html in step with this number.
-const CACHE = 'metamorph-v15';
+const CACHE = 'metamorph-v16';
 const ASSETS = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './apple-touch-icon.png', './favicon-32.png',
   './img/orb-chaos.webp', './img/orb-sleep.webp', './img/orb-fitness.webp', './img/orb-nutrition.webp', './img/orb-hygiene.webp', './img/orb-other.webp',
   './vendor/morphdom.min.js', './fonts/cinzel.woff2', './vendor/jszip.min.js'];
@@ -36,11 +36,12 @@ self.addEventListener('push', e => {
   }));
 });
 
-// tapping a reminder brings the app forward (or opens it)
+// tapping a reminder opens the app straight to that action (log the sip, complete the routine, ...)
 self.addEventListener('notificationclick', e => {
   e.notification.close();
+  const url = new URL((e.notification.data && e.notification.data.url) || './', self.registration.scope).href;
   e.waitUntil(self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(list => {
-    for (const c of list) if ('focus' in c) return c.focus();
-    return self.clients.openWindow((e.notification.data && e.notification.data.url) || './');
+    for (const c of list) if ('focus' in c) { c.postMessage({ type: 'quick', url }); return c.focus(); }
+    return self.clients.openWindow(url);
   }));
 });

@@ -31,8 +31,7 @@ const { open, sleep } = require('./h');
 
     // ---------- different times on different weekdays ----------
     await seed(`(s, { now, hm }) => {
-      s.prefs.dayStart = undefined;
-      const dow = new Date(Date.now() - (Math.max(0, 300 - 120)) * 60000).getDay();
+      s.prefs.dayStart = '00:00';   // the weekday below is the calendar's, so the app day must match it
       s.gates.hygiene = [{ id: 'V', title: 'Varies', start: hm(now + 300), vary: true, times: { [new Date().getDay()]: hm(now - 2) }, repeat: { type: 'daily' }, steps: [{ id: 'v1', title: 'x', minutes: 20, work: '' }] }];
       s.done = {}; s.fin = {};
     }`);

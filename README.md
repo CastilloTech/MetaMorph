@@ -43,4 +43,25 @@ npx wrangler deploy                          # prints the worker's URL
 
 Then set `PUSH_URL` in `src/js/24b-reminders.js` to that URL, rebuild and push. `node push/test.mjs` checks encryption and scheduling offline; `node push/e2e.mjs` sends a real notification through this machine's browser.
 
+### Companion chat
+
+The companion's chat goes through the same Worker (`push/src/chat.js`), which holds the Anthropic API key so it never reaches the browser. Each message carries a short snapshot of the day; Claude replies and suggests changes as tool calls, which the app shows as cards to accept or skip.
+
+```
+cd push
+npx wrangler secret put ANTHROPIC_API_KEY    # from console.anthropic.com
+npx wrangler secret put COMPANION_CODE       # any long random code; enter it once in the app (Companion → Chat)
+npx wrangler deploy
+```
+
+`CHAT_MODEL` and `CHAT_DAILY_LIMIT` in `wrangler.toml` set the model and a daily message cap. Set a monthly spend limit in the Anthropic console too.
+
+### Siri & Shortcuts inbox
+
+`push/src/inbox.js` lets an iPhone shortcut log things without opening the app: it POSTs a short message (`water 500`, `done`, `weight 182`, or any free text) to `/inbox` with the `X-Companion-Code` header. The app picks waiting messages up when it opens, applies them with the time they were sent, and clears them. Free text goes to the companion chat. Setup steps for the phone are in the app under Settings → Siri & Shortcuts.
+
+### Cloud backup
+
+`push/src/backup.js` stores the app's daily backup. The app encrypts it first (AES-GCM, key from the user's passphrase via PBKDF2), so the server only holds unreadable bytes; one copy per day is kept for 30 days, plus the latest. Restore is in the app under Settings → Cloud backup.
+
 The private key never goes in the repo. If it's lost, generate a new pair, update `VAPID_PUBLIC` in `wrangler.toml` and `src/js/24b-reminders.js`, and devices re-enable reminders once.

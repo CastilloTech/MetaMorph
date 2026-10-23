@@ -18,7 +18,9 @@ const DIR = path.join(__dirname, 'fixtures'), DL = path.join(require('os').tmpdi
     await upload('#mfile', 'front.jpg');
     ok('upload sheet opens on Physique', (await text('#mupf h2')).includes('photo') && (await p.$eval('[data-act=m-tag][data-v=physique]', e => e.classList.contains('on'))));
     await p.$eval('#mupf input[name=date]', e => { e.value = '2026-09-20'; });
-    await tap('#mupf button[type=submit]', 2500);
+    await tap('#mupf button[type=submit]', 300);
+    for (let i = 0; i < 20 && !(await state()).media.length; i++) await sleep(500);   // resizing takes a moment on slower machines
+    await sleep(300);
     const m1 = (await state()).media[0];
     ok(`photo stored and resized (${m1 && m1.w}×${m1 && m1.h}, ${m1 && Math.round(m1.size / 1024)} KB)`, m1 && Math.max(m1.w, m1.h) === 1600 && await idbHas('thumb:' + m1.id) && await idbHas(m1.id));
     await upload('#mfile', 'side.jpg');
@@ -50,6 +52,8 @@ const DIR = path.join(__dirname, 'fixtures'), DL = path.join(require('os').tmpdi
     await tap('[data-act=m-backup]', 2500);
     ok('backup asks before sharing', (await text('.ask h2')) === 'Media backup ready');
     await tap('.ask [data-o=yes]', 1500);
+    // downloads can take a few seconds to finish writing
+    for (let i = 0; i < 30 && !fs.readdirSync(DL).some(f => f.endsWith('.zip')); i++) await sleep(500);
     const zips = fs.readdirSync(DL).filter(f => f.endsWith('.zip'));
     ok(`media ZIP downloaded (${zips.join()})`, zips.length === 1);
     const zipPath = zips.length ? path.join(DL, zips[0]) : null;

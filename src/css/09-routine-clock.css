@@ -3,8 +3,8 @@
   .late, .tag.late, .tl .st.late { color: var(--late) !important; }
   .clockbar { display: flex; gap: 3px; margin: 14px 0 6px; }
   .clockbar > span { height: 8px; border-radius: 4px; background: var(--surface-2); overflow: hidden; min-width: 6px; }
-  .clockbar > span > i { display: block; height: 100%; width: 0; background: var(--gc, var(--accent)); transition: width 1s linear; }
-  .clockbar > span.done > i { width: 100% !important; background: var(--ok); }
+  .clockbar > span > i { display: block; height: 100%; width: 100%; transform: scaleX(0); transform-origin: left; background: var(--gc, var(--accent)); transition: transform 1s linear; will-change: transform; }
+  .clockbar > span.done > i { transform: none !important; background: var(--ok); }
   .clockbar.over > span:not(.done) > i { background: var(--late); }
   .clockbar.thin { margin: 6px 0 2px; }
   .clockbar.thin > span { height: 4px; }

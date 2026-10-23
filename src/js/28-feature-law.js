@@ -108,5 +108,5 @@
     </div></div>`;
   }
 
-  const anySheet = () => !!(V.cam || V.review || V.mup || V.mview || V.mcmp || V.woEx || V.nmeal || V.qa || V.edit || V.data || V.whatsNew || V.wedit || V.fcheck || V.tedit || V.nadd || V.ngoals || V.nprep || V.sedit || V.scan);
+  const anySheet = () => !!(V.sv || V.quick || V.siri || V.cbr || V.cam || V.review || V.mup || V.mview || V.mcmp || V.woEx || V.nmeal || V.qa || V.edit || V.data || V.whatsNew || V.wedit || V.fcheck || V.tedit || V.nadd || V.ngoals || V.nprep || V.sedit || V.scan);
 

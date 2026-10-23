@@ -19,7 +19,9 @@
     const now = Date.now();
     document.querySelectorAll('.clockbar i[data-s]').forEach(i => {
       const a = +i.dataset.s, b = +i.dataset.e;
-      i.style.width = Math.max(0, Math.min(100, 100 * (now - a) / (b - a))) + '%';
+      // a transform, not a width: the phone can slide it without re-laying out the page every frame
+      const f = Math.max(0, Math.min(1, (now - a) / (b - a)));
+      if (i.dataset.f !== f.toFixed(3)) { i.dataset.f = f.toFixed(3); i.style.transform = `scaleX(${f})`; }
     });
     document.querySelectorAll('.clockbar[data-end]').forEach(b => b.classList.toggle('over', now > +b.dataset.end));
     document.querySelectorAll('[data-left]').forEach(x => {

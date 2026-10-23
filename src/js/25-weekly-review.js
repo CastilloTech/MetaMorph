@@ -62,6 +62,8 @@
         ${on('todo') ? row('Tasks finished', st.todosDone) : ''}
       </ul></div>
       <p class="label">Looking back</p>
+      ${svBorn() && on('companion') && svChatReady() ? `<button class="btn block" data-act="rv-draft" ${V.rvDraft ? 'disabled' : ''} style="margin-bottom:10px">${V.rvDraft ? `${esc(svName())} is writing…` : `✦ Ask ${esc(svName())} for a draft`}</button>` : ''}
+      ${V.rvDraftErr ? `<p class="note warn">${esc(V.rvDraftErr)}</p>` : ''}
       <div class="field"><label>Keep doing</label><textarea data-rv="keep" placeholder="What worked this week?">${esc(rv.keep || '')}</textarea></div>
       <div class="field"><label>Change</label><textarea data-rv="change" placeholder="One thing to do differently next week">${esc(rv.change || '')}</textarea></div>
       <button class="btn primary block" data-act="rv-done">${rv.t ? 'Save' : 'Mark week reviewed'}</button>

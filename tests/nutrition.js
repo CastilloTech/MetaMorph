@@ -36,10 +36,11 @@ const { open, sleep } = require('./h');
     await tap('[data-act=n-pick][data-kind=meal]');
     ok('logged via + Add (588 kcal total)', (await text('.mac b')) === '588');
 
-    // save what was logged as a meal
-    await tap('[data-act=n-add][data-meal=Lunch]'); await tap('[data-act=n-pick][data-kind=food][data-id=oats]');
-    await tap('[data-act=n-add][data-meal=Lunch]'); await tap('[data-act=n-pick][data-kind=food][data-id=egg]');
-    await tap('[data-act=n-savemeal][data-meal=Lunch]');
+    // save what was logged as a meal (in a slot other than the current one, where the one-tap meal went)
+    const slot = await p.evaluate(() => { const h = new Date().getHours(); return h < 11 || h >= 21 ? 'Lunch' : 'Snacks'; });
+    await tap(`[data-act=n-add][data-meal=${slot}]`); await tap('[data-act=n-pick][data-kind=food][data-id=oats]');
+    await tap(`[data-act=n-add][data-meal=${slot}]`); await tap('[data-act=n-pick][data-kind=food][data-id=egg]');
+    await tap(`[data-act=n-savemeal][data-meal=${slot}]`);
     ok('"Save as a meal" prefills the items', (await p.$$eval('#nmealf .flog li', l => l.length)) === 2);
     await tap('#nmealf button[type=submit]');
     ok('second meal saved', (await state()).nutri.meals.length === 2);

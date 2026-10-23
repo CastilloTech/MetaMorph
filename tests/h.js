@@ -10,7 +10,9 @@ const BROWSER = process.env.CHROME_PATH || [
 ].find(fs.existsSync);
 const URL = process.env.BASE_URL || 'http://127.0.0.1:8765/index.html';
 const sleep = ms => new Promise(r => setTimeout(r, ms));
-const launch = (args = []) => puppeteer.launch({ executablePath: BROWSER, headless: true, args: [...args, ...(process.platform === 'linux' ? ['--no-sandbox'] : [])] });
+// newer Edge scans each download before finishing it, which leaves test downloads half-written; switch that off for tests
+const QUIET = ['--disable-features=msSmartScreenProtection,DownloadBubble,msEdgeDownloadsScanning', '--safebrowsing-disable-download-protection'];
+const launch = (args = []) => puppeteer.launch({ executablePath: BROWSER, headless: true, args: [...QUIET, ...args, ...(process.platform === 'linux' ? ['--no-sandbox'] : [])] });
 
 async function open({ width = 390, height = 844, mobile = false, args = [] } = {}) {
   const browser = await launch(args);
@@ -38,6 +40,9 @@ async function open({ width = 390, height = 844, mobile = false, args = [] } = {
         const hm = m => { m = ((m % 1440) + 1440) % 1440; return String(Math.floor(m / 60)).padStart(2, '0') + ':' + String(m % 60).padStart(2, '0'); };
         const key = (x = new Date()) => x.getFullYear() + '-' + String(x.getMonth() + 1).padStart(2, '0') + '-' + String(x.getDate()).padStart(2, '0');
         s.onboarded = true; s.seenVersion = 999;
+        // the app day normally rolls over two hours before wake; tests use calendar dates, so start the day at midnight
+        // unless a test sets its own (otherwise runs between midnight and ~5 AM see yesterday as today)
+        if (s.prefs && !s.prefs.dayStart) s.prefs.dayStart = '00:00';
         (${fnSrc})(s, { now, hm, key });
         localStorage.setItem('metamorph.v1', JSON.stringify(s));
       })()`);

@@ -240,6 +240,12 @@
       case 'rv-close-bg': if (e.target !== el) break;
       // fallthrough
       case 'rv-close': V.review = null; render(); break;
+      case 'rv-draft': {
+        const mon = V.review, r = S.reviews[mon];
+        if (r && (r.keep || r.change)) ask({ title: 'Replace your notes?', text: `${svName()} will write over what’s in Keep doing and Change.`, ok: 'Replace' }).then(y => { if (y) svDraftReview(mon); });
+        else svDraftReview(mon);
+        break;
+      }
 
       /* media */
       case 'm-add': document.getElementById(el.dataset.kind === 'video' ? 'mfilev' : 'mfile').click(); break;
@@ -540,6 +546,7 @@
     if (t.dataset && t.dataset.sec) { S.sections[t.dataset.sec] = t.checked; save(); render(); }
     if (t.dataset && t.dataset.pref) { S.prefs[t.dataset.pref] = t.checked; save(); render(); }
     if (t.dataset && t.dataset.rm) { RM()[t.dataset.rm] = t.checked; save(); render(); }
+    if (t.dataset && t.dataset.rmtime && t.value) { RM()[t.dataset.rmtime] = t.value; save(); render(); }
     if (t.dataset && t.dataset.bprof) {
       const pr = B().profile, k = t.dataset.bprof;
       if (k === 'activity') pr.activity = +t.value;

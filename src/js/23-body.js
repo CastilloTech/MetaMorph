@@ -12,7 +12,13 @@
     else { if (w - n <= 0) return null; bf = 86.010 * Math.log10(w - n) - 70.041 * Math.log10(h) + 36.76; }
     return bf > 2 && bf < 70 ? Math.round(bf * 10) / 10 : null;
   }
-  const entriesSorted = () => [...B().entries].sort((a, b) => a.date.localeCompare(b.date) || a.t - b.t);
+  // sorted once per change and reused (callers must not modify the list)
+  let esCache = { key: '', list: [] };
+  const entriesSorted = () => {
+    const key = `${S.rev}|${B().entries.length}`;
+    if (esCache.key !== key) esCache = { key, list: [...B().entries].sort((a, b) => a.date.localeCompare(b.date) || a.t - b.t) };
+    return esCache.list;
+  };
   const latestWith = f => { const es = entriesSorted().filter(e => e[f] != null && e[f] !== ''); return es.length ? es[es.length - 1] : null; };
   function latestBF() {
     const es = entriesSorted().map(e => ({ e, bf: navyBF(e) })).filter(x => x.bf != null);
@@ -90,8 +96,9 @@
     const rateGoal = ph.mode === 'bulk' ? [0.25, 0.5] : ph.mode === 'cut' ? [-1, -0.5] : null;
     const wkPct = wk != null && w ? 100 * wk / +w.weight : null;
     const onPace = rateGoal && wkPct != null ? (wkPct >= rateGoal[0] && wkPct <= rateGoal[1]) : null;
-    const bfPts = entriesSorted().map(e => ({ k: e.date, x: daysBetween(entriesSorted()[0].date, e.date), y: navyBF(e) })).filter(p => p.y != null);
-    const wPts = entriesSorted().filter(e => +e.weight > 0).map(e => ({ k: e.date, x: daysBetween(entriesSorted()[0].date, e.date), y: +e.weight }));
+    const all = entriesSorted(), first = all.length ? all[0].date : today();
+    const bfPts = all.map(e => ({ k: e.date, x: daysBetween(first, e.date), y: navyBF(e) })).filter(p => p.y != null);
+    const wPts = all.filter(e => +e.weight > 0).map(e => ({ k: e.date, x: daysBetween(first, e.date), y: +e.weight }));
     // when will the band edge be reached at the current body-fat trend?
     const bfSlope = slopePerDay(bfPts.slice(-6).map(p => ({ x: p.x, y: p.y })));
     let eta = '';
@@ -143,7 +150,7 @@
     const b = B(), prof = b.profile, f = V.bform || { date: today() };
     const ft = prof.heightIn ? Math.floor(prof.heightIn / 12) : '', inch = prof.heightIn ? Math.round((prof.heightIn % 12) * 10) / 10 : '';
     const preview = navyBF(f);
-    const es = entriesSorted().reverse();
+    const es = [...entriesSorted()].reverse();
     return `
       <div class="sechead"><h3>Profile</h3></div>
       <div class="card">

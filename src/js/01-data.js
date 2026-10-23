@@ -15,8 +15,24 @@
   const KEY = 'metamorph.v1';
 
   // Keep in step with CACHE in sw.js. Add a CHANGELOG entry for each release.
-  const APP_VERSION = 15;
+  const APP_VERSION = 16;
   const CHANGELOG = {
+    16: [
+      'Meet your companion (on Today): a friendly servitor whose one purpose is keeping you consistent',
+      'It charges up as you hold your Gates, drink water and hit your calorie goal, glows brighter on good streaks, and dims when days slip',
+      'Like the water schedule, its card stays on the routine that’s on now, with a Complete button; missed routines stay on the timeline as overdue, and a right swipe marks them done late',
+      'It notices things (calories off target, falling behind on water, a routine that keeps running late, a missed weigh-in) and offers a one-tap fix',
+      'Set goals and it reminds you of them; it also speaks in your reminders and celebrations',
+      'Chat with it: tell it what you ate, ask how you’re doing, or ask it to move a routine. It suggests changes as cards you accept or skip',
+      'Give it your own picture (Companion → Look & name)',
+      'Log without opening the app: Siri, Back Tap, home-screen and Control Center buttons through the Shortcuts app (Settings → Siri & Shortcuts has step-by-step setup)',
+      'Tapping a reminder opens straight to the action: log the sip, complete the routine (or mark it done late), finish the to-do',
+      'Quick bar on Today: +water, log your last food again, weight, and your companion',
+      'Cloud backup (Settings): your data is encrypted on your phone with a passphrase only you know and saved to your server every day; restore it on a new phone',
+      'A morning message with the day’s plan and an evening check-in with what’s left, from your companion (Settings → Reminders)',
+      'Your companion can draft your weekly review for you to edit',
+      'Faster and easier on your battery: the timer bars and glows no longer keep the phone busy while you’re just looking, and Body opens quicker with lots of history',
+    ],
     15: [
       'Safer storage: your data lives in IndexedDB with no practical size limit, and the newest copy always wins at launch',
       'Real reminders (Settings → Reminders): routine starts, water sips, timed to-dos and a Sunday review prompt, even with the app closed',
@@ -164,6 +180,10 @@
     if (!s.reviews) s.reviews = {};
     if (!s.reminders) s.reminders = { on: false, routines: true, water: true, todos: true, review: true, deviceId: null, lastHash: '' };
     if (s.water && !s.water.hit) s.water.hit = {};
+    if (s.sections.companion === undefined) s.sections.companion = true;
+    if (!s.cloud) s.cloud = { on: false, salt: null, last: null, size: 0, err: null };
+    if (s.reminders && s.reminders.brief === undefined) Object.assign(s.reminders, { brief: true, wrap: true, briefAt: null, wrapAt: null });
+    if (!s.servitor) s.servitor = { name: '', born: null, avatar: null, goals: [], dismissed: {}, best: 0, code: '', chat: { log: [], props: {} } };
     return s;
   }
 

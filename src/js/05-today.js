@@ -121,7 +121,7 @@
     const timed = S.todos.filter(x => x.date === k && x.time);
     const loose = S.todos.filter(x => !x.done && x.date && (x.date < k || (x.date === k && !x.time)));
     if (!items.length && !timed.length && !loose.length)
-      return `<div class="nexus">${orb('chaos', 150, 'spin')}<div class="cap">Nothing scheduled today</div></div>${nowStack()}`;
+      return `<div class="nexus">${orb('chaos', 150, 'spin')}<div class="cap">Nothing scheduled today</div></div>${companionCard()}${quickBar()}${nowStack()}`;
 
     const pick = items.find(x => status(x.r) === 'now')
       || items.find(x => status(x.r) === 'upcoming')
@@ -156,6 +156,8 @@
     return `
       <div class="nexus" style="--held:${items.length ? (doneCount / items.length).toFixed(2) : 0}">${orb('chaos', 150, 'spin')}
         <div class="cap"><b class="num">${doneCount}/${items.length}</b> held today</div></div>
+      ${companionCard()}
+      ${quickBar()}
       ${nowStack()}
       ${hero}
       <div class="row spread" style="margin-top:18px"><p class="label" style="margin:0">Timeline</p><span class="muted num" style="font-size:13px">${doneCount}/${items.length} done</span></div>
@@ -166,8 +168,8 @@
           if (st === 'done') { const fi = finText(r); right = `<span class="st ${fi.late ? 'late' : ''}">${fi.txt}</span>`; }
           else if (st === 'now') right = `<span class="st cleft" data-left="${windowOf(r).end}"></span>`;
           else if (st === 'upcoming') right = `<span class="st">${untilText(r)}</span>`;
-          else right = `<span class="st late">${sd ? `${sd}/${r.steps.length} · ` : ''}overdue</span>`;
-          return `<li style="--gc:${gateOf(gate).color}"><div class="swbg"><span class="l">✓ Held</span><span class="r">Undo</span></div>
+          else right = `<span class="st late">${sd ? `${sd}/${r.steps.length} · ` : ''}overdue<small>swipe when done</small></span>`;
+          return `<li style="--gc:${gateOf(gate).color}"><div class="swbg"><span class="l">${st === 'open' ? '✓ Done late' : '✓ Held'}</span><span class="r">Undo</span></div>
             <div class="it ${st}${st === 'done' ? ' locked' : ''}" ${st === 'done' ? '' : `data-act="run" data-gate="${gate}" data-id="${r.id}"`}>
             <span class="t num">${clock(startFor(r))}</span>
             <span class="dot"></span>

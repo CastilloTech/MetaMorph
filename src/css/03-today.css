@@ -26,6 +26,7 @@
   .tl .sub { font-size: 13px; color: var(--muted); }
   .tl .it.done .nm { color: var(--muted); }
   .tl .st { font-size: 13px; color: var(--muted); padding-top: 2px; white-space: nowrap; }
+  .tl .st small { display: block; font-size: 11px; color: var(--muted); text-align: right; font-weight: 400; }
   .tl .it.now .st { color: var(--accent); font-weight: 600; }
   .tl .it.done .st { color: var(--ok); }
   .swbg { position: absolute; inset: 0; display: flex; align-items: center; justify-content: space-between; padding: 0 18px; font-weight: 700; font-size: 14px; opacity: 0; transition: opacity .15s; }

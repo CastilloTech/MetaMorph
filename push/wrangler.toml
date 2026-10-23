@@ -13,10 +13,16 @@ crons = ["* * * * *"]
 VAPID_PUBLIC = "BLstPkxs99TdEmIzWipe9NqLXNKDJVa9PEr2Q7PUnHaRI-Zn6O5UlbQ3bVrzLB46nJg_AUSjlgBUrgwCk1zANo0"
 VAPID_SUBJECT = "https://github.com/CastilloTech/MetaMorph"
 ALLOWED_ORIGINS = "https://castillotech.github.io,http://127.0.0.1:5173,http://127.0.0.1:8765"
+# companion chat: the Claude model it uses, and a daily cap on messages (protects your API bill)
+CHAT_MODEL = "claude-haiku-5-5"
+CHAT_DAILY_LIMIT = "200"
 
 # filled in by the setup step (npx wrangler kv namespace create SUBS)
 [[kv_namespaces]]
 binding = "SUBS"
 id = "197262f96b204ddf9066168bc3730e42"
 
-# VAPID_PRIVATE_JWK is a secret: npx wrangler secret put VAPID_PRIVATE_JWK
+# Secrets (never in this file):
+#   npx wrangler secret put VAPID_PRIVATE_JWK
+#   npx wrangler secret put ANTHROPIC_API_KEY
+#   npx wrangler secret put COMPANION_CODE

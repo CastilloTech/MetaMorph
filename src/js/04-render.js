@@ -40,6 +40,10 @@
       ${V.mview ? mediaViewSheet() : ''}
       ${V.mcmp ? compareSheet() : ''}
       ${V.review ? reviewSheet() : ''}
+      ${V.sv ? companionSheet() : ''}
+      ${V.quick ? quickSheet() : ''}
+      ${V.siri ? siriSheet() : ''}
+      ${V.cbr ? cbRestoreSheet() : ''}
       ${V.cam ? camSheet() : ''}
       ${V.sedit ? supSheet() : ''}
       ${V.scan ? `<div class="scanner"><div class="frame"><video id="scanvid" playsinline muted></video></div><p id="scanmsg">Point the camera at a barcode</p><button class="btn" data-act="scan-close">Cancel</button></div>` : ''}

@@ -6,7 +6,7 @@ const { open, sleep } = require('./h');
   try {
     // ---------- routines: clock timer, steps, late ----------
     await seed(`(s, { now, hm }) => {
-      s.dayStart = undefined; s.prefs.dayStart = undefined;
+      s.dayStart = undefined; s.prefs.dayStart = '00:00';   // calendar day, so times just before dawn aren't counted as tonight
       const st = (id, title, m) => ({ id, title, minutes: m, work: '' });
       s.gates = { other: [],
         hygiene: [{ id: 'A', title: 'Morning routine', start: hm(now - 3), repeat: { type: 'daily' }, steps: [st('a1', 'Cold water', 2), st('a2', 'Teeth', 8)] }],
@@ -17,7 +17,7 @@ const { open, sleep } = require('./h');
     }`);
     ok('hero shows the running routine with a clock bar', (await text('.hero .when')) === 'NOW' && await has('.hero .clockbar'));
     await sleep(1200);
-    ok('timer bar fills on the clock', (await p.$eval('.hero .clockbar span:nth-child(2) i', e => parseFloat(e.style.width))) > 0);
+    ok('timer bar fills on the clock', (await p.$eval('.hero .clockbar span:nth-child(2) i', e => parseFloat((e.style.transform.match(/scaleX\(([\d.e-]+)\)/) || [0, 0])[1]))) > 0);
     ok('overdue routine is labelled', (await texts('.tl .st')).some(x => x.includes('overdue')));
     await tap('.stepchip[data-i="0"]');
     ok('step chip checks off', await p.$eval('.stepchip[data-i="0"]', e => e.classList.contains('done')));
